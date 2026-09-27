@@ -18,4 +18,5 @@
 
 - [Quran 1:1-7 — Veritas analysis (Maqasid al-Huruf)](https://veritas-analyst.org/en/corpus/1/1-7/)
 - [Quran 1:1 — Veritas analysis (Maqasid al-Huruf)](https://veritas-analyst.org/en/corpus/1/1/)
+- [Quran 2:1-10 — Veritas analysis (Maqasid al-Huruf)](https://veritas-analyst.org/en/corpus/2/1-10/)
 - [Quran — Tarteel cluster s-r-q ∩ q-t.-a. — Veritas analysis](https://veritas-analyst.org/en/corpus/tarteel/s-r-q--q-t-a/)
