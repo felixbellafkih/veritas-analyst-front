@@ -129,9 +129,10 @@ jobs:
           python - <<'EOF' | tee -a "$GITHUB_STEP_SUMMARY"
           import os
           from huggingface_hub import HfApi
+          # delete_patterns : un fichier de donnees qui n'existe plus localement (ex. paires) est retire
           info = HfApi(token=os.environ["HF_TOKEN"]).upload_folder(
               folder_path="hf", repo_id=os.environ["HF_DATASET"], repo_type="dataset",
-              commit_message="corpus: mise a jour automatique")
+              commit_message="corpus: mise a jour automatique", delete_patterns=["data/*.jsonl"])
           print(f"Hugging Face : {getattr(info, 'commit_url', info) or 'aucun changement'}")
           EOF
 
