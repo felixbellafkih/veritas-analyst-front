@@ -1,0 +1,143 @@
+# Publication automatique du corpus Veritas (site + Hugging Face).
+#
+# Declenchee par l'app a chaque validation ou correction d'une analyse (panneau Corpus public),
+# et chaque nuit par securite. Lit le corpus dans le Google Sheet, regenere le site avec
+# export_corpus.py (depot prive Veritas-Kernel), pousse le site et envoie le dataset Hugging Face.
+#
+# Secrets du depot (Settings > Secrets and variables > Actions) :
+#   KERNEL_READ_TOKEN     jeton GitHub, lecture seule du depot Veritas-Kernel
+#   KERNEL_SECRETS_TOML   GOOGLE_API_KEY + section [gcp_service_account] du secrets.toml
+#   HF_TOKEN              jeton Hugging Face (Write) ; sans lui, l'envoi Hugging Face est saute
+# Guide complet : deployment/PUBLICATION_AUTO.md du depot Veritas-Kernel.
+
+name: Publication du corpus
+
+on:
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: "Origine de la demande"
+        required: false
+        default: "manuel"
+  schedule:
+    - cron: "17 3 * * *"
+
+# Validations en rafale : une execution a la fois, la demande suivante attend
+concurrency:
+  group: publish-corpus
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pages: write
+
+env:
+  KERNEL_REPO: felixbellafkih/Veritas-Kernel
+  KERNEL_BRANCH: main
+  HF_DATASET: felixbellafkih/Veritas-Quranic-Corpus
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Configuration
+        id: config
+        env:
+          KERNEL_READ_TOKEN: ${{ secrets.KERNEL_READ_TOKEN }}
+          KERNEL_SECRETS_TOML: ${{ secrets.KERNEL_SECRETS_TOML }}
+        run: |
+          missing=""
+          [ -n "$KERNEL_READ_TOKEN" ] || missing="$missing KERNEL_READ_TOKEN"
+          [ -n "$KERNEL_SECRETS_TOML" ] || missing="$missing KERNEL_SECRETS_TOML"
+          if [ -n "$missing" ]; then
+            echo "Configuration incomplete, publication sautee. Secrets manquants :$missing" | tee -a "$GITHUB_STEP_SUMMARY"
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Depot du site
+        if: steps.config.outputs.ready == 'true'
+        uses: actions/checkout@v4
+        with:
+          path: site
+
+      - name: Depot Veritas-Kernel (prive)
+        if: steps.config.outputs.ready == 'true'
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.KERNEL_REPO }}
+          ref: ${{ env.KERNEL_BRANCH }}
+          token: ${{ secrets.KERNEL_READ_TOKEN }}
+          path: kernel
+
+      - name: Python
+        if: steps.config.outputs.ready == 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: kernel/requirements.txt
+
+      - name: Dependances
+        if: steps.config.outputs.ready == 'true'
+        run: pip install -r kernel/requirements.txt markdown huggingface_hub
+
+      - name: Secrets du Kernel (Google Sheet, Gemini)
+        if: steps.config.outputs.ready == 'true'
+        env:
+          KERNEL_SECRETS_TOML: ${{ secrets.KERNEL_SECRETS_TOML }}
+        run: |
+          test -n "$KERNEL_SECRETS_TOML" || { echo "::error::Secret KERNEL_SECRETS_TOML manquant"; exit 1; }
+          mkdir -p kernel/.streamlit
+          printf '%s\n' "$KERNEL_SECRETS_TOML" > kernel/.streamlit/secrets.toml
+
+      - name: Generation du site et du dataset
+        if: steps.config.outputs.ready == 'true'
+        working-directory: kernel
+        run: python export_corpus.py --write --site ../site --hf ../hf | tee ../export.log
+
+      - name: Publication du site
+        if: steps.config.outputs.ready == 'true'
+        working-directory: site
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REASON: ${{ inputs.reason || 'planifiee' }}
+        run: |
+          REASON=$(printf '%s' "$REASON" | tr -cd 'a-zA-Z0-9 _-' | cut -c1-40)
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Site inchange" | tee -a "$GITHUB_STEP_SUMMARY"
+          else
+            git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+              commit -q -m "corpus: mise a jour automatique ($REASON)"
+            git push -q
+            gh api -X POST "repos/${{ github.repository }}/pages/builds" >/dev/null || echo "Construction Pages non demandee (elle suit le push)"
+            echo "Site mis a jour : $(git log --oneline -1)" | tee -a "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Envoi Hugging Face
+        if: steps.config.outputs.ready == 'true'
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          if [ -z "$HF_TOKEN" ]; then
+            echo "HF_TOKEN absent : envoi Hugging Face saute" | tee -a "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          python - <<'EOF' | tee -a "$GITHUB_STEP_SUMMARY"
+          import os
+          from huggingface_hub import HfApi
+          info = HfApi(token=os.environ["HF_TOKEN"]).upload_folder(
+              folder_path="hf", repo_id=os.environ["HF_DATASET"], repo_type="dataset",
+              commit_message="corpus: mise a jour automatique")
+          print(f"Hugging Face : {getattr(info, 'commit_url', info) or 'aucun changement'}")
+          EOF
+
+      - name: Resume
+        if: always() && steps.config.outputs.ready == 'true'
+        run: |
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          grep -vE "^    " export.log >> "$GITHUB_STEP_SUMMARY" 2>/dev/null || true
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
