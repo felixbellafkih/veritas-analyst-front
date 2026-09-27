@@ -74,3 +74,4 @@ User-agent: AI2Bot
 Allow: /
 
 Sitemap: https://veritas-analyst.org/sitemap.xml
+Sitemap: https://veritas-analyst.org/sitemap-lexicon.xml

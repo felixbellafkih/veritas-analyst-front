@@ -8,6 +8,12 @@
 - [Corpus public (français)](https://veritas-analyst.org/corpus/): the validated original analyses
 - [Dataset (JSONL)](https://veritas-analyst.org/corpus/data/veritas_corpus.jsonl): one record per analysis, with the Quranic text, the roots and their letter equations, the original analysis and its English translation
 
+## Veritas lexicon
+
+- [Veritas lexicon (English)](https://veritas-analyst.org/en/lx-1242ba1a/): every root of the Quran decoded from the physical charge of its letters: logic function, letter equation, description, Quranic words derived from it, verses where it appears
+- [Lexique Veritas (français)](https://veritas-analyst.org/lx-1242ba1a/): the original French lexicon
+- [Lexicon (JSONL)](https://veritas-analyst.org/lx-1242ba1a/data/veritas_lexicon.jsonl): one record per root, French and English
+
 ## Analyses
 
 - [Quran 1:1-7 — Veritas analysis (Maqasid al-Huruf)](https://veritas-analyst.org/en/corpus/1/1-7/)
