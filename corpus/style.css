@@ -1,0 +1,14 @@
+:root{--bg:#0f172a;--card:#1e293b;--text:#e2e8f0;--muted:#94a3b8;--accent:#deff9a;--gold:#ffd700;--border:#334155}
+@media (prefers-color-scheme:light){:root{--bg:#f8fafc;--card:#ffffff;--text:#0f172a;--muted:#475569;--accent:#3f6212;--gold:#8a6a00;--border:#cbd5e1}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.65}
+.wrap{max-width:860px;margin:0 auto;padding:32px 16px 64px}
+nav.top{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:14px;margin-bottom:28px}
+a{color:var(--accent)}h1{font-size:28px;line-height:1.25;margin:0 0 20px}h2{font-size:19px;color:var(--accent);margin:34px 0 12px;letter-spacing:.5px}
+h3{font-size:17px;margin:26px 0 10px}p,li{color:var(--text)}.muted{color:var(--muted);font-size:14px}
+.verse{background:var(--card);border:1px solid var(--border);border-right:4px solid var(--gold);border-radius:10px;padding:16px 20px}
+.verse p{font-family:'Amiri','Scheherazade New','Noto Naskh Arabic',serif;font-size:26px;line-height:2;color:var(--gold);margin:6px 0;text-align:right}
+.verse .num{font-family:inherit;font-size:14px;color:var(--muted)}
+.table{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:15px}th,td{border:1px solid var(--border);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--card)}.roots td:first-child{white-space:nowrap}td .ar{font-family:'Amiri','Noto Naskh Arabic',serif;font-size:19px;color:var(--gold)}
+.box{background:var(--card);border-left:4px solid var(--accent);border-radius:10px;padding:14px 18px;margin-top:34px}
+ul.entries{padding-left:18px}ul.entries li{margin-bottom:12px}

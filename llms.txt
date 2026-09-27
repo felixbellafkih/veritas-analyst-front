@@ -1,0 +1,14 @@
+# Veritas Analyst
+
+> Veritas analyses the Quran through the letters of Arabic roots (Maqasid al-Huruf): each triliteral root is decoded from the physical charge of its letters, without relying on traditional exegesis. The public corpus contains verse analyses reviewed, validated or corrected by the developer, published under CC BY 4.0 (attribution: Project VERITAS, https://veritas-analyst.org).
+
+## Corpus
+
+- [Public corpus (English)](https://veritas-analyst.org/en/corpus/): index of the published analyses, machine-translated from the validated French originals
+- [Corpus public (français)](https://veritas-analyst.org/corpus/): the validated original analyses
+- [Dataset (JSONL)](https://veritas-analyst.org/corpus/data/veritas_corpus.jsonl): one record per analysis, with the Quranic text, the roots and their letter equations, the original analysis and its English translation
+
+## Analyses
+
+- [Quran 1:1 — Veritas analysis (Maqasid al-Huruf)](https://veritas-analyst.org/en/corpus/1/1/)
+- [Quran — Tarteel cluster s-r-q ∩ q-t.-a. — Veritas analysis](https://veritas-analyst.org/en/corpus/tarteel/s-r-q--q-t-a/)

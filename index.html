@@ -22,10 +22,14 @@
 
     <style>
         body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background-color: #0e1117; }
-        iframe { width: 100%; height: 100%; border: none; }
+        iframe { width: 100%; height: calc(100% - 30px); border: none; display: block; }
+        .corpus-link { height: 30px; display: flex; align-items: center; justify-content: center; gap: 14px; font: 13px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0e1117; border-top: 1px solid #1e293b; }
+        .corpus-link a { color: #deff9a; text-decoration: none; }
     </style>
 </head>
 <body>
     <iframe src="https://veritas-analyst.streamlit.app/?embed=true" allow="clipboard-read; clipboard-write"></iframe>
+    <!-- corpus-link -->
+    <nav class="corpus-link"><a href="/corpus/">Corpus public</a><a href="/en/corpus/">Public corpus</a><a href="/llms.txt">llms.txt</a></nav>
 </body>
 </html>
