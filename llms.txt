@@ -31,5 +31,6 @@
 - [Quran 30:32 — Veritas analysis (Maqasid al-Huruf)](https://veritas-analyst.org/en/corpus/30/32/)
 - [Quran 37:1-4 — Veritas analysis (Maqasid al-Huruf)](https://veritas-analyst.org/en/corpus/37/1-4/)
 - [Quran 42:1-2 — Veritas analysis (Maqasid al-Huruf)](https://veritas-analyst.org/en/corpus/42/1-2/)
+- [Quran Comparatif Sourates commençant par الر (10, 11, 12, 14 et 15) — Veritas analysis (Maqasid al-Huruf)](https://veritas-analyst.org/en/corpus/autres/comparatif-sourates-commen-ant-par-10-11-12-14-et-15/)
 - [Quran comparatif 13:1 et 14:1 — Veritas analysis (Maqasid al-Huruf)](https://veritas-analyst.org/en/corpus/autres/comparatif-13-1-et-14-1/)
 - [Quran — Tarteel cluster s-r-q ∩ q-t.-a. — Veritas analysis](https://veritas-analyst.org/en/corpus/tarteel/s-r-q--q-t-a/)
