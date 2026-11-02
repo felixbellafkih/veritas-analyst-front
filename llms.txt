@@ -31,6 +31,7 @@
 - [Quran 30:32 — Veritas analysis (Maqasid al-Huruf)](https://veritas-analyst.org/en/corpus/30/32/)
 - [Quran 37:1-4 — Veritas analysis (Maqasid al-Huruf)](https://veritas-analyst.org/en/corpus/37/1-4/)
 - [Quran 42:1-2 — Veritas analysis (Maqasid al-Huruf)](https://veritas-analyst.org/en/corpus/42/1-2/)
+- [Quran La corrélation entre le header A-L-M et la présence simultanée des critères C1, C2 et C3 dans le cycle d'ouverture est de 100%. — Veritas analysis (Maqasid al-Huruf)](https://veritas-analyst.org/en/corpus/autres/la-corr-lation-entre-le-header-a-l-m-et-la-pr-sence-simultan-e-des-crit-res-c1-c2-et-c3-dans-le-cycle-d-ouverture-est-de-100/)
 - [Quran Spécificité Relative (A-L-M) — Veritas analysis (Maqasid al-Huruf)](https://veritas-analyst.org/en/corpus/autres/sp-cificit-relative-a-l-m/)
 - [Quran La combinaison A-L-M n'est pas un mystère — Veritas analysis (Maqasid al-Huruf)](https://veritas-analyst.org/en/corpus/autres/la-combinaison-a-l-m-n-est-pas-un-myst-re/)
 - [Quran invariabilité de la charge M - 13:1 — Veritas analysis (Maqasid al-Huruf)](https://veritas-analyst.org/en/corpus/autres/invariabilit-de-la-charge-m-13-1/)
