@@ -31,6 +31,7 @@
 - [Quran 30:32 — Veritas analysis (Maqasid al-Huruf)](https://veritas-analyst.org/en/corpus/30/32/)
 - [Quran 37:1-4 — Veritas analysis (Maqasid al-Huruf)](https://veritas-analyst.org/en/corpus/37/1-4/)
 - [Quran 42:1-2 — Veritas analysis (Maqasid al-Huruf)](https://veritas-analyst.org/en/corpus/42/1-2/)
+- [Quran OPTIMISATION : La Sourate 2 maintient son C1 jusqu'à 2:29  -  La Sourate 16 possède un C1 massif (1-119) — Veritas analysis (Maqasid al-Huruf)](https://veritas-analyst.org/en/corpus/autres/optimisation-la-sourate-2-maintient-son-c1-jusqu-2-29-la-sourate-16-poss-de-un-c1-massif-1-119/)
 - [Quran intégrité du modèle C1/C2/C3 maintenue et  mathématiquement renforcée par la suppression du biais de découpage. — Veritas analysis (Maqasid al-Huruf)](https://veritas-analyst.org/en/corpus/autres/int-grit-du-mod-le-c1-c2-c3-maintenue-et-math-matiquement-renforc-e-par-la-suppression-du-biais-de-d-coupage/)
 - [Quran La corrélation entre le header A-L-M et la présence simultanée des critères C1, C2 et C3 dans le cycle d'ouverture est de 100%. — Veritas analysis (Maqasid al-Huruf)](https://veritas-analyst.org/en/corpus/autres/la-corr-lation-entre-le-header-a-l-m-et-la-pr-sence-simultan-e-des-crit-res-c1-c2-et-c3-dans-le-cycle-d-ouverture-est-de-100/)
 - [Quran Spécificité Relative (A-L-M) — Veritas analysis (Maqasid al-Huruf)](https://veritas-analyst.org/en/corpus/autres/sp-cificit-relative-a-l-m/)
