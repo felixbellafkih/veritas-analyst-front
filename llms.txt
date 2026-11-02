@@ -31,6 +31,7 @@
 - [Quran 30:32 — Veritas analysis (Maqasid al-Huruf)](https://veritas-analyst.org/en/corpus/30/32/)
 - [Quran 37:1-4 — Veritas analysis (Maqasid al-Huruf)](https://veritas-analyst.org/en/corpus/37/1-4/)
 - [Quran 42:1-2 — Veritas analysis (Maqasid al-Huruf)](https://veritas-analyst.org/en/corpus/42/1-2/)
+- [Quran L'automate fini déterministe (DFA) ne se contente pas de lire la racine isolée. Il compile la séquence selon une hiérarchie stricte. 3:200 — Veritas analysis (Maqasid al-Huruf)](https://veritas-analyst.org/en/corpus/autres/l-automate-fini-d-terministe-dfa-ne-se-contente-pas-de-lire-la-racine-isol-e-il-compile-la-s-quence-selon-une-hi-rarchie-stricte-3-200/)
 - [Quran L'analyse par ce DFA corrigé confirme ton observation avec une précision mathématique absolue : les deux séquences se terminent en S1S1​ (PROCESSING). — Veritas analysis (Maqasid al-Huruf)](https://veritas-analyst.org/en/corpus/autres/l-analyse-par-ce-dfa-corrig-confirme-ton-observation-avec-une-pr-cision-math-matique-absolue-les-deux-s-quences-se-terminent-en-s1s1-processing/)
 - [Quran existence de pointeurs de variables et de sous-routines imbriquées (Nested Subroutines) — Veritas analysis (Maqasid al-Huruf)](https://veritas-analyst.org/en/corpus/autres/existence-de-pointeurs-de-variables-et-de-sous-routines-imbriqu-es-nested-subroutines/)
 - [Quran L'Automate d'États Déterministe DFA est dynamique  3:200 — Veritas analysis (Maqasid al-Huruf)](https://veritas-analyst.org/en/corpus/autres/l-automate-d-tats-d-terministe-dfa-est-dynamique-3-200/)
