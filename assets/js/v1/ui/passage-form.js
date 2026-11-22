@@ -7,6 +7,7 @@ import { ApiFailure, describeFailure } from '../lib/failures.js';
 import { FREE_TEXT_MAX, ROOT_MAX, formState } from '../lib/form-state.js';
 import { responseLanguage } from '../lib/i18n.js';
 import { createLatest } from '../lib/interpreter-state.js';
+import { applyHandoff } from '../lib/tarteel-handoff.js';
 import { parseMarkdown } from '../lib/markdown.js';
 import { modelMenu } from '../lib/models.js';
 import { createTarteelProbe } from '../lib/tarteel-probe.js';
@@ -159,6 +160,9 @@ export function mountPassageForm(container, { api, store, asked, onLaunch, onMan
     if (view.step === 'lecture') fill(clusterBox, el('p', { class: 'champ__aide', text: t('Chargement du texte…') }));
     else if (view.step === 'pret') {
       // Tous les versets, une case devant chacun ; rien n'est coché au départ
+      // Venu de la page Tarteel : les versets cochés là-bas le sont ici aussi, si ce sont les mêmes racines.
+      // Le report ne sert qu'une fois, et rien ne part : c'est le visiteur qui lance l'analyse.
+      probe.selectMany(applyHandoff(store.takeTarteelHandoff(), state.primary, state.constraint, view.verses));
       clusterUi = mountClusterList(clusterBox, { probe, verses: view.verses, devMode: () => devMode });
       clusterUi.setDisabled(disabled);
     }

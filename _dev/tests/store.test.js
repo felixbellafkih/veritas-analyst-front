@@ -191,3 +191,23 @@ test('choix de l’API en local : gardé pour l’onglet seulement', () => {
   store.setApiChoice('faux');
   assert.equal(store.getApiChoice(), 'faux');
 });
+
+// ------------------------------------------------------------------ sélection reportée du Tarteel (étape 2)
+
+test('report Tarteel : gardé pour l’onglet, lu une seule fois', () => {
+  const { local, session, store } = setup();
+  const report = { primary: 'S-M-W', constraint: 'N-Z-L', references: ['2:22', '3:5'] };
+  assert.equal(store.takeTarteelHandoff(), null);
+  store.saveTarteelHandoff(report);
+  assert.ok(session.data.has('veritas.tarteel'));
+  assert.equal(local.data.size, 0, 'rien sur l’appareil');
+  assert.deepEqual(store.takeTarteelHandoff(), report);
+  assert.equal(store.takeTarteelHandoff(), null, 'un report ne sert qu’une fois');
+  assert.equal(session.data.has('veritas.tarteel'), false);
+});
+
+test('report Tarteel : un contenu illisible vaut absence, et il est effacé', () => {
+  const { session, store } = setup({}, { 'veritas.tarteel': '{pas du JSON' });
+  assert.equal(store.takeTarteelHandoff(), null);
+  assert.equal(session.data.has('veritas.tarteel'), false);
+});

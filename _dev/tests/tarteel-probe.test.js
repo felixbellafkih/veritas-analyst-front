@@ -327,3 +327,30 @@ test('check : revérifie les racines en place (bouton « Réessayer »)', async 
   await tick();
   assert.deepEqual(context.views.at(-1), { step: 'lecture', count: 352 });
 });
+
+// ------------------------------------------------------------------ sélection reportée (étape 2)
+
+test('selectMany : coche plusieurs versets d’un coup, sans rien annoncer ni redemander', async () => {
+  const context = setup();
+  await ready(context);
+  const views = context.views.length;
+  context.probe.selectMany([0, 2, 9, -1, 1.5, 2]);
+  assert.deepEqual(context.probe.selection(), { chosen: 2, total: 3 });
+  assert.deepEqual(context.probe.passage().verses, ['[2:22] : a', '[3:5] : c']);
+  assert.equal(context.views.length, views);
+  context.probe.selectMany(null);
+  context.probe.selectMany('x');
+  assert.deepEqual(context.probe.selection(), { chosen: 2, total: 3 });
+});
+
+test('selectMany : sans cluster lu, sans effet', async () => {
+  const context = setup();
+  context.probe.selectMany([0, 1]);
+  assert.deepEqual(context.probe.selection(), { chosen: 0, total: 0 });
+  (await asked(context, 'S-M-W', 'N-Z-L')).resolve({ primaryFrequency: 352, clusterFrequency: 3 });
+  await tick();
+  context.probe.selectMany([0, 1]); // les versets ne sont pas encore lus
+  context.api.calls.at(-1).resolve(VERSES);
+  await tick();
+  assert.deepEqual(context.probe.selection(), { chosen: 0, total: 3 });
+});

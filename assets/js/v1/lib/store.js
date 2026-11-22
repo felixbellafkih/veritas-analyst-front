@@ -130,5 +130,14 @@ export function createStore({ local, session } = {}) {
 
     loadForm: () => readJson(STORAGE.form),
     saveForm: (value) => inTab.set(STORAGE.form, JSON.stringify(value)),
+
+    // Sélection reportée de la page Tarteel à l'Interpréteur (lib/tarteel-handoff.js) : gardée pour
+    // l'onglet, et lue une seule fois. Un rechargement de l'Interpréteur ne recoche donc rien.
+    saveTarteelHandoff: (value) => inTab.set(STORAGE.handoff, JSON.stringify(value)),
+    takeTarteelHandoff() {
+      const value = readJson(STORAGE.handoff);
+      inTab.remove(STORAGE.handoff);
+      return value;
+    },
   };
 }

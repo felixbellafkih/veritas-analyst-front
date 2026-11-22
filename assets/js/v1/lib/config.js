@@ -13,6 +13,7 @@ export const STORAGE = Object.freeze({
   model: 'veritas.modele',
   form: 'veritas.formulaire',
   api: 'veritas.api',
+  handoff: 'veritas.tarteel', // sélection reportée de la page Tarteel à l'Interpréteur, pour l'onglet
 });
 
 const LOCAL_HOSTS = new Set(['localhost', '127.0.0.1']);
