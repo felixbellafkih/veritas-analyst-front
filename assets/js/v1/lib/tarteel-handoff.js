@@ -32,3 +32,16 @@ export function applyHandoff(handoff, primary, constraint, verses) {
   });
   return indexes;
 }
+
+// Le report, pris une fois dans l'onglet à l'ouverture de l'Interpréteur. Il sert au premier cluster prêt,
+// que ce soit ou non celui du report, puis plus jamais : rien ne se coche plus tard, à l'insu du visiteur.
+export function handoffSlot(handoff) {
+  let held = handoff;
+  return {
+    take(primary, constraint, verses) {
+      const indexes = applyHandoff(held, primary, constraint, verses);
+      held = null;
+      return indexes;
+    },
+  };
+}

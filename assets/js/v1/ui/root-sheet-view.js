@@ -4,6 +4,7 @@
 // soit la langue de l'interface.
 import { describeReadFailure } from '../lib/failures.js';
 import { scannerHref } from '../lib/roots-index.js';
+import { tarteelQuery } from '../lib/tarteel-stats.js';
 import { clear, el, fill } from './dom.js';
 import { icon } from './icons.js';
 import { currentLang, t, td } from './i18n-dom.js';
@@ -51,7 +52,7 @@ export function mountRootSheet(container, { onOpen }) {
       sheet.opposites.length ? el('div', { class: 'fiche__opposees' },
         el('p', { class: 'fiche__surtitre', text: t('BINARY SWITCH') }),
         sheet.opposites.map((code) => sheetLink(code, 'bouton-bord', [el('span', { text: '⇄', attrs: { 'aria-hidden': 'true' } }), el('span', { text: code })]))) : null,
-      el('a', { class: 'bouton-lien', attrs: { href: `/tarteel/?p=${encodeURIComponent(sheet.code)}` } },
+      el('a', { class: 'bouton-lien', attrs: { href: `/tarteel/${tarteelQuery({ primary: sheet.code })}` } },
         el('span', { text: t('Voir les versets de cette racine') }), icon('arrow', 16)));
   }
 

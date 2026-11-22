@@ -6,7 +6,7 @@
 import { FREE_TEXT_MAX, ROOT_MAX, formState } from '../lib/form-state.js';
 import { responseLanguage } from '../lib/i18n.js';
 import { createLatest } from '../lib/interpreter-state.js';
-import { applyHandoff } from '../lib/tarteel-handoff.js';
+import { handoffSlot } from '../lib/tarteel-handoff.js';
 import { tarteelQuery } from '../lib/tarteel-stats.js';
 import { modelMenu } from '../lib/models.js';
 import { createTarteelProbe } from '../lib/tarteel-probe.js';
@@ -118,6 +118,8 @@ export function mountPassageForm(container, { api, store, asked, onLaunch, onMan
   const constraint = el('input', { class: 'saisie', attrs: { id: 'racine-contrainte', ...rootAttrs } });
   const signal = el('div', { class: 'tarteel__signal', attrs: { role: 'status', 'aria-live': 'polite' } });
   const clusterBox = el('div', { class: 'tarteel__cluster' });
+  // Sélection reportée de la page Tarteel : lue une fois dans l'onglet, ici, à l'ouverture de la page
+  const handoff = handoffSlot(store.takeTarteelHandoff());
   let clusterUi = null;      // la liste des versets à l'écran (ui/cluster-list.js), quand un cluster est lu
   let devMode = false;       // mode développeur : la limite du corpus est rappelée à l'auteur
   let tarteelStep = '';      // dernière étape affichée
@@ -135,8 +137,9 @@ export function mountPassageForm(container, { api, store, asked, onLaunch, onMan
     if (view.step === 'pret') {
       // Tous les versets, une case devant chacun ; rien n'est coché au départ
       // Venu de la page Tarteel : les versets cochés là-bas le sont ici aussi, si ce sont les mêmes racines.
-      // Le report ne sert qu'une fois, et rien ne part : c'est le visiteur qui lance l'analyse.
-      probe.selectMany(applyHandoff(store.takeTarteelHandoff(), state.primary, state.constraint, view.verses));
+      // Le report ne sert qu'une fois, au premier cluster prêt, et rien ne part : c'est le visiteur qui
+      // lance l'analyse.
+      probe.selectMany(handoff.take(state.primary, state.constraint, view.verses));
       clusterUi = mountClusterList(clusterBox, { probe, verses: view.verses, devMode: () => devMode });
       clusterUi.setDisabled(disabled);
     } else {

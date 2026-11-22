@@ -1,5 +1,6 @@
 // Chiffres d'un cluster Tarteel, sans interface : répartition par sourate, rangs d'une sourate, texte à
 // copier ; et l'adresse de la page Tarteel, qui porte les racines (jamais la sélection).
+import { queryValue } from './query-value.js';
 import { clusterVerse } from './tarteel.js';
 
 const ROOT_MAX = 100; // même plafond que les champs de racine de l'Interpréteur
@@ -40,7 +41,7 @@ export function tarteelQuery({ primary, constraint } = {}) {
   const root = clean(primary);
   const limit = clean(constraint);
   if (!root) return '';
-  return `?p=${encodeURIComponent(root)}${limit ? `&c=${encodeURIComponent(limit)}` : ''}`;
+  return `?p=${queryValue(root)}${limit ? `&c=${queryValue(limit)}` : ''}`;
 }
 
 export function parseTarteelQuery(search) {

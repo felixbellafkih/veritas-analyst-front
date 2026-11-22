@@ -57,3 +57,13 @@ test('adresse de la page Tarteel : les racines y voyagent, la sélection jamais'
   const arabic = { primary: 'ض ر ب', constraint: 'ع ب د' };
   assert.deepEqual(parseTarteelQuery(tarteelQuery(arabic)), arabic);
 });
+
+// Relecture de l'étape 2 : une adresse qui finit par un point perd souvent ce point quand on la colle
+// dans une messagerie ; A-R-D. et A-R-D ne sont pas la même racine.
+test('adresse de la page Tarteel : un point final voyage encodé', () => {
+  assert.equal(tarteelQuery({ primary: 'A-R-D.' }), '?p=A-R-D%2E');
+  assert.equal(tarteelQuery({ primary: 'S-M-W', constraint: 'A-R-D.' }), '?p=S-M-W&c=A-R-D%2E');
+  assert.equal(tarteelQuery({ primary: 'A-R-D.', constraint: 'N-B-A.' }), '?p=A-R-D%2E&c=N-B-A%2E');
+  assert.equal(tarteelQuery({ primary: 'D.-R-B' }), '?p=D.-R-B');
+  assert.deepEqual(parseTarteelQuery('?p=A-R-D%2E&c=N-B-A%2E'), { primary: 'A-R-D.', constraint: 'N-B-A.' });
+});

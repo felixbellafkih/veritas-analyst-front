@@ -63,11 +63,10 @@ export function mountRootSearch(container, { onPick }) {
         el('span', { class: 'suggestions__code', text: entry.code, attrs: { dir: 'ltr' } }),
         el('span', { class: 'suggestions__arabe', text: entry.arabic, attrs: { lang: 'ar', dir: 'rtl' } }),
         el('span', { class: 'suggestions__fonction', text: entry.logic, attrs: { dir: 'ltr' } }));
-      // pointerdown, et non click : le champ ne doit pas perdre le curseur avant le choix
-      item.addEventListener('pointerdown', (event) => {
-        event.preventDefault();
-        pick(entry.code);
-      });
+      // Appuyer sur une suggestion ne retire pas le curseur du champ (mousedown neutralisé). Le choix se
+      // fait au clic, et non dès que le doigt se pose : sur un téléphone, faire défiler la liste ne choisit rien.
+      item.addEventListener('mousedown', (event) => event.preventDefault());
+      item.addEventListener('click', () => pick(entry.code));
       add(list, item);
     });
     list.hidden = false;

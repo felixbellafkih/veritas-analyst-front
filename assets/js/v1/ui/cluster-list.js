@@ -5,6 +5,8 @@
 // - Rien n'est coché au départ.
 // - La liste s'affiche par tranches, pour rester fluide avec des centaines de versets.
 // - Au clavier, elle n'offre qu'un arrêt à la touche Tab ; les flèches passent d'un verset à l'autre.
+//   Le lien d'une ligne (page Tarteel) n'est atteignable que sur la ligne du curseur.
+// - « Tout sélectionner » et « Tout désélectionner » portent sur les versets affichés.
 import { CORPUS_CELL_LIMIT, tooLongForCorpus } from '../lib/corpus-panel.js';
 import { nextIndex } from '../lib/roving.js';
 import { LARGE_SELECTION, clusterText, clusterVerse, largeSelection } from '../lib/tarteel.js';
@@ -22,6 +24,7 @@ export function mountClusterList(container, { probe, verses, devMode = () => fal
   let cursor = 0;                                // position, dans « visible », de la case atteignable par Tab
   let disabled = false;
   const boxes = new Map();                       // rang dans le cluster → case bâtie
+  const extras = new Map();                      // rang dans le cluster → élément de plus au bout de la ligne
 
   const count = el('p', { class: 'cluster__compte', attrs: { role: 'status' } });
   const hint = el('p', { class: 'message message--attention', text: t('Cochez au moins un verset.'), attrs: { role: 'alert', hidden: true } });
@@ -63,12 +66,17 @@ export function mountClusterList(container, { probe, verses, devMode = () => fal
       paint();
     });
     boxes.set(index, box);
+    const extra = rowExtra(index, verses[index]);
+    if (extra) {
+      extra.tabIndex = position === cursor ? 0 : -1;
+      extras.set(index, extra);
+    }
     return el('li', { class: 'cluster__ligne' },
       el('label', { class: 'cluster__verset' }, box,
         el('span', { class: 'cluster__contenu' },
           label ? el('span', { class: 'verset__ref', text: label }) : null,
           el('span', { class: 'cluster__texte', text, attrs: label ? { lang: 'ar', dir: 'rtl' } : { dir: 'auto' } }))),
-      rowExtra(index, verses[index]));
+      extra);
   }
 
   // Bâtit les lignes suivantes, jusqu'à la position voulue au moins
@@ -82,27 +90,36 @@ export function mountClusterList(container, { probe, verses, devMode = () => fal
   function renderAll() {
     clear(list);
     boxes.clear();
+    extras.clear();
     rendered = 0;
     cursor = 0;
     renderMore();
   }
 
+  // Sous un filtre par sourate, seuls les versets affichés changent : ceux des autres sourates gardent
+  // leur état, et rien de ce que le visiteur ne voit pas n'est coché à sa place.
   function setAll(on) {
-    probe.selectAll(on);
+    if (visible.length === verses.length) probe.selectAll(on);
+    else if (on) probe.selectMany(visible);
+    else for (const index of visible) probe.select(index, false);
     for (const box of boxes.values()) box.checked = on;
     paint();
   }
 
-  // La case qui porte le curseur du clavier : elle seule est atteignable par Tab
+  // La ligne du curseur est la seule dont la case, et le lien s'il y en a un, sont atteignables par Tab
+  function setReach(position, on) {
+    const index = visible[position];
+    if (boxes.has(index)) boxes.get(index).tabIndex = on ? 0 : -1;
+    if (extras.has(index)) extras.get(index).tabIndex = on ? 0 : -1;
+  }
+
   function moveCursor(position) {
     renderMore(position);
-    const boxAt = (at) => boxes.get(visible[at]);
-    if (boxAt(cursor)) boxAt(cursor).tabIndex = -1;
+    setReach(cursor, false);
     cursor = position;
-    const box = boxAt(cursor);
-    if (!box) return;
-    box.tabIndex = 0;
-    box.focus();
+    setReach(cursor, true);
+    const box = boxes.get(visible[cursor]);
+    if (box) box.focus();
   }
 
   list.addEventListener('keydown', (event) => {
@@ -124,10 +141,10 @@ export function mountClusterList(container, { probe, verses, devMode = () => fal
   list.addEventListener('focusin', (event) => {
     const box = event.target;
     if (!box.classList || !box.classList.contains('cluster__case')) return;
-    const previous = boxes.get(visible[cursor]);
-    if (previous && previous !== box) previous.tabIndex = -1;
-    cursor = Number(box.dataset.position);
-    box.tabIndex = 0;
+    const position = Number(box.dataset.position);
+    if (position !== cursor) setReach(cursor, false);
+    cursor = position;
+    setReach(cursor, true);
   });
 
   all.addEventListener('click', () => setAll(true));

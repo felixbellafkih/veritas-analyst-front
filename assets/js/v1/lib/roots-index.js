@@ -2,6 +2,7 @@
 // (assets/data/racines.json, écrit par la publication du corpus) et recherche dans cette liste.
 // La liste ne porte que le code, les lettres arabes et la fonction de chaque racine : la fiche complète
 // vient de l'API, à la demande.
+import { queryValue } from './query-value.js';
 
 const QUERY_MAX = 100; // même plafond que les champs de racine de l'Interpréteur
 const LOGIC_MIN = 2;   // la fonction n'est cherchée qu'à partir de deux caractères
@@ -36,16 +37,19 @@ function rank(entry, query) {
     const wanted = foldArabic(query);
     const letters = foldArabic(entry.arabic);
     if (!wanted) return null;
-    if (letters === wanted) return 3;
-    return letters.startsWith(wanted) ? 4 : null;
+    if (letters === wanted) return 4;
+    return letters.startsWith(wanted) ? 5 : null;
   }
   const raw = query.toUpperCase();
   const code = entry.code.toUpperCase();
   const folded = foldLatin(query);
   if (code === raw) return 0;
   if (folded && foldLatin(code) === folded) return 1;
-  if (code.startsWith(raw) || (folded && foldLatin(code).startsWith(folded))) return 2;
-  if (query.length >= LOGIC_MIN && entry.logic.toUpperCase().includes(raw)) return 5;
+  // Le code qui commence par la saisie telle quelle passe devant celui qui ne lui ressemble qu'une fois
+  // réduit à ses lettres : « D.-R » propose D.-R-B avant D-R-A
+  if (code.startsWith(raw)) return 2;
+  if (folded && foldLatin(code).startsWith(folded)) return 3;
+  if (query.length >= LOGIC_MIN && entry.logic.toUpperCase().includes(raw)) return 6;
   return null;
 }
 
@@ -76,4 +80,4 @@ export function scannerQuery(search) {
   return clean(new URLSearchParams(String(search ?? '')).get('q'));
 }
 
-export const scannerHref = (query) => `/scanner/?q=${encodeURIComponent(clean(query))}`;
+export const scannerHref = (query) => `/scanner/?q=${queryValue(clean(query))}`;

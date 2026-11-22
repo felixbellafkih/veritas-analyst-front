@@ -215,3 +215,19 @@ test('pages de lecture : aucune analyse n’y est lancée, aucune clé n’y est
     assert.doesNotMatch(source, /credentials\(\)/, name);
   }
 });
+
+// Un point final dans une adresse se perd au copier-coller : seules ces deux fonctions savent l'encoder
+test('les adresses du Scanner et du Tarteel sont bâties par scannerHref et tarteelQuery', () => {
+  const byHand = scripts.filter((path) => /\/(tarteel\/\?p=|scanner\/\?q=)/.test(read(path))).map((path) => rel(path).split('/').slice(-2).join('/'));
+  assert.deepEqual(byHand, ['lib/roots-index.js']);
+});
+
+// Le report d'une sélection est pris une fois, à l'ouverture de l'Interpréteur, et non à chaque cluster prêt
+test('Interpréteur : le report du Tarteel est lu à l’ouverture de la page, hors de l’affichage du cluster', () => {
+  const source = read(scripts.find((path) => path.endsWith(join('ui', 'passage-form.js'))));
+  assert.equal(source.split('takeTarteelHandoff(').length - 1, 1);
+  const show = source.slice(source.indexOf('function showTarteel('), source.indexOf('const probe = createTarteelProbe'));
+  assert.ok(show.length > 0);
+  assert.doesNotMatch(show, /takeTarteelHandoff/);
+  assert.match(show, /handoff\.take\(/);
+});

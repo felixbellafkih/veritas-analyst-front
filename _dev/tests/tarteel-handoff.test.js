@@ -3,7 +3,7 @@
 // références retrouvées dans CE cluster, pour CES racines, se cochent.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { applyHandoff, makeHandoff } from '../../assets/js/v1/lib/tarteel-handoff.js';
+import { applyHandoff, handoffSlot, makeHandoff } from '../../assets/js/v1/lib/tarteel-handoff.js';
 
 const V = ['[2:22] : a', '[2:164] : b', '[3:5] : c'];
 
@@ -43,4 +43,24 @@ test('applyHandoff : un report absent ou douteux ne coche rien', () => {
   }
   // des références qui ne sont pas des textes sont ignorées
   assert.deepEqual(applyHandoff({ primary: 'S-M-W', constraint: 'N-Z-L', references: [null, 12, '3:5'] }, 'S-M-W', 'N-Z-L', V), [2]);
+});
+
+// Relecture de l'étape 2 : le report était lu dans l'onglet au premier cluster prêt. Si ce cluster n'arrivait
+// pas (serveur en panne), le report restait dans l'onglet et cochait des versets bien plus tard, pour les
+// mêmes racines. Il est maintenant pris une fois, à l'ouverture de la page, et tenu ici.
+test('handoffSlot : le report sert au premier cluster prêt, puis plus jamais', () => {
+  const slot = handoffSlot(makeHandoff('S-M-W', 'N-Z-L', V, [0, 2]));
+  assert.deepEqual(slot.take('S-M-W', 'N-Z-L', V), [0, 2]);
+  assert.deepEqual(slot.take('S-M-W', 'N-Z-L', V), []);
+});
+
+test('handoffSlot : un premier cluster fait pour d’autres racines consomme le report sans rien cocher', () => {
+  const slot = handoffSlot(makeHandoff('S-M-W', 'N-Z-L', V, [0, 2]));
+  assert.deepEqual(slot.take('S-M-W', '', V), []);
+  assert.deepEqual(slot.take('S-M-W', 'N-Z-L', V), []);
+});
+
+test('handoffSlot : sans report, rien ne se coche', () => {
+  assert.deepEqual(handoffSlot(null).take('S-M-W', '', V), []);
+  assert.deepEqual(handoffSlot(undefined).take('S-M-W', '', V), []);
 });
