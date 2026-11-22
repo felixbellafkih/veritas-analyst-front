@@ -353,3 +353,11 @@ test('au chargement : l’entrée du corpus revient avec l’analyse', async () 
   assert.deepEqual(after.log.at(-1)[1].corpusEntry, ENTRY);
   assert.equal(after.log.at(-1)[1].language, 'Français');
 });
+
+test('analyse gardée avant que sa langue soit notée : le panneau du corpus reçoit la langue du formulaire', () => {
+  // Un onglet resté ouvert pendant une mise à jour du site : ce qu'il a gardé ne porte pas la langue de l'analyse
+  const context = setup({ saved: { history: A1, result: R1, resultPassage: P1, passage: P1 } });
+  context.form.language = 'English';
+  context.interpreter.restore();
+  assert.equal(context.log.at(-1)[1].language, 'English');
+});

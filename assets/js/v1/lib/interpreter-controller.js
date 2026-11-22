@@ -27,7 +27,8 @@ export function createInterpreter({ api, store, form, view, onWaiting, openKey, 
       // si elle est la première de sa conversation, sa langue, et son entrée déjà enregistrée
       lastInput: state.history.length >= 2 ? state.history[state.history.length - 2].text : '',
       first: state.history.length <= 2,
-      language: state.resultLanguage,
+      // La langue demandée pour cette analyse ; pour une analyse gardée avant qu'elle soit notée, celle du formulaire
+      language: state.resultLanguage || form.options().language,
       corpusEntry: state.corpusEntry,
     };
     try {
