@@ -208,6 +208,93 @@
   color: var(--secondaire);
 }
 
+/* ------------------------------------------------------------------ conversation */
+
+/* Échanges précédents, repliés au-dessus de l'analyse affichée */
+.echanges {
+  margin-block-end: 28px;
+  border: 1px solid var(--bord);
+  border-radius: var(--rayon-moyen);
+  background: var(--fond);
+}
+
+.echanges summary {
+  display: flex;
+  align-items: center;
+  min-height: 48px;
+  padding-inline: 16px;
+  color: var(--titre);
+  font-size: var(--t-petit);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.echanges__liste {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 4px 16px 20px;
+}
+
+.echange + .echange {
+  padding-block-start: 24px;
+  border-block-start: 1px solid var(--bord);
+}
+
+.echange__role {
+  margin-block-start: 12px;
+  color: var(--discret);
+  font-size: var(--t-petit);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.echange__role:first-child {
+  margin-block-start: 0;
+}
+
+.echange__demande {
+  margin-block-start: 6px;
+  color: var(--titre);
+  white-space: pre-wrap;
+}
+
+/* Sous l'analyse : poursuivre la conversation */
+.suite {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-block-start: 40px;
+  padding: 16px;
+  border: 1px solid var(--bord-fort);
+  border-radius: var(--rayon-grand);
+  background: var(--fond);
+}
+
+.suite textarea.saisie {
+  min-height: 72px;
+  padding-block: 10px;
+}
+
+.suite__bas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.suite__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.suite__actions .bouton {
+  min-height: var(--cible);
+}
+
 /* ------------------------------------------------------------------ attente */
 
 .attente {

@@ -221,6 +221,17 @@ test('suite de conversation : la réponse reprend le message envoyé', async () 
   assert.ok(result.endsWith('Réponse à : Objection 1'));
 });
 
+test('suite de conversation avec une clé d’échec : l’échec l’emporte', async () => {
+  const body = { verse_text: 'Objection', history: [{ role: 'user', text: 'a' }, { role: 'model', text: 'b' }] };
+  assert.deepEqual((await readLines(await analyze('echec', body))).lines.at(-1),
+    { type: 'result', result: '⚠️ ERREUR RUNTIME : API key not valid. Please pass a valid API key.' });
+  assert.equal((await readLines(await analyze('erreur', body))).lines.at(-1).type, 'error');
+  assert.equal((await readLines(await analyze('coupure', body))).lines.some((line) => line.type === 'result'), false);
+  const slow = await readLines(await analyze('lent', body));
+  assert.ok(slow.lines.filter((line) => line.type === 'ping').length >= 20);
+  assert.ok(slow.lines.at(-1).result.endsWith('Réponse à : Objection'));
+});
+
 test('journal : compte les analyses, garde la dernière, jamais la clé', async () => {
   assert.equal((await api('/__demandes', { method: 'DELETE' })).status, 200);
   await readLines(await analyze('ok', { verse_text: 'premier texte' }));

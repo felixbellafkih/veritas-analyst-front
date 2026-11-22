@@ -1,12 +1,13 @@
 // Page de l'Interpréteur : elle relie le formulaire du passage, l'API et l'affichage de l'analyse.
 // L'état (lib/interpreter-state.js) décide de ce qui s'affiche ; cette page ne fait que le suivre.
 import { createApi } from '../api.js';
-import { apiBase } from '../lib/config.js';
+import { API_PROD, apiBase } from '../lib/config.js';
+import { previousExchanges } from '../lib/conversation.js';
 import { initialState, reduce, snapshot } from '../lib/interpreter-state.js';
-import { analysisRequest } from '../lib/request.js';
+import { analysisRequest, followUpRequest } from '../lib/request.js';
 import { parsePassageQuery } from '../lib/verses.js';
 import { mountAnalysis } from '../ui/analysis-view.js';
-import { browserStore } from '../ui/dom.js';
+import { browserStore, el } from '../ui/dom.js';
 import { currentLang, initI18n, languageLabel, t } from '../ui/i18n-dom.js';
 import { openKeyDialog } from '../ui/key-dialog.js';
 import { mountPassageForm } from '../ui/passage-form.js';
@@ -23,7 +24,13 @@ let state = initialState();
 const openKey = () => openKeyDialog({ store, api, onChange: showAccess });
 const shell = mountShell({ page: 'interpreteur', store, onKeyClick: openKey });
 const form = mountPassageForm(document.getElementById('passage'), { api, store, onLaunch: launch, onManageKey: openKey });
-const view = mountAnalysis(article, { onRetry: retry, onManageKey: openKey });
+const view = mountAnalysis(article, { onRetry: retry, onManageKey: openKey, onFollowUp: followUp, onNewConversation: newConversation });
+
+// En local seulement : dire quelle API répond, pour ne pas confondre le faux serveur et la vraie
+if (['localhost', '127.0.0.1'].includes(window.location.hostname)) {
+  const real = apiBase(window.location) === API_PROD;
+  document.querySelector('#pied .pied__dans').append(el('span', { class: 'pied__local', text: real ? 'Essai local — API réelle' : 'Essai local — faux serveur d’API' }));
+}
 
 // Accès en service : mode développeur, clé du visiteur, ou rien
 function showAccess() {
@@ -44,7 +51,14 @@ function render() {
   document.body.dataset.attente = waiting ? 'oui' : 'non';
   if (state.phase === 'vide') view.showEmpty();
   else if (waiting) view.showWaiting();
-  else if (state.phase === 'resultat') view.showResult({ result: state.result, passage: state.resultPassage, input: state.history.length ? state.history[0].text : '' });
+  else if (state.phase === 'resultat') {
+    view.showResult({
+      result: state.result,
+      passage: state.resultPassage,
+      input: state.history.length ? state.history[0].text : '',
+      previous: previousExchanges(state.history, state.result),
+    });
+  }
   else view.showFailure(state.failure, { keepResult: Boolean(state.result) });
   // L'analyse et la conversation sont gardées pour l'onglet : un rechargement ne les perd pas
   if (state.phase === 'resultat') store.saveConversation(snapshot(state));
@@ -89,6 +103,22 @@ function launch(passage) {
 
 function retry() {
   if (dispatch({ type: state.requestKind, passage: state.passage, request: state.request })) send();
+}
+
+// Suite de la conversation : le message part avec les échanges gardés par la page
+function followUp(message) {
+  const { key, devPassword } = store.credentials();
+  if (!key && !devPassword) {
+    openKey();
+    return;
+  }
+  if (!dispatch({ type: 'followup', request: followUpRequest(message, state.history, requestOptions()) })) return;
+  article.scrollIntoView({ block: 'start' }); // l'état d'attente est en haut de l'analyse
+  send();
+}
+
+function newConversation() {
+  if (dispatch({ type: 'new-conversation' })) article.scrollIntoView({ block: 'start' });
 }
 
 // Quitter la page pendant une analyse la ferait perdre, alors qu'elle est facturée : le navigateur prévient

@@ -53,8 +53,23 @@ function actionButton(name, label, onClick) {
   return el('button', { class: 'bouton-bord', attrs: { type: 'button' }, on: { click: onClick } }, icon(name), el('span', { text: label }));
 }
 
-// onRetry() : relancer la demande en échec ; onManageKey() : ouvrir la fenêtre de la clé
-export function mountAnalysis(container, { onRetry, onManageKey }) {
+// Échanges précédents de la conversation, repliés : la demande du visiteur, puis la réponse mise en forme
+function earlierExchanges(previous) {
+  const list = el('div', { class: 'echanges__liste' });
+  for (const [request, answer] of previous) {
+    list.append(el('div', { class: 'echange' },
+      el('p', { class: 'echange__role', text: t('Votre demande') }),
+      el('p', { class: 'echange__demande', text: request, attrs: { dir: 'auto' } }),
+      el('p', { class: 'echange__role', text: t('Réponse') }),
+      // Sans repères de section : ceux de l'analyse affichée ne doivent pas exister en double
+      el('div', { class: 'analyse__corps' }, renderBlocks(parseMarkdown(splitOutput(answer).text), { ids: false }))));
+  }
+  return el('details', { class: 'echanges' }, el('summary', { text: `${t('Échanges précédents')} (${previous.length})` }), list);
+}
+
+// onRetry() : relancer la demande en échec ; onManageKey() : ouvrir la fenêtre de la clé ;
+// onFollowUp(message) : poursuivre la conversation ; onNewConversation() : en commencer une autre
+export function mountAnalysis(container, { onRetry, onManageKey, onFollowUp, onNewConversation }) {
   const status = el('div', { class: 'analyse__etat' });
   const result = el('div', { class: 'analyse__resultat' });
   clear(container).append(
@@ -77,6 +92,33 @@ export function mountAnalysis(container, { onRetry, onManageKey }) {
         el('p', { class: 'analyse__surtitre', text: t('Analyse') }),
         el('h2', { class: 'analyse__titre', text: title, attrs: { dir: 'auto' } })),
       actions || null);
+  }
+
+  // Pendant une attente, la suite de conversation est verrouillée comme le formulaire
+  function lockFollowUp(locked) {
+    for (const control of result.querySelectorAll('.suite textarea, .suite button')) control.disabled = locked;
+  }
+
+  // Sous l'analyse : poursuivre la conversation, ou en commencer une autre
+  function followUpForm() {
+    const message = el('textarea', { class: 'saisie', attrs: { id: 'suite-texte', rows: 2, placeholder: t('Objecter, demander une précision…') } });
+    const form = el('form', { class: 'suite', attrs: { novalidate: true } },
+      el('label', { class: 'champ__etiquette', text: t('Poursuivre la conversation'), attrs: { for: 'suite-texte' } }),
+      message,
+      el('div', { class: 'suite__bas' },
+        el('span', { class: 'champ__aide', text: t('Conversation en cours : votre prochain message la poursuit.') }),
+        el('div', { class: 'suite__actions' },
+          el('button', { class: 'bouton-bord', text: t('Nouvelle conversation'), attrs: { type: 'button' }, on: { click: () => onNewConversation() } }),
+          el('button', { class: 'bouton', attrs: { type: 'submit' } }, el('span', { text: t('Envoyer') }), icon('arrow')))));
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      if (message.value.trim()) onFollowUp(message.value);
+    });
+    // Ctrl + Entrée (ou Cmd + Entrée) envoie le message
+    message.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) form.requestSubmit();
+    });
+    return form;
   }
 
   // Repères tirés de l'en-tête technique : le modèle, les jetons et le coût (repliés), les références du corpus
@@ -119,6 +161,7 @@ export function mountAnalysis(container, { onRetry, onManageKey }) {
     // L'analyse précédente, s'il y en a une, reste affichée sous la zone d'état
     showWaiting() {
       stopTimer();
+      lockFollowUp(true);
       pings = 0;
       const started = Date.now();
       const elapsed = el('p', { class: 'attente__duree', text: t('Durée écoulée : {n} s', { n: 0 }) });
@@ -145,8 +188,9 @@ export function mountAnalysis(container, { onRetry, onManageKey }) {
       if (pingCount) pingCount.textContent = t('Signaux reçus du serveur : {n}', { n: pings });
     },
 
-    // result : le texte reçu du moteur ; passage : ce qui a été analysé ; input : la demande du visiteur
-    showResult({ result: raw, passage, input = '' }) {
+    // result : le texte reçu du moteur ; passage : ce qui a été analysé ; input : la première demande du
+    // visiteur ; previous : les échanges précédents de la conversation, [[demande, réponse], …]
+    showResult({ result: raw, passage, input = '', previous = [] }) {
       stopTimer();
       clear(status);
       const { headerLine, text } = splitOutput(raw);
@@ -162,15 +206,18 @@ export function mountAnalysis(container, { onRetry, onManageKey }) {
       const print = actionButton('printer', t('Imprimer'), () => window.print());
 
       clear(result).append(
+        previous.length ? earlierExchanges(previous) : null,
         header(titleOf(passage), el('div', { class: 'analyse__actions' }, copy, save, print, announce)),
         ...markers(headerLine),
         sections.length ? el('nav', { class: 'sommaire', attrs: { 'aria-label': t('Sections de l’analyse') } },
           sections.map((section) => el('a', { class: 'sommaire__lien', attrs: { href: `#${section.id}`, title: section.title } }, el('span', { text: section.title, attrs: { dir: 'auto' } })))) : null,
-        el('div', { class: 'analyse__corps' }, renderBlocks(blocks, { tableLabel: t('Tableau de l’analyse') })));
+        el('div', { class: 'analyse__corps' }, renderBlocks(blocks, { tableLabel: t('Tableau de l’analyse') })),
+        followUpForm());
     },
 
     showFailure(failure, { keepResult = false } = {}) {
       stopTimer();
+      lockFollowUp(false); // le message saisi reste dans sa zone : il peut repartir
       const { text, retry, askKey } = describeFailure(failure);
       const detail = failure && failure.detail ? String(failure.detail) : '';
       const actions = el('div', { class: 'message__actions' },

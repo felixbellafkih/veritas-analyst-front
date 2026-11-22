@@ -65,15 +65,19 @@ function authorize(req, res) {
 }
 
 function analysisScript(scenario, body, fixtures) {
-  if (Array.isArray(body.history) && body.history.length) {
-    return { pings: 1, last: { type: 'result', result: `${HEADER}\n\nRéponse à : ${body.verse_text}` } };
-  }
+  // Suite de conversation : la réponse reprend le message reçu. Les clés d'échec gardent leur effet.
+  const followUp = Array.isArray(body.history) && body.history.length > 0;
+  const reply = { type: 'result', result: `${HEADER}\n\nRéponse à : ${body.verse_text}` };
   switch (scenario) {
-    case 'anglais': return { pings: 1, last: { type: 'result', result: fixtures.analysisEn } };
-    case 'lent': return { pings: SLOW_PINGS, last: { type: 'result', result: fixtures.analysis } };
     case 'erreur': return { pings: 1, last: { type: 'error', detail: '500 INTERNAL. Faux serveur.' } };
     case 'echec': return { pings: 1, last: { type: 'result', result: '⚠️ ERREUR RUNTIME : API key not valid. Please pass a valid API key.' } };
     case 'coupure': return { pings: 2, last: null };
+    case 'lent': return { pings: SLOW_PINGS, last: followUp ? reply : { type: 'result', result: fixtures.analysis } };
+    default:
+  }
+  if (followUp) return { pings: 1, last: reply };
+  switch (scenario) {
+    case 'anglais': return { pings: 1, last: { type: 'result', result: fixtures.analysisEn } };
     case 'entete': return { pings: 1, last: { type: 'result', result: '**[TARGET: m]** quelque chose\n\n### 1. T\nok' } };
     case 'hostile': return { pings: 1, last: { type: 'result', result: `${HEADER}\n\n${HOSTILE}` } };
     default: return { pings: 3, last: { type: 'result', result: fixtures.analysis } };

@@ -255,6 +255,12 @@
   color: var(--accent-survol);
 }
 
+/* Visible en local seulement : quelle API répond (faux serveur, ou API réelle) */
+.pied__local {
+  color: var(--attention);
+  font-weight: 600;
+}
+
 /* ------------------------------------------------------------------ barre d'onglets (téléphone) */
 
 .onglets {
