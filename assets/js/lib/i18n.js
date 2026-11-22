@@ -41,7 +41,7 @@ function matchLanguage(tag, codes) {
   return codes.includes(primary) ? primary : null;
 }
 
-// Première langue du visiteur (navigator.languages) qui existe dans la liste ; sinon le français
+// Première langue du visiteur (celles que son navigateur annonce) qui existe dans la liste ; sinon le français
 export function pickLanguage(candidates, codes) {
   for (const tag of candidates || []) {
     const found = matchLanguage(tag, codes);

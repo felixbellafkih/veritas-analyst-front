@@ -1,0 +1,212 @@
+/* Nouveau site Veritas — composants : boutons, champs, cartes, pastilles, messages. */
+
+/* ------------------------------------------------------------------ boutons */
+
+.bouton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 48px;
+  padding-inline: 20px;
+  border: 0;
+  border-radius: var(--rayon-moyen);
+  background: var(--bouton-fond);
+  color: var(--bouton-texte);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.bouton:hover:not(:disabled) {
+  background: var(--bouton-survol);
+  color: var(--bouton-texte);
+}
+
+.bouton:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+.bouton--large {
+  width: 100%;
+  min-height: 54px;
+}
+
+.bouton-lien {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: var(--cible);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--accent);
+  font-size: inherit;
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
+
+.bouton-lien:hover {
+  color: var(--accent-survol);
+}
+
+/* ------------------------------------------------------------------ champs */
+
+.champ {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.champ__etiquette {
+  color: var(--secondaire);
+  font-size: var(--t-petit);
+  font-weight: 500;
+}
+
+.champ__aide {
+  color: var(--discret);
+  font-size: var(--t-petit);
+}
+
+.saisie {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 14px;
+  border: 1px solid var(--bord-fort);
+  border-radius: var(--rayon);
+  background: var(--surface);
+  color: var(--titre);
+  font-size: var(--t-texte);
+}
+
+textarea.saisie {
+  min-height: 132px;
+  padding-block: 12px;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.saisie:hover {
+  border-color: var(--discret);
+}
+
+.saisie:disabled {
+  opacity: 0.6;
+}
+
+/* Liste déroulante : la flèche est une icône posée par-dessus, pour suivre le thème */
+.choix {
+  position: relative;
+  display: flex;
+}
+
+.choix select.saisie {
+  padding-inline-end: 40px;
+  appearance: none;
+  -webkit-appearance: none;
+  text-overflow: ellipsis;
+}
+
+.choix .icone {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-end: 14px;
+  color: var(--secondaire);
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
+.case {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  min-height: var(--cible);
+  padding-block: 10px;
+  cursor: pointer;
+}
+
+.case input {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  margin: 2px 0 0;
+  accent-color: var(--accent);
+}
+
+/* ------------------------------------------------------------------ cartes, pastilles */
+
+.carte {
+  border: 1px solid var(--bord);
+  border-radius: var(--rayon-grand);
+  background: var(--surface);
+}
+
+.pastille {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  padding-inline: 10px;
+  border: 1px solid var(--bord);
+  border-radius: var(--rayon-petit);
+  background: var(--fond);
+  color: var(--secondaire);
+  font-size: var(--t-petit);
+}
+
+.pastille--code {
+  font-family: var(--police-codes);
+}
+
+/* ------------------------------------------------------------------ messages */
+
+.message {
+  padding: 12px 14px;
+  border: 1px solid var(--bord-fort);
+  border-inline-start-width: 3px;
+  border-radius: var(--rayon);
+  background: var(--fond);
+  color: var(--texte);
+  font-size: var(--t-petit);
+}
+
+.message--erreur {
+  border-inline-start-color: var(--erreur);
+}
+
+.message--erreur .message__titre {
+  color: var(--erreur);
+}
+
+.message--reussite {
+  border-inline-start-color: var(--reussite);
+}
+
+.message--reussite .message__titre {
+  color: var(--reussite);
+}
+
+.message--attention {
+  border-inline-start-color: var(--attention);
+}
+
+.message--attention .message__titre {
+  color: var(--attention);
+}
+
+.message__titre {
+  font-weight: 600;
+}
+
+/* Texte de l'auteur mis en forme (gras, code) dans l'interface */
+.texte-auteur {
+  color: var(--secondaire);
+  font-size: var(--t-petit);
+}
+
+.texte-auteur strong {
+  color: var(--titre);
+}
