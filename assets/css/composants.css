@@ -97,6 +97,13 @@ textarea.saisie {
   opacity: 0.6;
 }
 
+/* Une liste de langues mêle toutes les écritures (latine, cyrillique, grecque, arabe, chinoise…) : elle
+   s'affiche dans la police de l'appareil, qui les couvre toutes. Avec la police du site, le navigateur
+   chargerait quatre fichiers de plus pour ces seuls libellés. */
+.saisie--langues {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
 /* Liste déroulante : la flèche est une icône posée par-dessus, pour suivre le thème */
 .choix {
   position: relative;

@@ -264,7 +264,7 @@ export function mountPassageForm(container, { api, store, asked, onLaunch, onMan
   // ------------------------------------------------------------------ langue de la réponse, modèle
 
   // La langue de la réponse suit celle de l'interface tant que le visiteur ne l'a pas changée
-  const languageSelect = el('select', { class: 'saisie', attrs: { id: 'langue-reponse' } });
+  const languageSelect = el('select', { class: 'saisie saisie--langues', attrs: { id: 'langue-reponse' } });
   for (const entry of languages()) add(languageSelect, el('option', { text: entry.label, attrs: { value: entry.code } }));
   languageSelect.value = responseLanguage(languages(), state.language, currentLang()).code;
   languageSelect.addEventListener('change', () => {
