@@ -160,3 +160,43 @@ test('la demande part avec la clé dans son en-tête, et nulle part ailleurs', a
   assert.ok(!seen[0].options.body.includes('CLE-SECRETE'));
   assert.deepEqual(JSON.parse(seen[0].options.body), BODY);
 });
+
+// ------------------------------------------------------------------ corpus public (mode développeur)
+
+const DEV = { key: '', devPassword: 'dev' };
+const CORPUS_RESULT = '**[TARGET: m]** | 📊 **Tokens:** Input=1 | Output=1 | Thinking=0 | Total=2\n\nAnalyse du verset';
+const CORPUS_SAVE = { action: 'validate', verse_input: 'ٱللَّهُ', result: CORPUS_RESULT, reference: '2:255', kind: 'verse', language: 'Français', final_text: 'Analyse du verset', note: '' };
+
+test('corpus : brouillon, enregistrement, puis mise à jour de la même entrée', async () => {
+  assert.deepEqual(await api.corpusDraft({ verse_input: 'ٱللَّهُ', result: CORPUS_RESULT, reference: '2:255', kind: 'verse' }, DEV),
+    { reference: '2:255', kind: 'verse', text: 'Analyse du verset' });
+  const entry = await api.corpusSave(CORPUS_SAVE, DEV);
+  assert.deepEqual(Object.keys(entry).sort(), ['final_output', 'id', 'note', 'reference', 'status']);
+  assert.equal(entry.status, 'validated');
+  const updated = await api.corpusUpdate(entry.id, { reference: '2:255', final_text: 'Analyse corrigée', note: 'relu', expected: entry }, DEV);
+  assert.equal(updated.changed, true);
+  assert.deepEqual(updated.entry, { id: entry.id, reference: '2:255', status: 'corrected', final_output: 'Analyse corrigée', note: 'relu' });
+});
+
+test('corpus : sans mot de passe développeur rien ne part, et la clé du visiteur n’est jamais envoyée', async () => {
+  const sent = [];
+  const spied = createApi({ base, fetch: (url, options) => {
+    sent.push(options.headers);
+    return fetch(url, options);
+  } });
+  await fails(spied.corpusDraft({ verse_input: 'x', result: CORPUS_RESULT }, { key: 'ok', devPassword: '' }), { kind: 'http', status: 401 });
+  await fails(spied.corpusSave(CORPUS_SAVE, { key: 'ok' }), { kind: 'http', status: 401 });
+  await fails(spied.corpusUpdate('a1', { reference: '2:255', final_text: 'x', note: '', expected: {} }, {}), { kind: 'http', status: 401 });
+  assert.equal(sent.length, 0);
+  await spied.corpusDraft({ verse_input: 'x', result: CORPUS_RESULT }, { key: 'ok', devPassword: 'dev' });
+  assert.deepEqual(sent, [{ 'Content-Type': 'application/json', 'X-Dev-Password': 'dev' }]);
+});
+
+test('corpus : un refus du serveur garde son message', async () => {
+  await fails(api.corpusSave({ ...CORPUS_SAVE, final_text: 'un autre texte' }, DEV),
+    { kind: 'http', status: 400, detail: 'Le texte a été modifié : utilise « Enregistrer la correction ».' });
+  await fails(api.corpusDraft({ verse_input: 'x', result: CORPUS_RESULT }, { devPassword: 'faux' }),
+    { kind: 'http', status: 401, detail: 'Unauthorized: Dev Password required' });
+  await fails(api.corpusUpdate('inconnue', { reference: '2:255', final_text: 'x', note: '', expected: {} }, DEV),
+    { kind: 'http', status: 404, detail: 'Entrée inconnue introuvable dans le corpus.' });
+});

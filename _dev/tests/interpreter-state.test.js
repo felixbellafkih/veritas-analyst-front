@@ -18,7 +18,7 @@ const afterFirst = () => reduce(reduce(initialState(), launch()), success(R1));
 
 test('état de départ', () => {
   assert.deepEqual(initialState(), {
-    phase: 'vide', history: [], result: null, resultPassage: null, passage: null, request: null, requestKind: null, failure: null,
+    phase: 'vide', history: [], result: null, resultPassage: null, resultLanguage: null, corpusEntry: null, passage: null, request: null, requestKind: null, failure: null,
   });
 });
 
@@ -165,7 +165,7 @@ test('après un échec, un nouveau lancement est accepté', () => {
 test('snapshot et restore : l’analyse et la conversation reviennent après un rechargement', () => {
   const shown = reduce(reduce(afterFirst(), { type: 'followup', request: followUpRequest('Objection', afterFirst().history, O) }), success(R2));
   const saved = JSON.parse(JSON.stringify(snapshot(shown)));
-  assert.deepEqual(Object.keys(saved).sort(), ['history', 'passage', 'result', 'resultPassage']);
+  assert.deepEqual(Object.keys(saved).sort(), ['corpusEntry', 'history', 'passage', 'result', 'resultLanguage', 'resultPassage']);
   const restored = reduce(initialState(), { type: 'restore', saved });
   assert.equal(restored.phase, 'resultat');
   assert.equal(restored.result, R2);
@@ -190,4 +190,65 @@ test('createLatest : seule la dernière demande compte', () => {
   assert.equal(latest.isCurrent(a), false);
   assert.equal(latest.isCurrent(b), true);
   assert.notEqual(a, b);
+});
+
+// ------------------------------------------------------------------ corpus public : l'entrée enregistrée pour l'analyse affichée
+
+const ENTRY = { id: 'a1b2c3d4e5f6', reference: '1:1', status: 'validated', final_output: 'Analyse 1', note: '' };
+const corpusSaved = (result, entry = ENTRY) => ({ type: 'corpus-saved', result, entry });
+
+test('une analyse reçue garde la langue de sa demande, et n’a pas encore d’entrée dans le corpus', () => {
+  const shown = afterFirst();
+  assert.equal(shown.resultLanguage, 'Français');
+  assert.equal(shown.corpusEntry, null);
+  const english = reduce(reduce(shown, { type: 'followup', request: { verse_text: 'Objection', language: 'English', history: shown.history } }), success(R2));
+  assert.equal(english.resultLanguage, 'English');
+});
+
+test('corpus-saved : l’entrée est rattachée à l’analyse affichée, et à elle seule', () => {
+  const shown = afterFirst();
+  const saved = reduce(shown, corpusSaved(R1));
+  assert.deepEqual(saved.corpusEntry, ENTRY);
+  assert.equal(saved.phase, 'resultat');
+  assert.equal(saved.result, R1);
+  // une réponse arrivée pour une autre analyse, une entrée douteuse, ou aucune analyse : sans effet
+  assert.equal(reduce(shown, corpusSaved(R2)), shown);
+  assert.equal(reduce(shown, corpusSaved(R1, { id: '' })), shown);
+  assert.equal(reduce(shown, corpusSaved(R1, null)), shown);
+  assert.equal(reduce(initialState(), corpusSaved(R1)).corpusEntry, null);
+});
+
+test('corpus-saved pendant qu’une suite est en attente : l’analyse affichée garde son entrée', () => {
+  const waiting = reduce(afterFirst(), { type: 'followup', request: followUpRequest('Objection', afterFirst().history, O) });
+  const saved = reduce(waiting, corpusSaved(R1));
+  assert.equal(saved.phase, 'attente');
+  assert.deepEqual(saved.corpusEntry, ENTRY);
+});
+
+test('une nouvelle analyse, ou une suite, oublie l’entrée de la précédente', () => {
+  const saved = reduce(afterFirst(), corpusSaved(R1));
+  const next = reduce(reduce(saved, launch(P2, REQ2)), success(R2));
+  assert.equal(next.corpusEntry, null);
+  const followed = reduce(reduce(saved, { type: 'followup', request: followUpRequest('Objection', saved.history, O) }), success(R2));
+  assert.equal(followed.corpusEntry, null);
+  // un échec ne change rien : l'analyse affichée est toujours celle de l'entrée
+  const failed = reduce(reduce(saved, launch(P2, REQ2)), { type: 'failure', failure: new Error('x') });
+  assert.deepEqual(failed.corpusEntry, ENTRY);
+});
+
+test('snapshot et restore : l’entrée du corpus et la langue reviennent après un rechargement', () => {
+  const saved = JSON.parse(JSON.stringify(snapshot(reduce(afterFirst(), corpusSaved(R1)))));
+  const restored = reduce(initialState(), { type: 'restore', saved });
+  assert.deepEqual(restored.corpusEntry, ENTRY);
+  assert.equal(restored.resultLanguage, 'Français');
+});
+
+test('restore : une entrée douteuse est écartée, l’analyse revient quand même', () => {
+  const saved = JSON.parse(JSON.stringify(snapshot(afterFirst())));
+  for (const doubtful of ['x', 12, [], { id: 3 }, { id: 'a' }]) {
+    const restored = reduce(initialState(), { type: 'restore', saved: { ...saved, corpusEntry: doubtful, resultLanguage: 42 } });
+    assert.equal(restored.phase, 'resultat');
+    assert.equal(restored.corpusEntry, null, JSON.stringify(doubtful));
+    assert.equal(restored.resultLanguage, null);
+  }
 });

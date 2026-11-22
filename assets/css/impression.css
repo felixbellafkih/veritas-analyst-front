@@ -46,6 +46,7 @@ body {
 .sommaire,
 .suite,
 .echanges,
+.corpus,
 dialog {
   display: none !important;
 }

@@ -64,6 +64,14 @@ export function createApi({ base, fetch: fetchImpl = globalThis.fetch }) {
   const query = (params) => new URLSearchParams(params).toString();
   const pair = (primary, constraint) => (constraint ? { primary, constraint } : { primary });
 
+  // Corpus public : mode développeur seulement. Seul le mot de passe développeur accompagne la demande,
+  // jamais la clé du visiteur ; sans lui, rien ne part.
+  function corpus(path, method, body, credentials) {
+    const devPassword = credentials && credentials.devPassword;
+    if (!devPassword) return Promise.reject(new ApiFailure('http', { status: 401, detail: 'Unauthorized: Dev Password required' }));
+    return json(path, { method, headers: { 'Content-Type': 'application/json', 'X-Dev-Password': devPassword }, body: JSON.stringify(body) });
+  }
+
   return {
     stats: () => json('/content/manifesto/stats'),
 
@@ -91,6 +99,17 @@ export function createApi({ base, fetch: fetchImpl = globalThis.fetch }) {
       await json('/auth/dev-mode', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password }) });
       return true;
     },
+
+    // Panneau « Valider / Corriger » (lib/corpus-panel.js). Le brouillon : {reference, kind, text}
+    corpusDraft: (body, credentials) => corpus('/corpus/draft', 'POST', body, credentials),
+
+    // Premier enregistrement : rend l'entrée, {id, reference, status, final_output, note}
+    async corpusSave(body, credentials) {
+      return (await corpus('/corpus/entries', 'POST', body, credentials)).entry;
+    },
+
+    // Mise à jour de la même entrée : rend {entry, changed}
+    corpusUpdate: (id, body, credentials) => corpus(`/corpus/entries/${encodeURIComponent(id)}`, 'PUT', body, credentials),
 
     // Lance une analyse et rend le texte du moteur. Rejette : 'http', 'network', 'stream' (ligne error),
     // 'engine' (réponse sans en-tête [TARGET]), 'cut' (connexion coupée), 'timeout', 'aborted', 'credential'.

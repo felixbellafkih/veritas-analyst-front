@@ -446,6 +446,75 @@
   min-height: var(--cible);
 }
 
+/* ------------------------------------------------------------------ corpus public (mode développeur) */
+
+/* Sous l'analyse, replié : valider ou corriger le texte avant qu'il entre dans le corpus public */
+.analyse__corpus:empty {
+  display: none;
+}
+
+.corpus {
+  margin-block-start: 40px;
+  border: 1px solid var(--bord-fort);
+  border-radius: var(--rayon-grand);
+  background: var(--fond);
+}
+
+.corpus__titre {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 12px;
+  min-height: 48px;
+  padding: 8px 16px;
+  color: var(--titre);
+  font-size: var(--t-petit);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.corpus__marque {
+  color: var(--reussite);
+}
+
+.corpus__dans,
+.corpus__corps {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.corpus__dans {
+  padding: 4px 16px 16px;
+}
+
+.corpus textarea.corpus__texte {
+  min-height: 320px;
+  font-size: var(--t-petit);
+  line-height: 1.6;
+}
+
+.corpus__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.corpus__actions .bouton {
+  min-height: var(--cible);
+}
+
+.corpus__info {
+  color: var(--reussite);
+  font-size: var(--t-petit);
+  font-weight: 600;
+}
+
+.corpus__erreur {
+  color: var(--erreur);
+  font-size: var(--t-petit);
+}
+
 /* ------------------------------------------------------------------ attente */
 
 .attente {

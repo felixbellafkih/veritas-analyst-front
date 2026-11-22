@@ -131,6 +131,95 @@ function frequencies(query, fixtures) {
   return { primary_root: primary, constraint, primary_frequency: primaryFrequency, cluster_frequency: clusterFrequency };
 }
 
+// ---- Corpus public : les règles du vrai serveur (api.py, section 8, et engine/corpus_store.py), sans
+// Google Sheet ni publication. Les entrées vivent en mémoire, le temps du serveur local.
+const CORPUS_EDITABLE = ['reference', 'status', 'final_output', 'note'];
+const normalize = (text) => String(text || '').replace(/\r\n/g, '\n').trim();
+// Deux textes qui ne diffèrent que par des blancs : ce n'est pas une correction
+const sameContent = (a, b) => String(a || '').replace(/\s+/g, '') === String(b || '').replace(/\s+/g, '');
+const corpusFields = (entry) => ({ id: entry.id, reference: entry.reference, status: entry.status, final_output: entry.final_output, note: entry.note });
+
+// Sépare l'en-tête technique (modèle, jetons, coût) du texte de l'analyse
+function splitOutput(result) {
+  const text = String(result || '');
+  const match = /^\s*\*\*\[TARGET:\s*([^\]]+)\]\*\*[^\n]*\n+/.exec(text);
+  return match ? normalize(text.slice(match[0].length)) : normalize(text);
+}
+
+function validReference(match) {
+  const [sura, start, end] = [Number(match[1]), Number(match[2]), match[3]];
+  if (sura < 1 || sura > 114 || start < 1) return '';
+  return end && Number(end) > start ? `${sura}:${start}-${Number(end)}` : `${sura}:${start}`;
+}
+
+// Rend [type, référence] : verse, range, cluster ou free
+function parseReference(verseInput, output) {
+  const input = String(verseInput || '');
+  const reference = /(\d{1,3})\s*:\s*(\d{1,3})(?:\s*-\s*(\d{1,3}))?/;
+  if (input.startsWith('Analyse ce cluster')) {
+    const match = /Triangulation\s*:\s*([^)]+)\)/.exec(input);
+    return ['cluster', match ? `tarteel:${match[1].trim()}` : ''];
+  }
+  if (input.startsWith('Analyse le verset') || input.startsWith('Analyse les versets')) {
+    const match = reference.exec(input.split('\n', 1)[0]);
+    if (match) {
+      const found = validReference(match);
+      return [found.includes('-') ? 'range' : 'verse', found];
+    }
+  }
+  const match = reference.exec(normalize(output).slice(0, 200));
+  return ['free', match ? validReference(match) : ''];
+}
+
+function corpusDraft(body) {
+  const text = splitOutput(body.result);
+  let [kind, reference] = parseReference(body.verse_input, text);
+  if (body.reference) [kind, reference] = [body.kind || kind, body.reference];
+  return { status: 200, data: { reference, kind, text } };
+}
+
+function corpusSave(body, entries) {
+  const refuse = (detail) => ({ status: 400, data: { detail } });
+  if (body.action !== 'validate' && body.action !== 'correct') return refuse('Action inconnue.');
+  const raw = splitOutput(body.result);
+  const changed = !sameContent(body.final_text, raw);
+  if (body.action === 'validate' && changed) return refuse('Le texte a été modifié : utilise « Enregistrer la correction ».');
+  if (body.action === 'correct' && !changed) return refuse('Aucune modification : utilise « Valider tel quel ».');
+  if (!String(body.reference || '').trim()) return refuse('Indique la référence du verset (ex. 2:255).');
+  const finalText = changed ? normalize(body.final_text) : raw;
+  const entry = {
+    id: Array.from({ length: 12 }, () => Math.floor(Math.random() * 16).toString(16)).join(''),
+    reference: String(body.reference).trim(),
+    status: finalText === raw ? 'validated' : 'corrected',
+    raw_output: raw,
+    final_output: finalText,
+    note: String(body.note || '').trim(),
+  };
+  entries.set(entry.id, entry);
+  return { status: 200, data: { entry: corpusFields(entry) } };
+}
+
+function corpusUpdate(id, body, entries) {
+  const current = entries.get(id);
+  if (!current) return { status: 404, data: { detail: `Entrée ${id} introuvable dans le corpus.` } };
+  const finalText = sameContent(body.final_text, current.raw_output) ? current.raw_output : normalize(body.final_text);
+  const revised = {
+    ...current,
+    reference: String(body.reference || '').trim(),
+    final_output: finalText,
+    note: String(body.note || '').trim(),
+    status: finalText === current.raw_output ? 'validated' : 'corrected',
+  };
+  if (!revised.reference) return { status: 400, data: { detail: 'Indique la référence du verset (ex. 2:255).' } };
+  if (CORPUS_EDITABLE.every((name) => revised[name] === current[name])) return { status: 200, data: { entry: corpusFields(current), changed: false } };
+  const expected = body.expected || {};
+  if (CORPUS_EDITABLE.some((name) => normalize(current[name]) !== normalize(String(expected[name] ?? '')))) {
+    return { status: 500, data: { detail: 'Cette entrée a été modifiée ailleurs depuis son chargement (Google Sheet ou autre écran) : recharge le corpus avant de la mettre à jour.' } };
+  }
+  entries.set(id, revised);
+  return { status: 200, data: { entry: corpusFields(revised), changed: true } };
+}
+
 async function serveStatic(pathname, res) {
   const notFound = () => {
     res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'no-store' });
@@ -164,7 +253,19 @@ async function serveStatic(pathname, res) {
 
 export async function startServer({ port = 8787, pingMs = 300 } = {}) {
   const fixtures = await loadFixtures();
-  const state = { count: 0, last: null, outage: false };
+  const state = { count: 0, last: null, outage: false, corpus: new Map() };
+
+  // Corpus public : le mot de passe développeur seul ouvre ces routes, une clé ne suffit pas
+  async function handleCorpus(req, res, path) {
+    if (String(req.headers['x-dev-password'] || '') !== DEV_PASSWORD) return sendJson(res, 401, { detail: 'Unauthorized: Dev Password required' });
+    const body = await readBody(req);
+    if (!body) return sendJson(res, 422, { detail: 'Corps de demande invalide.' });
+    let answer = null;
+    if (req.method === 'POST' && path === '/corpus/draft') answer = corpusDraft(body);
+    else if (req.method === 'POST' && path === '/corpus/entries') answer = corpusSave(body, state.corpus);
+    else if (req.method === 'PUT' && path.startsWith('/corpus/entries/')) answer = corpusUpdate(decodeURIComponent(path.slice('/corpus/entries/'.length)), body, state.corpus);
+    return answer ? sendJson(res, answer.status, answer.data) : sendJson(res, 404, { detail: 'Not Found' });
+  }
 
   async function handleApi(req, res, path, query) {
     if (path === '/__demandes') {
@@ -179,6 +280,7 @@ export async function startServer({ port = 8787, pingMs = 300 } = {}) {
       return sendJson(res, 200, { panne: state.outage });
     }
     if (state.outage) return sendJson(res, 503, { detail: 'Service indisponible (panne simulée).' });
+    if (path.startsWith('/corpus/')) return handleCorpus(req, res, path);
 
     if (req.method === 'GET') {
       if (path === '/content/manifesto/stats') return sendJson(res, 200, fixtures.stats);

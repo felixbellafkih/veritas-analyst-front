@@ -53,6 +53,8 @@ const view = mountAnalysis(article, {
   onFollowUp: (message) => interpreter.followUp(message),
   onNewConversation: () => interpreter.newConversation(),
   publishedPages,
+  // Panneau « Valider / Corriger » du corpus public : mode développeur seulement
+  corpus: { api, credentials: () => store.credentials(), onSaved: (result, entry) => interpreter.corpusSaved(result, entry) },
 });
 
 const interpreter = createInterpreter({
@@ -87,6 +89,7 @@ function showAccess() {
   const status = store.getDevPassword() ? 'dev' : store.getKey() ? 'presente' : 'absente';
   shell.setKeyStatus(status);
   form.setAccess(status, store.keyIsRemembered());
+  view.setDevMode(status === 'dev');
 }
 
 showAccess();

@@ -23,6 +23,12 @@ export function createInterpreter({ api, store, form, view, onWaiting, openKey, 
       passage: state.resultPassage,
       input: state.history.length ? state.history[0].text : '',
       previous: previousExchanges(state.history, state.result),
+      // Pour le panneau du corpus (mode développeur) : la saisie à laquelle l'analyse affichée répond,
+      // si elle est la première de sa conversation, sa langue, et son entrée déjà enregistrée
+      lastInput: state.history.length >= 2 ? state.history[state.history.length - 2].text : '',
+      first: state.history.length <= 2,
+      language: state.resultLanguage,
+      corpusEntry: state.corpusEntry,
     };
     try {
       view.showResult(shown);
@@ -114,6 +120,17 @@ export function createInterpreter({ api, store, form, view, onWaiting, openKey, 
       if (!(await confirmNewConversation())) return false;
       if (!dispatch({ type: 'new-conversation' })) return false;
       reveal('new');
+      return true;
+    },
+
+    // L'analyse affichée vient d'être enregistrée dans le corpus public, ou son entrée mise à jour : elle est
+    // gardée pour l'onglet, sans rien réafficher (le panneau garde ce que l'auteur y a saisi).
+    // Rend faux si result n'est plus l'analyse affichée.
+    corpusSaved(result, entry) {
+      const next = reduce(state, { type: 'corpus-saved', result, entry });
+      if (next === state) return false;
+      state = next;
+      store.saveConversation(snapshot(state));
       return true;
     },
 

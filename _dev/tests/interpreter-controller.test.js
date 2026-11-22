@@ -134,7 +134,9 @@ test('lancement : une demande part, l’attente s’affiche, puis l’analyse es
   calls[0].resolve(R1);
   await tick();
   assert.equal(log.at(-1)[0], 'resultat');
-  assert.deepEqual(log.at(-1)[1], { result: R1, passage: P1, input: 'بِسْمِ ٱللَّهِ', previous: [] });
+  assert.deepEqual(log.at(-1)[1], {
+    result: R1, passage: P1, input: 'بِسْمِ ٱللَّهِ', previous: [], lastInput: 'بِسْمِ ٱللَّهِ', first: true, language: 'Français', corpusEntry: null,
+  });
   assert.equal(effects.waiting.at(-1), false);
   assert.equal(stored.conversation.result, R1);
   assert.deepEqual(stored.conversation.history, A1);
@@ -306,4 +308,48 @@ test('la mise en forme échoue : l’analyse est déjà gardée, et le texte re�
   assert.equal(context.log.at(-1)[1].result, R1);
   assert.equal(context.log.some((entry) => entry[0] === 'erreur'), false);
   assert.equal(context.effects.waiting.at(-1), false);
+});
+
+// ------------------------------------------------------------------ corpus public (mode développeur)
+
+const ENTRY = { id: 'a1b2c3d4e5f6', reference: '1:1', status: 'validated', final_output: 'Analyse 1', note: '' };
+
+test('la vue reçoit ce que le panneau du corpus demande : dernière saisie, première analyse ou suite, langue', async () => {
+  const context = await analysed(setup());
+  const first = context.log.at(-1)[1];
+  assert.equal(first.lastInput, 'بِسْمِ ٱللَّهِ');
+  assert.equal(first.first, true);
+  assert.equal(first.language, 'Français');
+  assert.equal(first.corpusEntry, null);
+
+  context.view.draft = 'Objection';
+  context.form.language = 'English';
+  context.interpreter.followUp('Objection');
+  context.calls.at(-1).resolve(R2);
+  await tick();
+  const second = context.log.at(-1)[1];
+  assert.equal(second.result, R2);
+  assert.equal(second.lastInput, 'Objection');
+  assert.equal(second.first, false);
+  assert.equal(second.language, 'English');
+});
+
+test('corpusSaved : l’entrée est gardée pour l’onglet sans réafficher l’analyse', async () => {
+  const context = await analysed(setup());
+  const shown = context.log.length;
+  assert.equal(context.interpreter.corpusSaved(R1, ENTRY), true);
+  assert.equal(context.log.length, shown, 'rien n’est réaffiché : le panneau garde ce que l’auteur y a saisi');
+  assert.deepEqual(context.stored.conversation.corpusEntry, ENTRY);
+  // une réponse pour une autre analyse que celle affichée est ignorée
+  assert.equal(context.interpreter.corpusSaved(R2, { ...ENTRY, id: 'ffffffffffff' }), false);
+  assert.deepEqual(context.stored.conversation.corpusEntry, ENTRY);
+});
+
+test('au chargement : l’entrée du corpus revient avec l’analyse', async () => {
+  const before = await analysed(setup());
+  before.interpreter.corpusSaved(R1, ENTRY);
+  const after = setup({ saved: before.stored.conversation });
+  after.interpreter.restore();
+  assert.deepEqual(after.log.at(-1)[1].corpusEntry, ENTRY);
+  assert.equal(after.log.at(-1)[1].language, 'Français');
 });

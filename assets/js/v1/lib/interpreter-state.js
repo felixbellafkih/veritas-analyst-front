@@ -2,11 +2,15 @@
 // Phases : 'vide' (aucune analyse), 'attente' (une demande est partie), 'resultat', 'erreur'.
 // reduce(état, événement) rend un nouvel état, ou le même objet quand l'événement est sans effet.
 import { addExchange } from './conversation.js';
+import { validEntry } from './corpus-panel.js';
 import { succeeded } from './engine-output.js';
 import { ApiFailure } from './failures.js';
 
 export function initialState() {
-  return { phase: 'vide', history: [], result: null, resultPassage: null, passage: null, request: null, requestKind: null, failure: null };
+  return {
+    phase: 'vide', history: [], result: null, resultPassage: null, resultLanguage: null, corpusEntry: null,
+    passage: null, request: null, requestKind: null, failure: null,
+  };
 }
 
 function validHistory(history) {
@@ -14,9 +18,14 @@ function validHistory(history) {
     && turn.role === (index % 2 === 0 ? 'user' : 'model') && typeof turn.text === 'string');
 }
 
-// Ce qui est gardé pour l'onglet, afin qu'un rechargement de la page ne perde ni l'analyse ni la conversation
+// Ce qui est gardé pour l'onglet, afin qu'un rechargement de la page ne perde ni l'analyse ni la conversation.
+// resultLanguage : la langue demandée pour l'analyse affichée ; corpusEntry : son entrée dans le corpus public,
+// si l'auteur l'y a enregistrée (mode développeur) : après un rechargement, il la met à jour au lieu d'en créer une autre.
 export function snapshot(state) {
-  return { history: state.history, result: state.result, resultPassage: state.resultPassage, passage: state.passage };
+  return {
+    history: state.history, result: state.result, resultPassage: state.resultPassage, passage: state.passage,
+    resultLanguage: state.resultLanguage, corpusEntry: state.corpusEntry,
+  };
 }
 
 export function reduce(state, event) {
@@ -49,6 +58,8 @@ export function reduce(state, event) {
         phase: 'resultat',
         result: event.result,
         resultPassage: launched ? state.passage : state.resultPassage,
+        resultLanguage: typeof state.request.language === 'string' ? state.request.language : null,
+        corpusEntry: null, // une autre analyse : elle n'a pas encore d'entrée dans le corpus
         history: addExchange(launched ? [] : state.history, state.request.verse_text, event.result),
         failure: null,
       };
@@ -59,6 +70,12 @@ export function reduce(state, event) {
       if (state.phase !== 'attente') return state;
       return { ...state, phase: 'erreur', failure: event.failure };
 
+    // L'auteur a enregistré l'analyse affichée dans le corpus public (ou mis à jour son entrée). Une réponse
+    // arrivée pour une autre analyse que celle affichée est ignorée.
+    case 'corpus-saved':
+      if (!state.result || event.result !== state.result || !validEntry(event.entry)) return state;
+      return { ...state, corpusEntry: event.entry };
+
     case 'new-conversation':
       return state.phase === 'attente' ? state : initialState();
 
@@ -66,7 +83,16 @@ export function reduce(state, event) {
     case 'restore': {
       const saved = event.saved;
       if (state.phase !== 'vide' || !saved || !succeeded(saved.result) || !validHistory(saved.history)) return state;
-      return { ...initialState(), phase: 'resultat', history: saved.history, result: saved.result, resultPassage: saved.resultPassage || null, passage: saved.passage || null };
+      return {
+        ...initialState(),
+        phase: 'resultat',
+        history: saved.history,
+        result: saved.result,
+        resultPassage: saved.resultPassage || null,
+        resultLanguage: typeof saved.resultLanguage === 'string' ? saved.resultLanguage : null,
+        corpusEntry: validEntry(saved.corpusEntry) ? saved.corpusEntry : null,
+        passage: saved.passage || null,
+      };
     }
 
     default:

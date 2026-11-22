@@ -267,3 +267,92 @@ test('panne : toutes les routes de l’API répondent 503, puis reviennent', asy
   assert.equal((await api('/__panne?on=0')).status, 200);
   assert.equal((await api('/content/manifesto/stats')).status, 200);
 });
+
+// ------------------------------------------------------------------ corpus public : mêmes règles que l'API (api.py, section 8)
+
+const DEV_HEADERS = { 'Content-Type': 'application/json', 'X-Dev-Password': 'dev' };
+const TARGET = '**[TARGET: gemini-3.1-pro-preview]** | 📊 **Tokens:** Input=1 | Output=1 | Thinking=0 | Total=2\n\n';
+const corpus = (path, body, { method = 'POST', headers = DEV_HEADERS } = {}) => api(path, { method, headers, body: JSON.stringify(body) });
+const saveBody = (extra = {}) => ({
+  action: 'validate', verse_input: 'ٱللَّهُ', result: `${TARGET}Analyse du verset`, reference: '2:255', kind: 'verse', language: 'Français',
+  final_text: 'Analyse du verset', note: '', ...extra,
+});
+
+test('corpus : réservé au mot de passe développeur, une clé ne suffit pas', async () => {
+  for (const headers of [{ 'Content-Type': 'application/json' }, { 'Content-Type': 'application/json', 'X-API-Key': 'ok' }, { 'Content-Type': 'application/json', 'X-Dev-Password': 'faux' }]) {
+    for (const [path, method] of [['/corpus/draft', 'POST'], ['/corpus/entries', 'POST'], ['/corpus/entries/abc', 'PUT']]) {
+      const response = await corpus(path, saveBody(), { method, headers });
+      assert.equal(response.status, 401, `${method} ${path}`);
+      assert.deepEqual(await response.json(), { detail: 'Unauthorized: Dev Password required' });
+    }
+  }
+});
+
+test('corpus, brouillon : le texte sans l’en-tête technique, et la référence proposée', async () => {
+  const draft = async (body) => (await corpus('/corpus/draft', body)).json();
+  // référence connue du site (mode Verset)
+  assert.deepEqual(await draft({ verse_input: 'ٱللَّهُ', result: `${TARGET}Analyse\r\n du verset \n`, reference: '2:255', kind: 'verse' }),
+    { reference: '2:255', kind: 'verse', text: 'Analyse\n du verset' });
+  // cluster Tarteel : la phrase du site est reconnue
+  assert.deepEqual(await draft({ verse_input: 'Analyse ce cluster de versets interconnectés (Triangulation : S-M-W ∩ N-Z-L) :\n\n[2:22] : x', result: `${TARGET}Analyse` }),
+    { reference: 'tarteel:S-M-W ∩ N-Z-L', kind: 'cluster', text: 'Analyse' });
+  // saisie libre : la référence est lue en tête de la réponse, si elle y figure
+  assert.deepEqual(await draft({ verse_input: 'un texte', result: `${TARGET}**Sourate 18:96-97** — analyse` }), { reference: '18:96-97', kind: 'free', text: '**Sourate 18:96-97** — analyse' });
+  assert.deepEqual(await draft({ verse_input: 'un texte', result: `${TARGET}Sans repère` }), { reference: '', kind: 'free', text: 'Sans repère' });
+  assert.deepEqual(await draft({ verse_input: 'un texte', result: 'Réponse sans en-tête' }), { reference: '', kind: 'free', text: 'Réponse sans en-tête' });
+});
+
+test('corpus, enregistrement : validé tel quel, ou corrigé', async () => {
+  const validated = await (await corpus('/corpus/entries', saveBody({ final_text: ' Analyse  du\nverset ' }))).json();
+  assert.match(validated.entry.id, /^[0-9a-f]{12}$/);
+  // Des espaces en plus ne sont pas une correction : le texte du modèle est gardé tel quel
+  assert.deepEqual(validated.entry, { id: validated.entry.id, reference: '2:255', status: 'validated', final_output: 'Analyse du verset', note: '' });
+  const corrected = await (await corpus('/corpus/entries', saveBody({ action: 'correct', final_text: 'Analyse corrigée', note: ' relu ' }))).json();
+  assert.deepEqual(corrected.entry, { id: corrected.entry.id, reference: '2:255', status: 'corrected', final_output: 'Analyse corrigée', note: 'relu' });
+  assert.notEqual(corrected.entry.id, validated.entry.id);
+});
+
+test('corpus, enregistrement : les refus de l’API, avec leurs messages', async () => {
+  const refused = async (extra, detail) => {
+    const response = await corpus('/corpus/entries', saveBody(extra));
+    assert.equal(response.status, 400);
+    assert.deepEqual(await response.json(), { detail });
+  };
+  await refused({ action: 'publier' }, 'Action inconnue.');
+  await refused({ final_text: 'Analyse modifiée' }, 'Le texte a été modifié : utilise « Enregistrer la correction ».');
+  await refused({ action: 'correct' }, 'Aucune modification : utilise « Valider tel quel ».');
+  await refused({ reference: '   ' }, 'Indique la référence du verset (ex. 2:255).');
+});
+
+test('corpus, mise à jour : la même entrée est réécrite, sauf si elle a changé ailleurs', async () => {
+  const { entry } = await (await corpus('/corpus/entries', saveBody())).json();
+  const update = (body, id = entry.id) => corpus(`/corpus/entries/${id}`, body, { method: 'PUT' });
+
+  const same = await (await update({ reference: '2:255', final_text: 'Analyse du verset', note: '', expected: entry })).json();
+  assert.deepEqual(same, { entry, changed: false });
+
+  const changed = await (await update({ reference: '2:255', final_text: 'Analyse corrigée', note: 'relu', expected: entry })).json();
+  assert.deepEqual(changed, { entry: { id: entry.id, reference: '2:255', status: 'corrected', final_output: 'Analyse corrigée', note: 'relu' }, changed: true });
+
+  // La version attendue n'est plus celle du serveur : rien n'est écrit
+  const stale = await update({ reference: '2:255', final_text: 'Encore autre chose', note: '', expected: entry });
+  assert.equal(stale.status, 500);
+  assert.deepEqual(await stale.json(), { detail: 'Cette entrée a été modifiée ailleurs depuis son chargement (Google Sheet ou autre écran) : recharge le corpus avant de la mettre à jour.' });
+
+  const back = await (await update({ reference: '2:255', final_text: 'Analyse du verset', note: '', expected: changed.entry })).json();
+  assert.equal(back.entry.status, 'validated');
+
+  const empty = await update({ reference: ' ', final_text: 'Analyse du verset', note: '', expected: back.entry });
+  assert.equal(empty.status, 400);
+  assert.deepEqual(await empty.json(), { detail: 'Indique la référence du verset (ex. 2:255).' });
+
+  const unknown = await update({ reference: '2:255', final_text: 'x', note: '', expected: entry }, 'inconnue');
+  assert.equal(unknown.status, 404);
+  assert.deepEqual(await unknown.json(), { detail: 'Entrée inconnue introuvable dans le corpus.' });
+});
+
+test('corpus : le journal des analyses ne compte pas ces demandes', async () => {
+  await api('/__demandes', { method: 'DELETE' });
+  await corpus('/corpus/draft', { verse_input: 'x', result: `${TARGET}y` });
+  assert.equal((await (await api('/__demandes')).json()).count, 0);
+});

@@ -8,6 +8,7 @@ import { EXPORT_LINK_LIFETIME_MS, exportFileName } from '../lib/export-name.js';
 import { BILLED_NOTICE, describeFailure, maybeBilled } from '../lib/failures.js';
 import { outline, parseMarkdown } from '../lib/markdown.js';
 import { resultTitle } from '../lib/verses.js';
+import { corpusPanel } from './corpus-panel.js';
 import { add, clear, el, fill } from './dom.js';
 import { icon } from './icons.js';
 import { t, td, tm } from './i18n-dom.js';
@@ -81,8 +82,9 @@ function earlierExchanges(previous) {
 
 // onRetry() : relancer la demande en échec ; onManageKey() : ouvrir la fenêtre de la clé ;
 // onFollowUp(message) : poursuivre la conversation ; onNewConversation() : en commencer une autre ;
-// publishedPages() : promesse des adresses publiées du corpus (pour les liens des références)
-export function mountAnalysis(container, { onRetry, onManageKey, onFollowUp, onNewConversation, publishedPages = async () => null }) {
+// publishedPages() : promesse des adresses publiées du corpus (pour les liens des références) ;
+// corpus : {api, credentials(), onSaved(result, entry)}, pour le panneau « Valider / Corriger » du mode développeur
+export function mountAnalysis(container, { onRetry, onManageKey, onFollowUp, onNewConversation, publishedPages = async () => null, corpus = null }) {
   const status = el('div', { class: 'analyse__etat' });
   const result = el('div', { class: 'analyse__resultat' });
   fill(container,
@@ -94,6 +96,9 @@ export function mountAnalysis(container, { onRetry, onManageKey, onFollowUp, onN
   let pings = 0;
   let pingCount = null;
   let submitDraft = null; // envoie ce que contient la zone de suite, quand elle est à l'écran
+  let devMode = false;     // mode développeur : le panneau du corpus s'affiche sous l'analyse
+  let current = null;      // l'analyse affichée, telle que la page l'a reçue
+  let corpusHolder = null; // emplacement du panneau du corpus, sous l'analyse affichée
 
   function stopTimer() {
     if (timer !== null) clearInterval(timer);
@@ -106,6 +111,35 @@ export function mountAnalysis(container, { onRetry, onManageKey, onFollowUp, onN
         el('p', { class: 'analyse__surtitre', text: t('Analyse') }),
         el('h2', { class: 'analyse__titre', text: title, attrs: { dir: 'auto' } })),
       actions || null);
+  }
+
+  // Le panneau du corpus n'existe qu'en mode développeur. Il n'est bâti qu'une fois par analyse : le rebâtir
+  // effacerait ce que l'auteur y a saisi.
+  function paintCorpus() {
+    if (!corpusHolder) return;
+    if (!devMode || !corpus || !current) {
+      clear(corpusHolder);
+      return;
+    }
+    if (corpusHolder.firstChild) return;
+    fill(corpusHolder, corpusPanel(corpus, current, (result, entry) => {
+      // L'entrée suit l'analyse affichée : si le panneau est rebâti, il la retrouve
+      if (current && current.result === result) current = { ...current, corpusEntry: entry };
+      corpus.onSaved(result, entry);
+    }));
+  }
+
+  // Sous l'analyse qui vient d'être affichée
+  function corpusPlace(shown) {
+    current = shown;
+    corpusHolder = el('div', { class: 'analyse__corpus' });
+    return corpusHolder;
+  }
+
+  function forgetResult() {
+    submitDraft = null;
+    current = null;
+    corpusHolder = null;
   }
 
   // Pendant une attente, la suite de conversation est verrouillée comme le formulaire
@@ -186,7 +220,7 @@ export function mountAnalysis(container, { onRetry, onManageKey, onFollowUp, onN
   return {
     showEmpty() {
       stopTimer();
-      submitDraft = null;
+      forgetResult();
       clear(status);
       fill(result,
         header(t('L’analyse s’affichera ici')),
@@ -226,7 +260,8 @@ export function mountAnalysis(container, { onRetry, onManageKey, onFollowUp, onN
 
     // result : le texte reçu du moteur ; passage : ce qui a été analysé ; input : la première demande du
     // visiteur ; previous : les échanges précédents de la conversation, [[demande, réponse], …]
-    showResult({ result: raw, passage, input = '', previous = [] }) {
+    showResult(shown) {
+      const { result: raw, passage, input = '', previous = [] } = shown;
       const { headerLine, text } = splitOutput(raw);
       const blocks = parseMarkdown(text);
       const sections = outline(blocks);
@@ -241,17 +276,27 @@ export function mountAnalysis(container, { onRetry, onManageKey, onFollowUp, onN
       ];
       stopTimer();
       clear(status);
-      fill(result, content, followUpForm());
+      fill(result, content, corpusPlace(shown), followUpForm());
+      paintCorpus();
     },
 
     // Secours quand la mise en forme échoue : le texte reçu, tel quel, avec les mêmes actions
-    showPlainResult({ result: raw, passage, input = '' }) {
+    showPlainResult(shown) {
+      const { result: raw, passage, input = '' } = shown;
       stopTimer();
       clear(status);
       fill(result,
         header(titleOf(passage), resultActions(raw, passage, input)),
         el('pre', { class: 'analyse__brut', text: String(raw ?? ''), attrs: { dir: 'auto' } }),
+        corpusPlace(shown),
         followUpForm());
+      paintCorpus();
+    },
+
+    // Mode développeur en service, ou non : le panneau du corpus apparaît ou disparaît sous l'analyse affichée
+    setDevMode(on) {
+      devMode = Boolean(on);
+      paintCorpus();
     },
 
     // « Réessayer » d'une suite : la zone de suite repart telle qu'elle est
@@ -277,7 +322,7 @@ export function mountAnalysis(container, { onRetry, onManageKey, onFollowUp, onN
           el('pre', { class: 'detail__texte', text: failure.status ? `${failure.status} — ${detail}` : detail, attrs: { dir: 'auto' } })) : null,
         actions));
       if (!keepResult) {
-        submitDraft = null;
+        forgetResult();
         clear(result);
       }
     },
