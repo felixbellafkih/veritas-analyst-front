@@ -41,3 +41,9 @@ export function describeFailure(failure) {
   if (failure.kind === 'http') return { ...(BY_STATUS[failure.status] || SERVER_ERROR) };
   return { ...(Object.prototype.hasOwnProperty.call(BY_KIND, failure.kind) ? BY_KIND[failure.kind] : GENERAL) };
 }
+
+// Après une coupure ou un délai dépassé, le serveur a pu terminer l'analyse (et la clé être facturée) sans
+// que la réponse arrive : le visiteur doit le savoir avant de relancer.
+export const BILLED_NOTICE = tx('Cette demande a peut-être été facturée : le serveur a pu terminer l’analyse sans pouvoir vous l’envoyer. Réessayer lance une nouvelle demande.');
+
+export const maybeBilled = (failure) => Boolean(failure) && (failure.kind === 'cut' || failure.kind === 'timeout');

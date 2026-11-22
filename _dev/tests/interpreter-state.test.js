@@ -75,17 +75,45 @@ test('échec après une analyse : elle reste affichée, la conversation ne bouge
   assert.equal(state.requestKind, 'followup');
 });
 
-test('autre passage : nouvelle conversation, l’ancienne analyse reste jusqu’à l’arrivée de la suivante', () => {
-  const waiting = reduce(afterFirst(), launch(P2, REQ2));
+test('autre passage : l’analyse affichée et sa conversation restent jusqu’à l’arrivée de la suivante', () => {
+  const shown = afterFirst();
+  const waiting = reduce(shown, launch(P2, REQ2));
   assert.equal(waiting.phase, 'attente');
-  assert.deepEqual(waiting.history, []);
+  assert.deepEqual(waiting.history, shown.history); // la conversation affichée ne bouge pas pendant l'attente
   assert.equal(waiting.result, R1);
   assert.equal(waiting.resultPassage, P1);
   assert.equal(waiting.passage, P2);
   const state = reduce(waiting, success(R2));
   assert.equal(state.result, R2);
   assert.equal(state.resultPassage, P2);
+  // À l'arrivée de la nouvelle analyse, une nouvelle conversation commence : l'ancienne n'y figure pas
   assert.deepEqual(state.history, [{ role: 'user', text: 'ٱللَّهُ' }, { role: 'model', text: R2 }]);
+});
+
+// Défaut relevé à la relecture : la conversation était vidée dès le lancement. Après un lancement en échec,
+// la zone de suite, restée sous l'ancienne analyse, envoyait alors une demande sans contexte (facturée),
+// et la réponse était rangée sous le passage qui n'avait jamais été analysé.
+test('lancement en échec, puis suite sous l’ancienne analyse : la conversation affichée continue', () => {
+  const shown = afterFirst();
+  const failed = reduce(reduce(shown, launch(P2, REQ2)), { type: 'failure', failure: { kind: 'cut' } });
+  assert.equal(failed.phase, 'erreur');
+  assert.equal(failed.result, R1);
+  assert.deepEqual(failed.history, shown.history);
+  const request = followUpRequest('Pourquoi cette racine ?', failed.history, O);
+  assert.deepEqual(request.history, shown.history); // la demande porte le passage et l'analyse affichés
+  const state = reduce(reduce(failed, { type: 'followup', request }), success(R2));
+  assert.equal(state.resultPassage, P1); // la réponse reste rangée sous le passage affiché
+  assert.equal(state.passage, P1);
+  assert.equal(state.history.length, 4);
+  assert.deepEqual(state.history[0], { role: 'user', text: 'بِسْمِ ٱللَّهِ' });
+});
+
+test('suite sans analyse affichée : rien ne part', () => {
+  const start = initialState();
+  const request = { verse_text: 'x', language: 'Français' };
+  assert.equal(reduce(start, { type: 'followup', request }), start);
+  const failed = reduce(reduce(start, launch()), { type: 'failure', failure: { kind: 'cut' } });
+  assert.equal(reduce(failed, { type: 'followup', request }), failed);
 });
 
 test('suite de conversation : la demande porte l’historique, et le premier échange survit au plafond', () => {
@@ -122,12 +150,15 @@ test('une réponse qui n’est pas attendue est ignorée', () => {
   assert.equal(reduce(shown, { type: 'inconnu' }), shown);
 });
 
-test('réessayer : la demande en échec repart telle quelle', () => {
+// « Réessayer » ne renvoie plus la demande gardée : il relance le formulaire tel qu'il est (voir
+// interpreter-controller.test.js). Ici, seulement : après un échec, un lancement est de nouveau accepté.
+test('après un échec, un nouveau lancement est accepté', () => {
   const failed = reduce(reduce(initialState(), launch()), { type: 'failure', failure: { kind: 'network' } });
   assert.equal(failed.requestKind, 'launch');
-  const again = reduce(failed, { type: failed.requestKind, passage: failed.passage, request: failed.request });
+  const again = reduce(failed, launch(P2, REQ2));
   assert.equal(again.phase, 'attente');
-  assert.equal(again.request, REQ1);
+  assert.equal(again.request, REQ2);
+  assert.equal(again.passage, P2);
   assert.equal(again.failure, null);
 });
 

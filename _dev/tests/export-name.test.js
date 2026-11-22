@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { exportFileName } from '../../assets/js/v1/lib/export-name.js';
+import { EXPORT_LINK_LIFETIME_MS, exportFileName } from '../../assets/js/v1/lib/export-name.js';
 
 // En-tête technique qui cite une référence du corpus (1:1-7) : elle ne doit pas donner son nom au fichier
 const H = '**[TARGET: gemini-3.1-pro-preview]** | 📊 **Tokens:** Input=41,250 | Output=1,830 | Thinking=2,410 | Total=45,490 | Cost=$0.1234 | 📚 **Références :** 1:1-7, 18:96 (verset)';
@@ -33,4 +33,9 @@ test('sourate hors liste : Unknown, comme aujourd’hui', () => {
 
 test('référence incomplète : la règle actuelle s’applique', () => {
   assert.equal(exportFileName({ reference: { sura: 2 }, result: 'voir 18:96', input: '' }), '018_Al-Kahf_96_VeritasAnalysis.txt');
+});
+
+// Sur iPhone, Safari demande une confirmation avant de télécharger : le lien doit vivre jusque-là
+test('le lien de téléchargement vit au moins une minute', () => {
+  assert.ok(EXPORT_LINK_LIFETIME_MS >= 60000);
 });

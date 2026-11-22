@@ -97,8 +97,23 @@ function openMore(store) {
   ));
 }
 
-export function mountShell({ page, store, onKeyClick }) {
+// Essai en local seulement (localApi vaut 'reel' ou 'faux') : dire sur chaque page quelle API répond. Avec
+// le faux serveur, les analyses affichées sont des textes enregistrés : il ne faut pas les prendre pour
+// de vraies analyses. Ces deux phrases ne s'affichent jamais en ligne : elles ne sont pas traduites.
+function localBanner(localApi) {
+  const real = localApi === 'reel';
+  const other = new URL(window.location.href);
+  other.searchParams.set('api', real ? 'faux' : 'reel');
+  return el('div', { class: `bandeau-local${real ? ' bandeau-local--reel' : ''}`, attrs: { role: 'note' } },
+    el('span', { text: real
+      ? 'Essai local — vraie API : les analyses sont réelles, et facturées sur votre clé.'
+      : 'Essai local — faux serveur : les analyses affichées sont des textes enregistrés, pas de vraies analyses.' }),
+    el('a', { text: real ? 'Revenir au faux serveur' : 'Passer à la vraie API', attrs: { href: `${other.pathname}${other.search}` } }));
+}
+
+export function mountShell({ page, store, onKeyClick, localApi = null }) {
   const ready = DESTINATIONS.filter((destination) => destination.ready);
+  if (localApi) document.body.insertBefore(localBanner(localApi), document.body.firstChild);
 
   // ---- en-tête. Le bouton de la langue n'apparaît que si l'interface existe dans une autre langue que le français.
   const languageButton = el('button', {

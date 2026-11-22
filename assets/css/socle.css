@@ -19,6 +19,33 @@
   color: var(--bouton-texte);
 }
 
+/* Essai en local seulement : quelle API répond (faux serveur, ou vraie API) */
+.bandeau-local {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 4px 16px;
+  padding: 8px var(--marge);
+  border-block-end: 1px solid var(--bord-fort);
+  background: var(--surface-2);
+  color: var(--attention);
+  font-size: var(--t-petit);
+  font-weight: 600;
+  text-align: center;
+}
+
+.bandeau-local--reel {
+  color: var(--erreur);
+}
+
+.bandeau-local a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--cible);
+  font-weight: 500;
+}
+
 /* ------------------------------------------------------------------ en-tête */
 
 .entete {
@@ -255,11 +282,6 @@
   color: var(--accent-survol);
 }
 
-/* Visible en local seulement : quelle API répond (faux serveur, ou API réelle) */
-.pied__local {
-  color: var(--attention);
-  font-weight: 600;
-}
 
 /* ------------------------------------------------------------------ barre d'onglets (téléphone) */
 
@@ -358,6 +380,14 @@
   display: flex;
   flex-direction: column;
   gap: 14px;
+}
+
+/* Question à deux réponses : le refus d'abord, la confirmation ensuite */
+.fenetre__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
 }
 
 /* Fenêtre « Clé API » */

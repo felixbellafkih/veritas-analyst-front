@@ -2,7 +2,7 @@
 // navigateur ou de l'API : le sélecteur de passage, la carte de racine, les repères, les extraits du corpus.
 // Rien de ce qui vient du LEXICON ou de l'API n'est recopié dans la page : ce qui manque ne s'affiche pas.
 import { createApi } from '../api.js';
-import { apiBase } from '../lib/config.js';
+import { apiBase, apiChoice } from '../lib/config.js';
 import { corpusExcerpts } from '../lib/corpus-list.js';
 import { htmlLang } from '../lib/i18n.js';
 import { rootTiles } from '../lib/root-card.js';
@@ -17,11 +17,14 @@ const EXAMPLE_ROOT = 'S-M-W'; // racine montrée en exemple, tirée de l'analyse
 const VERSES = SURAS.reduce((total, sura) => total + sura.verses, 0);
 
 const store = browserStore();
-const api = createApi({ base: apiBase(window.location) });
+// Essai en local : la vraie API ou le faux serveur, choix gardé pour l'onglet (null en ligne)
+const localApi = apiChoice(window.location, store.getApiChoice());
+if (localApi) store.setApiChoice(localApi);
+const api = createApi({ base: apiBase(window.location, localApi) });
 await initI18n({ store });
 document.title = `VERITAS | ${t('Analyse systémique du texte coranique')}`;
 
-const shell = mountShell({ page: 'accueil', store, onKeyClick: () => openKeyDialog({ store, api, onChange: showAccess }) });
+const shell = mountShell({ page: 'accueil', store, onKeyClick: () => openKeyDialog({ store, api, onChange: showAccess }), localApi });
 
 function showAccess() {
   shell.setKeyStatus(store.getDevPassword() ? 'dev' : store.getKey() ? 'presente' : 'absente');

@@ -177,3 +177,17 @@ test('modèle et formulaire : gardés pour l’onglet', () => {
   assert.deepEqual(store.loadForm(), { mode: 'verset', sura: 2, start: 255, end: 255 });
   assert.equal(local.data.size, 0);
 });
+
+test('choix de l’API en local : gardé pour l’onglet seulement', () => {
+  const local = new Map();
+  const session = new Map();
+  const area = (map) => ({ getItem: (name) => (map.has(name) ? map.get(name) : null), setItem: (name, value) => map.set(name, String(value)), removeItem: (name) => map.delete(name) });
+  const store = createStore({ local: area(local), session: area(session) });
+  assert.equal(store.getApiChoice(), null);
+  store.setApiChoice('reel');
+  assert.equal(store.getApiChoice(), 'reel');
+  assert.equal(session.get('veritas.api'), 'reel');
+  assert.equal(local.size, 0);
+  store.setApiChoice('faux');
+  assert.equal(store.getApiChoice(), 'faux');
+});

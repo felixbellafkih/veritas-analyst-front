@@ -124,6 +124,10 @@ export function createStore({ local, session } = {}) {
     getModel: () => inTab.get(STORAGE.model),
     setModel: (name) => inTab.set(STORAGE.model, String(name)),
 
+    // Essai en local : quelle API répond ('reel' ou 'faux'), pour l'onglet
+    getApiChoice: () => inTab.get(STORAGE.api),
+    setApiChoice: (value) => inTab.set(STORAGE.api, String(value)),
+
     loadForm: () => readJson(STORAGE.form),
     saveForm: (value) => inTab.set(STORAGE.form, JSON.stringify(value)),
   };

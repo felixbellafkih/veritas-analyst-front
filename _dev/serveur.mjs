@@ -9,6 +9,8 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const FIXTURES = join(ROOT, '_dev', 'fixtures');
 const HEADER = '**[TARGET: gemini-3.1-pro-preview]** | 📊 **Tokens:** Input=41,250 | Output=1,830 | Thinking=2,410 | Total=45,490 | Cost=$0.1234 | 📚 **Références :** 1:1-7';
+// Références avec des virgules entre parenthèses, et une analyse sans page publiée à l'adresse de ses versets
+const HEADER_REFERENCES = HEADER.replace(/📚.*$/u, '📚 **Références :** 1:1-7, 18:96-97 (racines : S-D-D, R-D-M), 7:204 (racines : X-Y-Z)');
 const MODELS = ['gemini-3.1-pro-preview', 'gemini-2.5-flash', 'gemini-2.5-pro'];
 const DEV_PASSWORD = 'dev';
 const SLOW_PINGS = 27; // 8 secondes environ, à un ping toutes les 300 ms
@@ -83,6 +85,7 @@ function analysisScript(scenario, body, fixtures) {
     case 'anglais': return { pings: 1, last: { type: 'result', result: fixtures.analysisEn } };
     case 'entete': return { pings: 1, last: { type: 'result', result: '**[TARGET: m]** quelque chose\n\n### 1. T\nok' } };
     case 'hostile': return { pings: 1, last: { type: 'result', result: `${HEADER}\n\n${HOSTILE}` } };
+    case 'references': return { pings: 1, last: { type: 'result', result: `${HEADER_REFERENCES}\n\n### 1. RÉFÉRENCES\n\nTexte d’essai.` } };
     default: return { pings: 3, last: { type: 'result', result: fixtures.analysis } };
   }
 }
@@ -250,7 +253,15 @@ export async function startServer({ port = 8787, pingMs = 300 } = {}) {
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
-  const { port } = await startServer();
-  console.log(`Nouveau site Veritas, serveur local : http://localhost:${port}`);
-  console.log('Faux serveur d’API sous /__api (clés factices : ok, anglais, lent, erreur, echec, coupure, entete, hostile ; mot de passe développeur : dev).');
+  try {
+    const { port } = await startServer();
+    console.log(`Nouveau site Veritas, serveur local : http://localhost:${port}/accueil/ et http://localhost:${port}/interpreteur/`);
+    console.log('Par défaut, un faux serveur d’API répond (clés factices : ok, anglais, lent, erreur, echec, coupure, entete, hostile, references ; mot de passe développeur : dev).');
+    console.log(`Essai avec la vraie API : http://localhost:${port}/interpreteur/?api=reel`);
+    console.log('Pour arrêter le serveur : Ctrl+C.');
+  } catch (error) {
+    // Le port est déjà pris : le serveur tourne déjà (par exemple lancé depuis une autre fenêtre)
+    if (!error || error.code !== 'EADDRINUSE') throw error;
+    console.log('Le serveur local tourne déjà sur ce PC : ouvrez http://localhost:8787/interpreteur/ dans votre navigateur.');
+  }
 }

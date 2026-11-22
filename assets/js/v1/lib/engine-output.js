@@ -22,6 +22,26 @@ export function splitOutput(result) {
 
 export const succeeded = (result) => Boolean(splitOutput(result).model);
 
+// Les références sont séparées par des virgules, mais un libellé en contient aussi entre parenthèses
+// (« 18:96-97 (racines : S-D-D, R-D-M) ») : seules les virgules hors parenthèses séparent.
+function splitReferences(text) {
+  const labels = [];
+  let depth = 0;
+  let current = '';
+  for (const char of text) {
+    if (char === '(') depth += 1;
+    else if (char === ')') depth = Math.max(0, depth - 1);
+    if (char === ',' && depth === 0) {
+      labels.push(current);
+      current = '';
+    } else {
+      current += char;
+    }
+  }
+  labels.push(current);
+  return labels.map((label) => label.trim()).filter(Boolean);
+}
+
 // Découpe la ligne d'en-tête. Si la forme n'est pas reconnue, rien n'est inventé : usage vaut null,
 // et l'interface montre alors la ligne telle quelle.
 export function parseHeader(headerLine) {
@@ -32,7 +52,7 @@ export function parseHeader(headerLine) {
   return {
     model: model ? model[1].trim() : '',
     usage: usage ? usage[1].trim() : null,
-    references: references ? references[1].split(',').map((label) => label.trim()).filter(Boolean) : [],
+    references: references ? splitReferences(references[1]) : [],
   };
 }
 
@@ -44,4 +64,12 @@ export function referenceHref(label) {
   const [sura, start, end] = [Number(match[1]), Number(match[2]), match[3] ? Number(match[3]) : null];
   if (sura < 1 || sura > 114 || start < 1) return null;
   return `/corpus/${sura}/${start}${end ? `-${end}` : ''}/`;
+}
+
+// Lien d'une référence, seulement si une page est publiée à cette adresse. published : les adresses de la
+// liste publiée du corpus (lib/corpus-list.js) ; tant qu'elle n'est pas connue, aucun lien. Une analyse
+// rangée ailleurs (/corpus/autres/…) est citée par ses versets : son libellé reste alors un simple texte.
+export function publishedHref(label, published) {
+  const href = referenceHref(label);
+  return href && published && typeof published.has === 'function' && published.has(href) ? href : null;
 }

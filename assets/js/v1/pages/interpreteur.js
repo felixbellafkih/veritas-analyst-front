@@ -1,40 +1,86 @@
 // Page de l'Interpréteur : elle relie le formulaire du passage, l'API et l'affichage de l'analyse.
-// L'état (lib/interpreter-state.js) décide de ce qui s'affiche ; cette page ne fait que le suivre.
+// Ce qui part, quand, et ce qui s'affiche se décide dans lib/interpreter-controller.js (testé sans page) ;
+// ici, seulement le branchement et ce qui touche à la fenêtre du navigateur.
 import { createApi } from '../api.js';
-import { API_PROD, apiBase } from '../lib/config.js';
-import { previousExchanges } from '../lib/conversation.js';
-import { initialState, reduce, snapshot } from '../lib/interpreter-state.js';
-import { analysisRequest, followUpRequest } from '../lib/request.js';
+import { apiBase, apiChoice } from '../lib/config.js';
+import { corpusExcerpts } from '../lib/corpus-list.js';
+import { createInterpreter } from '../lib/interpreter-controller.js';
 import { parsePassageQuery } from '../lib/verses.js';
 import { mountAnalysis } from '../ui/analysis-view.js';
-import { add, browserStore, el } from '../ui/dom.js';
+import { openConfirm } from '../ui/dialog.js';
+import { browserStore } from '../ui/dom.js';
 import { initI18n, t } from '../ui/i18n-dom.js';
 import { openKeyDialog } from '../ui/key-dialog.js';
+import { createLeaveGuard } from '../ui/leave-guard.js';
 import { mountPassageForm } from '../ui/passage-form.js';
 import { mountShell } from '../ui/shell.js';
 
 const store = browserStore();
-const api = createApi({ base: apiBase(window.location) });
+// Essai en local : la vraie API ou le faux serveur, choix gardé pour l'onglet (null en ligne)
+const localApi = apiChoice(window.location, store.getApiChoice());
+if (localApi) store.setApiChoice(localApi);
+const api = createApi({ base: apiBase(window.location, localApi) });
 await initI18n({ store });
 document.title = `${t('Interpréteur')} — Veritas Analyst`;
 
 const article = document.getElementById('analyse');
-let state = initialState();
+const guard = createLeaveGuard();
 
 const openKey = () => openKeyDialog({ store, api, onChange: showAccess });
-const shell = mountShell({ page: 'interpreteur', store, onKeyClick: openKey });
+const shell = mountShell({ page: 'interpreteur', store, onKeyClick: openKey, localApi });
+
+// Adresses publiées du corpus, lues une fois sur sa liste : les références d'une analyse ne deviennent
+// des liens que vers ces pages. Sans la liste, elles restent du texte.
+let published = null;
+function publishedPages() {
+  if (!published) {
+    published = fetch('/corpus/')
+      .then((response) => (response.ok ? response.text() : ''))
+      .then((html) => corpusExcerpts(html))
+      .catch(() => null);
+  }
+  return published;
+}
+
 // Passage demandé par l'adresse (venue de l'accueil) : le formulaire est seulement placé dessus, c'est le
 // visiteur qui lance l'analyse. Sinon le formulaire reprend ce qui était gardé pour l'onglet.
 const form = mountPassageForm(document.getElementById('passage'), {
-  api, store, asked: parsePassageQuery(window.location.search), onLaunch: launch, onManageKey: openKey,
+  api, store, asked: parsePassageQuery(window.location.search), onLaunch: (passage) => interpreter.launch(passage), onManageKey: openKey,
 });
-const view = mountAnalysis(article, { onRetry: retry, onManageKey: openKey, onFollowUp: followUp, onNewConversation: newConversation });
+const view = mountAnalysis(article, {
+  onRetry: () => interpreter.retry(),
+  onManageKey: openKey,
+  onFollowUp: (message) => interpreter.followUp(message),
+  onNewConversation: () => interpreter.newConversation(),
+  publishedPages,
+});
 
-// En local seulement : dire quelle API répond, pour ne pas confondre le faux serveur et la vraie
-if (['localhost', '127.0.0.1'].includes(window.location.hostname)) {
-  const real = apiBase(window.location) === API_PROD;
-  add(document.querySelector('#pied .pied__dans'), el('span', { class: 'pied__local', text: real ? 'Essai local — API réelle' : 'Essai local — faux serveur d’API' }));
-}
+const interpreter = createInterpreter({
+  api,
+  store,
+  form,
+  view,
+  // Pendant une demande : formulaire et langue verrouillés, et le départ de la page demande confirmation
+  onWaiting(waiting) {
+    form.setDisabled(waiting);
+    shell.setBusy(waiting);
+    guard.setActive(waiting);
+    document.body.dataset.attente = waiting ? 'oui' : 'non';
+  },
+  openKey,
+  // L'état d'attente et l'analyse sont en haut de la colonne : sur un écran étroit, la page y descend
+  reveal(what) {
+    if (what !== 'launch' || window.matchMedia('(max-width: 1023.98px)').matches) article.scrollIntoView({ block: 'start' });
+    if (what === 'launch') article.focus({ preventScroll: true });
+  },
+  // L'analyse affichée a été payée : l'effacer demande une confirmation
+  confirmNewConversation: () => openConfirm({
+    title: t('Nouvelle conversation'),
+    text: t('L’analyse affichée et sa conversation seront effacées.'),
+    confirmLabel: t('Effacer'),
+    cancelLabel: t('Annuler'),
+  }),
+});
 
 // Accès en service : mode développeur, clé du visiteur, ou rien
 function showAccess() {
@@ -43,89 +89,5 @@ function showAccess() {
   form.setAccess(status, store.keyIsRemembered());
 }
 
-function render() {
-  const waiting = state.phase === 'attente';
-  form.setDisabled(waiting);
-  shell.setBusy(waiting);
-  document.body.dataset.attente = waiting ? 'oui' : 'non';
-  if (state.phase === 'vide') view.showEmpty();
-  else if (waiting) view.showWaiting();
-  else if (state.phase === 'resultat') {
-    view.showResult({
-      result: state.result,
-      passage: state.resultPassage,
-      input: state.history.length ? state.history[0].text : '',
-      previous: previousExchanges(state.history, state.result),
-    });
-  }
-  else view.showFailure(state.failure, { keepResult: Boolean(state.result) });
-  // L'analyse et la conversation sont gardées pour l'onglet : un rechargement ne les perd pas
-  if (state.phase === 'resultat') store.saveConversation(snapshot(state));
-  else if (state.phase === 'vide') store.clearConversation();
-}
-
-// Applique un événement ; rend faux quand il est sans effet (par exemple un second clic pendant l'attente)
-function dispatch(event) {
-  const next = reduce(state, event);
-  if (next === state) return false;
-  state = next;
-  render();
-  return true;
-}
-
-async function send() {
-  try {
-    const result = await api.analyze(state.request, store.credentials(), { onPing: () => view.notePing() });
-    dispatch({ type: 'success', result });
-  } catch (failure) {
-    dispatch({ type: 'failure', failure });
-    // Clé absente ou refusée par le serveur : la fenêtre de la clé s'ouvre
-    if (failure.kind === 'http' && failure.status === 401) openKey();
-  }
-}
-
-function showAnalysis() {
-  if (window.matchMedia('(max-width: 1023.98px)').matches) article.scrollIntoView({ block: 'start' });
-  article.focus({ preventScroll: true });
-}
-
-function launch(passage) {
-  const { key, devPassword } = store.credentials();
-  if (!key && !devPassword) {
-    openKey(); // sans clé, rien ne part
-    return;
-  }
-  if (!dispatch({ type: 'launch', passage, request: analysisRequest(passage, form.options()) })) return;
-  showAnalysis();
-  send();
-}
-
-function retry() {
-  if (dispatch({ type: state.requestKind, passage: state.passage, request: state.request })) send();
-}
-
-// Suite de la conversation : le message part avec les échanges gardés par la page
-function followUp(message) {
-  const { key, devPassword } = store.credentials();
-  if (!key && !devPassword) {
-    openKey();
-    return;
-  }
-  if (!dispatch({ type: 'followup', request: followUpRequest(message, state.history, form.options()) })) return;
-  article.scrollIntoView({ block: 'start' }); // l'état d'attente est en haut de l'analyse
-  send();
-}
-
-function newConversation() {
-  if (dispatch({ type: 'new-conversation' })) article.scrollIntoView({ block: 'start' });
-}
-
-// Quitter la page pendant une analyse la ferait perdre, alors qu'elle est facturée : le navigateur prévient
-window.addEventListener('beforeunload', (event) => {
-  if (state.phase !== 'attente') return;
-  event.preventDefault();
-  event.returnValue = '';
-});
-
 showAccess();
-if (!dispatch({ type: 'restore', saved: store.loadConversation() })) render();
+interpreter.restore();

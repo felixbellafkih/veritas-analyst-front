@@ -456,6 +456,21 @@
   white-space: pre-wrap;
 }
 
+/* Après une coupure ou un délai dépassé : la demande est peut-être déjà facturée */
+.message__note {
+  margin-block-start: 6px;
+  color: var(--titre);
+}
+
+/* Secours quand la mise en forme d'une analyse échoue : le texte reçu, tel quel */
+.analyse__brut {
+  margin: 24px 0 0;
+  overflow-wrap: anywhere;
+  font-family: var(--police-texte);
+  font-size: var(--t-texte);
+  white-space: pre-wrap;
+}
+
 .message__actions {
   display: flex;
   flex-wrap: wrap;

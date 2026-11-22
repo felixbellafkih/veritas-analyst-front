@@ -222,6 +222,13 @@ test('flux hostile : contenu hostile après un en-tête normal', async () => {
   }
 });
 
+test('flux references : un en-tête dont les références portent des virgules et une page non publiée', async () => {
+  const { lines } = await readLines(await analyze('references'));
+  const { result } = lines.at(-1);
+  assert.ok(result.startsWith('**[TARGET: gemini-3.1-pro-preview]**'));
+  assert.ok(result.split('\n')[0].endsWith('📚 **Références :** 1:1-7, 18:96-97 (racines : S-D-D, R-D-M), 7:204 (racines : X-Y-Z)'));
+});
+
 test('suite de conversation : la réponse reprend le message envoyé', async () => {
   const body = { verse_text: 'Objection 1', history: [{ role: 'user', text: 'a' }, { role: 'model', text: 'b' }] };
   const { lines } = await readLines(await analyze('ok', body));

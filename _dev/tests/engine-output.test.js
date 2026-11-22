@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { parseHeader, referenceHref, splitOutput, succeeded } from '../../assets/js/v1/lib/engine-output.js';
+import { parseHeader, publishedHref, referenceHref, splitOutput, succeeded } from '../../assets/js/v1/lib/engine-output.js';
 
 const H = '**[TARGET: gemini-3.1-pro-preview]** | 📊 **Tokens:** Input=41,250 | Output=1,830 | Thinking=2,410 | Total=45,490 | Cost=$0.1234 | 📚 **Références :** 1:1-7, 18:96 (verset)';
 const FAILED = [
@@ -71,4 +71,31 @@ test('referenceHref : pas de lien pour un cluster, une référence impossible ou
   assert.equal(referenceHref('0:1'), null);
   assert.equal(referenceHref(''), null);
   assert.equal(referenceHref(null), null);
+});
+
+// Défaut relevé à la relecture : un libellé du moteur contient des virgules (« racines : S-D-D, R-D-M »)
+test('parseHeader : une virgule entre parenthèses ne coupe pas une référence', () => {
+  const header = '**[TARGET: m]** | 📊 **Tokens:** Input=1 | Output=1 | Thinking=0 | Total=2 | 📚 **Références :** 1:1-7, 18:96-97 (racines : S-D-D, R-D-M), 2:255 (verset)';
+  assert.deepEqual(parseHeader(header).references, ['1:1-7', '18:96-97 (racines : S-D-D, R-D-M)', '2:255 (verset)']);
+});
+
+test('parseHeader : parenthèse jamais refermée, le texte reste entier', () => {
+  const header = '**[TARGET: m]** | 📊 **Tokens:** Non disponible | 📚 **Références :** 1:1 (racines : A, B';
+  assert.deepEqual(parseHeader(header).references, ['1:1 (racines : A, B']);
+});
+
+// Défaut relevé à la relecture : l'adresse était devinée sur les nombres du libellé, même quand aucune
+// page n'est publiée à cette adresse (analyse rangée sous /corpus/autres/…)
+test('publishedHref : un lien seulement vers une page publiée du corpus', () => {
+  const published = new Set(['/corpus/1/1-7/', '/corpus/18/96-97/']);
+  assert.equal(publishedHref('1:1-7', published), '/corpus/1/1-7/');
+  assert.equal(publishedHref('18:96-97 (racines : S-D-D, R-D-M)', published), '/corpus/18/96-97/');
+  assert.equal(publishedHref('7:204 (racines : X-Y-Z)', published), null);
+  assert.equal(publishedHref('tarteel:S-M-W ∩ N-Z-L (verset)', published), null);
+});
+
+test('publishedHref : tant que la liste publiée n’est pas connue, aucun lien', () => {
+  assert.equal(publishedHref('1:1-7', null), null);
+  assert.equal(publishedHref('1:1-7', undefined), null);
+  assert.equal(publishedHref('1:1-7', new Map([['/corpus/1/1-7/', 'extrait']])), '/corpus/1/1-7/');
 });

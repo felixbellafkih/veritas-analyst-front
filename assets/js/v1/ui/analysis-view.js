@@ -3,9 +3,9 @@
 // échec, l'analyse précédente reste affichée dessous.
 // Le texte d'une analyse est mis en forme, jamais réécrit : Copier et Exporter donnent le texte reçu du
 // moteur, au caractère près, en-tête technique compris.
-import { parseHeader, referenceHref, splitOutput } from '../lib/engine-output.js';
-import { exportFileName } from '../lib/export-name.js';
-import { describeFailure } from '../lib/failures.js';
+import { parseHeader, publishedHref, splitOutput } from '../lib/engine-output.js';
+import { EXPORT_LINK_LIFETIME_MS, exportFileName } from '../lib/export-name.js';
+import { BILLED_NOTICE, describeFailure, maybeBilled } from '../lib/failures.js';
 import { outline, parseMarkdown } from '../lib/markdown.js';
 import { resultTitle } from '../lib/verses.js';
 import { add, clear, el, fill } from './dom.js';
@@ -46,11 +46,23 @@ function downloadText(name, text) {
   add(document.body, link);
   link.click();
   link.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  setTimeout(() => URL.revokeObjectURL(url), EXPORT_LINK_LIFETIME_MS);
 }
 
 function actionButton(name, label, onClick) {
   return el('button', { class: 'bouton-bord', attrs: { type: 'button' }, on: { click: onClick } }, icon(name), el('span', { text: label }));
+}
+
+// Copier, Exporter, Imprimer : toujours le texte reçu du moteur, tel quel
+function resultActions(raw, passage, input) {
+  const announce = el('span', { class: 'sr', attrs: { role: 'status' } });
+  const copy = actionButton('copy', t('Copier'), async () => {
+    announce.textContent = (await copyText(raw)) ? t('Analyse copiée.') : t('La copie n’a pas pu se faire.');
+  });
+  const reference = passage && passage.mode === 'verset' ? { sura: passage.sura, start: passage.start } : null;
+  const save = actionButton('download', t('Exporter'), () => downloadText(exportFileName({ reference, result: raw, input }), raw));
+  const print = actionButton('printer', t('Imprimer'), () => window.print());
+  return el('div', { class: 'analyse__actions' }, copy, save, print, announce);
 }
 
 // Échanges précédents de la conversation, repliés : la demande du visiteur, puis la réponse mise en forme
@@ -68,8 +80,9 @@ function earlierExchanges(previous) {
 }
 
 // onRetry() : relancer la demande en échec ; onManageKey() : ouvrir la fenêtre de la clé ;
-// onFollowUp(message) : poursuivre la conversation ; onNewConversation() : en commencer une autre
-export function mountAnalysis(container, { onRetry, onManageKey, onFollowUp, onNewConversation }) {
+// onFollowUp(message) : poursuivre la conversation ; onNewConversation() : en commencer une autre ;
+// publishedPages() : promesse des adresses publiées du corpus (pour les liens des références)
+export function mountAnalysis(container, { onRetry, onManageKey, onFollowUp, onNewConversation, publishedPages = async () => null }) {
   const status = el('div', { class: 'analyse__etat' });
   const result = el('div', { class: 'analyse__resultat' });
   fill(container,
@@ -80,6 +93,7 @@ export function mountAnalysis(container, { onRetry, onManageKey, onFollowUp, onN
   let timer = null;
   let pings = 0;
   let pingCount = null;
+  let submitDraft = null; // envoie ce que contient la zone de suite, quand elle est à l'écran
 
   function stopTimer() {
     if (timer !== null) clearInterval(timer);
@@ -110,15 +124,39 @@ export function mountAnalysis(container, { onRetry, onManageKey, onFollowUp, onN
         el('div', { class: 'suite__actions' },
           el('button', { class: 'bouton-bord', text: t('Nouvelle conversation'), attrs: { type: 'button' }, on: { click: () => onNewConversation() } }),
           el('button', { class: 'bouton', attrs: { type: 'submit' } }, el('span', { text: t('Envoyer') }), icon('arrow')))));
+    const submit = () => {
+      if (message.value.trim()) onFollowUp(message.value);
+      else message.focus();
+    };
     form.addEventListener('submit', (event) => {
       event.preventDefault();
-      if (message.value.trim()) onFollowUp(message.value);
+      submit();
     });
     // Ctrl + Entrée (ou Cmd + Entrée) envoie le message
     message.addEventListener('keydown', (event) => {
-      if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) form.requestSubmit();
+      if (event.key !== 'Enter' || !(event.ctrlKey || event.metaKey)) return;
+      event.preventDefault();
+      submit();
     });
+    submitDraft = submit;
     return form;
+  }
+
+  // Un libellé de référence ne devient un lien que si une page du corpus est publiée à son adresse.
+  // La liste publiée arrive après l'affichage : d'ici là, et sans elle, les libellés restent du texte.
+  async function linkReferences(labels, holders) {
+    let published = null;
+    try {
+      published = await publishedPages();
+    } catch {
+      published = null;
+    }
+    labels.forEach((label, index) => {
+      const href = publishedHref(label, published);
+      if (href && holders[index].isConnected) {
+        fill(holders[index], el('a', { class: 'analyse__reference', text: label, attrs: { href, target: '_blank', rel: 'noopener' } }));
+      }
+    });
   }
 
   // Repères tirés de l'en-tête technique : le modèle, les jetons et le coût (repliés), les références du corpus
@@ -136,14 +174,11 @@ export function mountAnalysis(container, { onRetry, onManageKey, onFollowUp, onN
       model ? el('span', { class: 'pastille pastille--code', text: model }) : null,
       usageButton);
     if (references.length) {
+      const holders = references.map((label) => el('span', {}, el('span', { class: 'analyse__reference', text: label, attrs: { dir: 'auto' } })));
       const list = el('span', { class: 'analyse__references' }, el('span', { text: t('Références du corpus :') }));
-      references.forEach((label, position) => {
-        const href = referenceHref(label);
-        if (position > 0) add(list, ', ');
-        else add(list, ' ');
-        add(list, href ? el('a', { class: 'analyse__reference', text: label, attrs: { href, target: '_blank', rel: 'noopener' } }) : el('span', { class: 'analyse__reference', text: label }));
-      });
+      holders.forEach((holder, position) => add(list, position > 0 ? ', ' : ' ', holder));
       add(row, list);
+      linkReferences(references, holders);
     }
     return [row, usageText];
   }
@@ -151,6 +186,7 @@ export function mountAnalysis(container, { onRetry, onManageKey, onFollowUp, onN
   return {
     showEmpty() {
       stopTimer();
+      submitDraft = null;
       clear(status);
       fill(result,
         header(t('L’analyse s’affichera ici')),
@@ -191,28 +227,36 @@ export function mountAnalysis(container, { onRetry, onManageKey, onFollowUp, onN
     // result : le texte reçu du moteur ; passage : ce qui a été analysé ; input : la première demande du
     // visiteur ; previous : les échanges précédents de la conversation, [[demande, réponse], …]
     showResult({ result: raw, passage, input = '', previous = [] }) {
-      stopTimer();
-      clear(status);
       const { headerLine, text } = splitOutput(raw);
       const blocks = parseMarkdown(text);
       const sections = outline(blocks);
-      const announce = el('span', { class: 'sr', attrs: { role: 'status' } });
-
-      const copy = actionButton('copy', t('Copier'), async () => {
-        announce.textContent = (await copyText(raw)) ? t('Analyse copiée.') : t('La copie n’a pas pu se faire.');
-      });
-      const reference = passage && passage.mode === 'verset' ? { sura: passage.sura, start: passage.start } : null;
-      const save = actionButton('download', t('Exporter'), () => downloadText(exportFileName({ reference, result: raw, input }), raw));
-      const print = actionButton('printer', t('Imprimer'), () => window.print());
-
-      fill(result,
+      // Tout est bâti avant de toucher à la page : si la mise en forme échoue, rien n'est effacé
+      const content = [
         previous.length ? earlierExchanges(previous) : null,
-        header(titleOf(passage), el('div', { class: 'analyse__actions' }, copy, save, print, announce)),
+        header(titleOf(passage), resultActions(raw, passage, input)),
         ...markers(headerLine),
         sections.length ? el('nav', { class: 'sommaire', attrs: { 'aria-label': t('Sections de l’analyse') } },
           sections.map((section) => el('a', { class: 'sommaire__lien', attrs: { href: `#${section.id}`, title: section.title } }, el('span', { text: section.title, attrs: { dir: 'auto' } })))) : null,
         el('div', { class: 'analyse__corps' }, renderBlocks(blocks, { tableLabel: t('Tableau de l’analyse') })),
+      ];
+      stopTimer();
+      clear(status);
+      fill(result, content, followUpForm());
+    },
+
+    // Secours quand la mise en forme échoue : le texte reçu, tel quel, avec les mêmes actions
+    showPlainResult({ result: raw, passage, input = '' }) {
+      stopTimer();
+      clear(status);
+      fill(result,
+        header(titleOf(passage), resultActions(raw, passage, input)),
+        el('pre', { class: 'analyse__brut', text: String(raw ?? ''), attrs: { dir: 'auto' } }),
         followUpForm());
+    },
+
+    // « Réessayer » d'une suite : la zone de suite repart telle qu'elle est
+    submitFollowUp() {
+      if (submitDraft) submitDraft();
     },
 
     showFailure(failure, { keepResult = false } = {}) {
@@ -225,12 +269,17 @@ export function mountAnalysis(container, { onRetry, onManageKey, onFollowUp, onN
         askKey ? el('button', { class: 'bouton-bord', text: t('Gérer la clé'), attrs: { type: 'button' }, on: { click: () => onManageKey() } }) : null);
       fill(status, el('div', { class: 'message message--erreur', attrs: { role: 'alert' } },
         el('p', { class: 'message__titre', text: td(text) }),
+        // Coupure ou délai dépassé : le serveur a pu finir l'analyse, et la clé être facturée
+        maybeBilled(failure) ? el('p', { class: 'message__note', text: td(BILLED_NOTICE) }) : null,
         // Le message du moteur est fait pour être lu : il s'affiche ouvert. Les autres détails restent repliés.
         detail ? el('details', { class: 'detail', attrs: { open: failure.kind === 'engine' } },
           el('summary', { text: t('Détail technique') }),
           el('pre', { class: 'detail__texte', text: failure.status ? `${failure.status} — ${detail}` : detail, attrs: { dir: 'auto' } })) : null,
         actions));
-      if (!keepResult) clear(result);
+      if (!keepResult) {
+        submitDraft = null;
+        clear(result);
+      }
     },
   };
 }

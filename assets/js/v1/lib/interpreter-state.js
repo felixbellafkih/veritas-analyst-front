@@ -21,32 +21,38 @@ export function snapshot(state) {
 
 export function reduce(state, event) {
   switch (event.type) {
-    // Analyse d'un passage : une nouvelle conversation commence. L'analyse affichée reste à l'écran
-    // jusqu'à l'arrivée de la suivante. Pendant l'attente, un second lancement est sans effet : chaque
-    // demande est facturée, il n'en part qu'une.
+    // Analyse d'un passage. L'analyse affichée ET sa conversation restent en place jusqu'à l'arrivée de la
+    // suivante : si le lancement échoue, la zone de suite continue la conversation qu'on a sous les yeux.
+    // La nouvelle conversation ne commence qu'à la réussite (voir 'success'). Pendant l'attente, un second
+    // lancement est sans effet : chaque demande est facturée, il n'en part qu'une.
     case 'launch':
       if (state.phase === 'attente' || !event.request) return state;
-      return { ...state, phase: 'attente', history: [], passage: event.passage, request: event.request, requestKind: 'launch', failure: null };
+      return { ...state, phase: 'attente', passage: event.passage, request: event.request, requestKind: 'launch', failure: null };
 
-    // Suite de la conversation : la demande porte déjà l'historique (lib/request.js, followUpRequest)
+    // Suite de la conversation affichée : la demande porte déjà son historique (lib/request.js,
+    // followUpRequest). Sans analyse affichée, il n'y a rien à poursuivre.
     case 'followup':
-      if (state.phase === 'attente' || !event.request) return state;
-      return { ...state, phase: 'attente', request: event.request, requestKind: 'followup', failure: null };
+      if (state.phase === 'attente' || !event.request || !state.result) return state;
+      return { ...state, phase: 'attente', passage: state.resultPassage, request: event.request, requestKind: 'followup', failure: null };
 
-    case 'success':
+    case 'success': {
       if (state.phase !== 'attente') return state;
       // Une réponse sans en-tête [TARGET] est une erreur du moteur : elle n'entre pas dans la conversation
       if (!succeeded(event.result)) {
         return { ...state, phase: 'erreur', failure: new ApiFailure('engine', { detail: String(event.result ?? '') }) };
       }
+      // Un lancement ouvre une nouvelle conversation, rangée sous son passage ; une suite prolonge celle
+      // qui est affichée, sous le passage déjà affiché.
+      const launched = state.requestKind === 'launch';
       return {
         ...state,
         phase: 'resultat',
         result: event.result,
-        resultPassage: state.passage,
-        history: addExchange(state.history, state.request.verse_text, event.result),
+        resultPassage: launched ? state.passage : state.resultPassage,
+        history: addExchange(launched ? [] : state.history, state.request.verse_text, event.result),
         failure: null,
       };
+    }
 
     // En cas d'échec, l'analyse précédente reste affichée et la conversation ne bouge pas
     case 'failure':

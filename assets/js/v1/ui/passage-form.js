@@ -358,12 +358,17 @@ export function mountPassageForm(container, { api, store, asked, onLaunch, onMan
     }
   }
 
-  form.addEventListener('submit', (event) => {
-    event.preventDefault();
+  // Lance l'analyse de ce que le formulaire montre : le bouton, la touche Entrée, et « Réessayer »
+  function submit() {
     if (disabled) return;
     const passage = currentPassage();
     if (passage) onLaunch(passage);
     else showWhatIsMissing();
+  }
+
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    submit();
   });
 
   paintVerseFields();
@@ -381,6 +386,8 @@ export function mountPassageForm(container, { api, store, asked, onLaunch, onMan
       disabled = Boolean(value);
       for (const control of form.querySelectorAll('select, input, textarea, .segments__bouton, button[type="submit"]')) control.disabled = disabled;
     },
+    // Relance le formulaire tel qu'il est (« Réessayer » après un lancement en échec)
+    submit,
     // Langue de la réponse et modèle, pour la demande (lib/request.js)
     options: () => ({
       language: responseLanguage(languages(), state.language, currentLang()).label,

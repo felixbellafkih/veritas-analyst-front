@@ -153,3 +153,13 @@ test('les modules ne s’importent que par des chemins relatifs, à l’intérie
     }
   }
 });
+
+// « text » sur un dossier entier ferait convertir les fins de ligne d'une image ou d'une police ajoutée plus
+// tard (un PNG commence par un retour chariot suivi d'un saut de ligne) : avec « text=auto », git reconnaît
+// les fichiers binaires et les laisse intacts.
+test('.gitattributes : aucun dossier entier forcé en texte', () => {
+  const lines = read(join(SITE, '.gitattributes')).split('\n').map((line) => line.trim()).filter((line) => line && !line.startsWith('#'));
+  const folders = lines.filter((line) => line.split(/\s+/)[0].endsWith('/**'));
+  assert.ok(folders.length >= 4, `${folders.length} dossiers`);
+  for (const line of folders) assert.match(line, /\stext=auto(\s|$)/, line);
+});

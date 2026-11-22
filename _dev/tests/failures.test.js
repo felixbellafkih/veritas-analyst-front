@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { ApiFailure, describeFailure } from '../../assets/js/v1/lib/failures.js';
+import { ApiFailure, BILLED_NOTICE, describeFailure, maybeBilled } from '../../assets/js/v1/lib/failures.js';
 
 const DETAIL = 'DETAIL-TECHNIQUE-42';
 const failure = (kind, status) => new ApiFailure(kind, { status, detail: DETAIL });
@@ -66,4 +66,16 @@ test('genre inconnu ou valeur inattendue : un message général, sans plantage',
   assert.ok(describeFailure(failure('inconnu')).text.length > 10);
   assert.ok(describeFailure(new Error('boom')).text.length > 10);
   assert.ok(describeFailure(null).text.length > 10);
+});
+
+// Après une coupure ou un délai dépassé, le serveur a pu finir l'analyse : le visiteur doit le savoir avant de réessayer
+test('coupure et délai dépassé : la demande est peut-être déjà facturée', () => {
+  assert.equal(maybeBilled(new ApiFailure('cut')), true);
+  assert.equal(maybeBilled(new ApiFailure('timeout')), true);
+  for (const failure of [new ApiFailure('network'), new ApiFailure('http', { status: 500 }), new ApiFailure('http', { status: 401 }),
+    new ApiFailure('stream'), new ApiFailure('engine'), new ApiFailure('credential'), new ApiFailure('aborted'), null, undefined, {}]) {
+    assert.equal(maybeBilled(failure), false, JSON.stringify(failure));
+  }
+  assert.equal(typeof BILLED_NOTICE, 'string');
+  assert.ok(BILLED_NOTICE.length > 20);
 });

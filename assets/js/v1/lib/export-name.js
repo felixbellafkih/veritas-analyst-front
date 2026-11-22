@@ -21,3 +21,7 @@ export function exportFileName({ reference = null, result = '', input = '' } = {
   const match = REFERENCE.exec(splitOutput(result).text) || REFERENCE.exec(String(input ?? ''));
   return match ? named(Number(match[1]), match[2]) : DEFAULT_NAME;
 }
+
+// Durée de vie du lien de téléchargement créé par « Exporter ». Sur iPhone, Safari demande une confirmation
+// avant de télécharger : un lien retiré au bout d'une seconde ferait échouer l'export.
+export const EXPORT_LINK_LIFETIME_MS = 60000;
