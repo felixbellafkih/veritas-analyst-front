@@ -6,6 +6,7 @@ import { apiBase, apiChoice } from '../lib/config.js';
 import { corpusExcerpts } from '../lib/corpus-list.js';
 import { htmlLang } from '../lib/i18n.js';
 import { rootTiles } from '../lib/root-card.js';
+import { scannerHref } from '../lib/roots-index.js';
 import { MAX_VERSES, SURAS, clampRange, passageQuery } from '../lib/verses.js';
 import { add, browserStore, el, fill } from '../ui/dom.js';
 import { icon } from '../ui/icons.js';
@@ -117,7 +118,10 @@ async function showRoot(card) {
         : el('p', { class: 'racine__arabe', text: arabic, attrs: { lang: 'ar', dir: 'rtl' } }),
       el('div', { class: 'racine__sens' },
         el('p', { class: 'racine__fonction', text: logic, attrs: { dir: 'ltr' } }),
-        el('p', { class: 'racine__equation', text: equation, attrs: { dir: 'auto' } })));
+        el('p', { class: 'racine__equation', text: equation, attrs: { dir: 'auto' } })),
+      // La fiche complète de cette racine (définition, dérivations, racine opposée)
+      el('a', { class: 'lien-fleche', attrs: { href: scannerHref(text(root.root) || EXAMPLE_ROOT) } },
+        el('span', { text: t('Ouvrir cette racine dans le Scanner') }), icon('arrow', 16)));
     card.hidden = false;
   } catch {
     card.hidden = true;

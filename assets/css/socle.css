@@ -564,3 +564,11 @@
     border-radius: var(--rayon-grand) var(--rayon-grand) 0 0;
   }
 }
+
+/* Très petits écrans : cinq onglets tiennent sans marge de côté (« Interpréteur » en entier à 320 px) */
+@media (max-width: 359.98px) {
+  .onglets,
+  .onglets__lien {
+    padding-inline: 0;
+  }
+}
