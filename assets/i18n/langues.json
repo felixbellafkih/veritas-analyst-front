@@ -6,347 +6,347 @@
  },
  {
   "code": "en",
-  "interface": false,
+  "interface": true,
   "label": "English"
  },
  {
   "code": "ar",
-  "interface": false,
+  "interface": true,
   "label": "العربية"
  },
  {
   "code": "es",
-  "interface": false,
+  "interface": true,
   "label": "Español"
  },
  {
   "code": "de",
-  "interface": false,
+  "interface": true,
   "label": "Deutsch"
  },
  {
   "code": "it",
-  "interface": false,
+  "interface": true,
   "label": "Italiano"
  },
  {
   "code": "pt",
-  "interface": false,
+  "interface": true,
   "label": "Português"
  },
  {
   "code": "ru",
-  "interface": false,
+  "interface": true,
   "label": "Русский"
  },
  {
   "code": "zh-CN",
-  "interface": false,
+  "interface": true,
   "label": "中文 (Simplified)"
  },
  {
   "code": "zh-TW",
-  "interface": false,
+  "interface": true,
   "label": "中文 (Traditional)"
  },
  {
   "code": "ja",
-  "interface": false,
+  "interface": true,
   "label": "日本語"
  },
  {
   "code": "ko",
-  "interface": false,
+  "interface": true,
   "label": "한국어"
  },
  {
   "code": "hi",
-  "interface": false,
+  "interface": true,
   "label": "हिन्दी"
  },
  {
   "code": "tr",
-  "interface": false,
+  "interface": true,
   "label": "Türkçe"
  },
  {
   "code": "id",
-  "interface": false,
+  "interface": true,
   "label": "Bahasa Indonesia"
  },
  {
   "code": "vi",
-  "interface": false,
+  "interface": true,
   "label": "Tiếng Việt"
  },
  {
   "code": "pl",
-  "interface": false,
+  "interface": true,
   "label": "Polski"
  },
  {
   "code": "nl",
-  "interface": false,
+  "interface": true,
   "label": "Nederlands"
  },
  {
   "code": "sv",
-  "interface": false,
+  "interface": true,
   "label": "Svenska"
  },
  {
   "code": "fi",
-  "interface": false,
+  "interface": true,
   "label": "Suomi"
  },
  {
   "code": "da",
-  "interface": false,
+  "interface": true,
   "label": "Dansk"
  },
  {
   "code": "no",
-  "interface": false,
+  "interface": true,
   "label": "Norsk"
  },
  {
   "code": "cs",
-  "interface": false,
+  "interface": true,
   "label": "Čeština"
  },
  {
   "code": "hu",
-  "interface": false,
+  "interface": true,
   "label": "Magyar"
  },
  {
   "code": "el",
-  "interface": false,
+  "interface": true,
   "label": "Ελληνικά"
  },
  {
   "code": "ro",
-  "interface": false,
+  "interface": true,
   "label": "Română"
  },
  {
   "code": "bg",
-  "interface": false,
+  "interface": true,
   "label": "Български"
  },
  {
   "code": "uk",
-  "interface": false,
+  "interface": true,
   "label": "Українська"
  },
  {
   "code": "iw",
-  "interface": false,
+  "interface": true,
   "label": "עברית"
  },
  {
   "code": "fa",
-  "interface": false,
+  "interface": true,
   "label": "فارسی"
  },
  {
   "code": "ur",
-  "interface": false,
+  "interface": true,
   "label": "اردو"
  },
  {
   "code": "sw",
-  "interface": false,
+  "interface": true,
   "label": "Swahili"
  },
  {
   "code": "am",
-  "interface": false,
+  "interface": true,
   "label": "Amharic"
  },
  {
   "code": "ha",
-  "interface": false,
+  "interface": true,
   "label": "Hausa"
  },
  {
   "code": "yo",
-  "interface": false,
+  "interface": true,
   "label": "Yoruba"
  },
  {
   "code": "zu",
-  "interface": false,
+  "interface": true,
   "label": "Zulu"
  },
  {
   "code": "af",
-  "interface": false,
+  "interface": true,
   "label": "Afrikaans"
  },
  {
   "code": "ta",
-  "interface": false,
+  "interface": true,
   "label": "Tamil"
  },
  {
   "code": "te",
-  "interface": false,
+  "interface": true,
   "label": "Telugu"
  },
  {
   "code": "ml",
-  "interface": false,
+  "interface": true,
   "label": "Malayalam"
  },
  {
   "code": "kn",
-  "interface": false,
+  "interface": true,
   "label": "Kannada"
  },
  {
   "code": "mr",
-  "interface": false,
+  "interface": true,
   "label": "Marathi"
  },
  {
   "code": "bn",
-  "interface": false,
+  "interface": true,
   "label": "Bengali"
  },
  {
   "code": "gu",
-  "interface": false,
+  "interface": true,
   "label": "Gujarati"
  },
  {
   "code": "pa",
-  "interface": false,
+  "interface": true,
   "label": "Punjabi"
  },
  {
   "code": "th",
-  "interface": false,
+  "interface": true,
   "label": "Thai"
  },
  {
   "code": "my",
-  "interface": false,
+  "interface": true,
   "label": "Burmese"
  },
  {
   "code": "km",
-  "interface": false,
+  "interface": true,
   "label": "Khmer"
  },
  {
   "code": "tl",
-  "interface": false,
+  "interface": true,
   "label": "Tagalog"
  },
  {
   "code": "lo",
-  "interface": false,
+  "interface": true,
   "label": "Lao"
  },
  {
   "code": "ms",
-  "interface": false,
+  "interface": true,
   "label": "Malay"
  },
  {
   "code": "jv",
-  "interface": false,
+  "interface": true,
   "label": "Javanese"
  },
  {
   "code": "ceb",
-  "interface": false,
+  "interface": true,
   "label": "Cebuano"
  },
  {
   "code": "so",
-  "interface": false,
+  "interface": true,
   "label": "Somali"
  },
  {
   "code": "ku",
-  "interface": false,
+  "interface": true,
   "label": "Kurdish"
  },
  {
   "code": "ps",
-  "interface": false,
+  "interface": true,
   "label": "Pashto"
  },
  {
   "code": "uz",
-  "interface": false,
+  "interface": true,
   "label": "Uzbek"
  },
  {
   "code": "kk",
-  "interface": false,
+  "interface": true,
   "label": "Kazakh"
  },
  {
   "code": "az",
-  "interface": false,
+  "interface": true,
   "label": "Azerbaijani"
  },
  {
   "code": "bs",
-  "interface": false,
+  "interface": true,
   "label": "Bosnian"
  },
  {
   "code": "hr",
-  "interface": false,
+  "interface": true,
   "label": "Croatian"
  },
  {
   "code": "sr",
-  "interface": false,
+  "interface": true,
   "label": "Serbian"
  },
  {
   "code": "sq",
-  "interface": false,
+  "interface": true,
   "label": "Albanian"
  },
  {
   "code": "sk",
-  "interface": false,
+  "interface": true,
   "label": "Slovak"
  },
  {
   "code": "sl",
-  "interface": false,
+  "interface": true,
   "label": "Slovenian"
  },
  {
   "code": "et",
-  "interface": false,
+  "interface": true,
   "label": "Estonian"
  },
  {
   "code": "lv",
-  "interface": false,
+  "interface": true,
   "label": "Latvian"
  },
  {
   "code": "lt",
-  "interface": false,
+  "interface": true,
   "label": "Lithuanian"
  },
  {
   "code": "eo",
-  "interface": false,
+  "interface": true,
   "label": "Esperanto"
  },
  {
   "code": "la",
-  "interface": false,
+  "interface": true,
   "label": "Latin"
  }
 ]
