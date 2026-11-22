@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { htmlLang, isRtl, pickLanguage, translate, tx, validLang } from '../../assets/js/lib/i18n.js';
+import { htmlLang, isRtl, pickLanguage, responseLanguage, translate, tx, validLang } from '../../assets/js/lib/i18n.js';
 
 // Les codes de engine/translator.py (LANGUAGE_NAMES), plus le français
 const codes = ['fr', 'en', 'ar', 'es', 'de', 'it', 'pt', 'ru', 'zh-CN', 'zh-TW', 'ja', 'ko', 'hi', 'tr', 'id', 'vi', 'pl', 'nl', 'sv',
@@ -85,4 +85,28 @@ test('htmlLang : codes normalisés pour l’attribut lang', () => {
   assert.equal(htmlLang('zh-TW'), 'zh-Hant');
   assert.equal(htmlLang('fr'), 'fr');
   assert.equal(htmlLang('ceb'), 'ceb');
+});
+
+const LISTE = [{ code: 'fr', label: 'Français' }, { code: 'en', label: 'English' }, { code: 'ar', label: 'العربية' }];
+
+test('langue de la réponse : celle de l’interface tant que le visiteur n’a rien choisi', () => {
+  assert.deepEqual(responseLanguage(LISTE, null, 'en'), { code: 'en', label: 'English' });
+  assert.deepEqual(responseLanguage(LISTE, undefined, 'fr'), { code: 'fr', label: 'Français' });
+});
+
+test('langue de la réponse : le choix du visiteur l’emporte sur la langue de l’interface', () => {
+  assert.deepEqual(responseLanguage(LISTE, 'ar', 'en'), { code: 'ar', label: 'العربية' });
+  assert.deepEqual(responseLanguage(LISTE, 'fr', 'en'), { code: 'fr', label: 'Français' });
+});
+
+test('langue de la réponse : un choix absent de la liste est abandonné', () => {
+  assert.deepEqual(responseLanguage(LISTE, 'xx', 'en'), { code: 'en', label: 'English' });
+  assert.deepEqual(responseLanguage(LISTE, 42, 'ar'), { code: 'ar', label: 'العربية' });
+});
+
+test('langue de la réponse : à défaut, « Français », le libellé qui ne demande aucune traduction au moteur', () => {
+  assert.deepEqual(responseLanguage(LISTE, null, 'xx'), { code: 'fr', label: 'Français' });
+  assert.deepEqual(responseLanguage([], 'en', 'en'), { code: 'fr', label: 'Français' });
+  assert.deepEqual(responseLanguage(null, null, null), { code: 'fr', label: 'Français' });
+  assert.deepEqual(responseLanguage([{ code: 'en' }, null, { code: 'ar', label: '' }], 'en', 'ar'), { code: 'fr', label: 'Français' });
 });

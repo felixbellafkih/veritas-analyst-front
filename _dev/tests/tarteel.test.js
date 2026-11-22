@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { CEILING, SENT_LIMIT, clusterText, tarteelState } from '../../assets/js/lib/tarteel.js';
+import { CEILING, SENT_LIMIT, clusterText, clusterVerse, tarteelState } from '../../assets/js/lib/tarteel.js';
 
 test('seuils : plafond de 57 occurrences, 30 versets envoyés', () => {
   assert.equal(CEILING, 57);
@@ -58,4 +58,16 @@ test('clusterText : 30 versets au plus', () => {
   assert.ok(text.includes('verset 30'));
   assert.ok(!text.includes('verset 31'));
   assert.equal(text.split('\n\n').length, 31); // la phrase, puis 30 versets
+});
+
+test('clusterVerse : sépare la référence du texte, pour l’affichage', () => {
+  assert.deepEqual(clusterVerse('[2:22] : ٱلَّذِى جَعَلَ لَكُمُ'), { reference: '2:22', text: 'ٱلَّذِى جَعَلَ لَكُمُ' });
+  assert.deepEqual(clusterVerse('[114:6] :  مِنَ ٱلْجِنَّةِ  '), { reference: '114:6', text: 'مِنَ ٱلْجِنَّةِ' });
+  assert.deepEqual(clusterVerse('[1:1] : ﻿بِسْمِ'), { reference: '1:1', text: 'بِسْمِ' });
+});
+
+test('clusterVerse : un élément d’une autre forme s’affiche tel quel', () => {
+  assert.deepEqual(clusterVerse('texte sans repère'), { reference: '', text: 'texte sans repère' });
+  assert.deepEqual(clusterVerse(null), { reference: '', text: '' });
+  assert.deepEqual(clusterVerse(42), { reference: '', text: '42' });
 });

@@ -126,6 +126,15 @@ test('Tarteel : cluster découpé par limit et offset', async () => {
   assert.deepEqual(await missing.json(), { detail: 'No occurrences found' });
 });
 
+test('Tarteel : la racine MESSAGE a 5 occurrences, et son cluster est un message du Kernel', async () => {
+  const frequencies = await (await api('/tarteel/frequencies?primary=MESSAGE')).json();
+  assert.equal(frequencies.primary_frequency, 5);
+  assert.equal(frequencies.cluster_frequency, 5);
+  const cluster = await api('/tarteel/cluster?primary=MESSAGE&limit=30');
+  assert.equal(cluster.status, 200);
+  assert.deepEqual(await cluster.json(), { cluster_list: '[WARNING KERNEL] Triangulation impossible.' });
+});
+
 test('modèles : 401 sans clé, liste avec la clé', async () => {
   const refused = await api('/models');
   assert.equal(refused.status, 401);

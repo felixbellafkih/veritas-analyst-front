@@ -1,4 +1,6 @@
 // Icônes au trait, dessinées dans la page (elles suivent la couleur du texte, donc le thème). Tracés des maquettes.
+import { add } from './dom.js';
+
 const SVG = 'http://www.w3.org/2000/svg';
 
 // Chaque forme : [balise, attributs, pleine ?]
@@ -44,14 +46,14 @@ function frame(className, box, size) {
 
 export function icon(name, size = 18) {
   const svg = frame('icone', 24, size);
-  for (const [tag, attributes, filled] of SHAPES[name] || []) svg.append(shape(tag, attributes, filled ? 'plein' : ''));
+  for (const [tag, attributes, filled] of SHAPES[name] || []) add(svg, shape(tag, attributes, filled ? 'plein' : ''));
   return svg;
 }
 
 // Le logo : une loupe dont le verre porte un V de trois nœuds reliés (redessin vectoriel du logo actuel)
 export function logo(size = 30) {
   const svg = frame('logo', 32, size);
-  svg.append(
+  add(svg,
     shape('circle', { cx: 14, cy: 14, r: 10 }, 'logo__cercle'),
     shape('path', { d: 'M21.6 21.6L28 28' }, 'logo__manche'),
     shape('path', { d: 'M10 11.6l4 6 4-6' }, 'logo__v'),

@@ -2,7 +2,7 @@
 // La clé enregistrée n'est jamais réaffichée. Par défaut elle reste dans l'onglet ; la case la garde sur l'appareil.
 import { describeFailure } from '../lib/failures.js';
 import { openDialog } from './dialog.js';
-import { clear, el } from './dom.js';
+import { el, fill } from './dom.js';
 import { icon } from './icons.js';
 import { t, td, tm } from './i18n-dom.js';
 
@@ -155,7 +155,7 @@ export function openKeyDialog({ store, api, onChange }) {
   }
 
   function render() {
-    clear(body).append(...keySection(), developerSection());
+    fill(body, ...keySection(), developerSection());
   }
 
   render();

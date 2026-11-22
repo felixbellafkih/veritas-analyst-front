@@ -7,6 +7,7 @@
 // data-i18n-placeholder, data-i18n-aria-label, data-i18n-title (la valeur de l'attribut est la source).
 import { htmlLang, isRtl, pickLanguage, translate, validLang } from '../lib/i18n.js';
 import { parseInline } from '../lib/markdown.js';
+import { fill } from './dom.js';
 import { renderInline } from './markdown-view.js';
 
 const FRENCH = { code: 'fr', label: 'Français' };
@@ -99,7 +100,7 @@ export function applyTranslations(root = document) {
     const name = markdown ? 'i18nMd' : 'i18n';
     if (!node.dataset[name]) node.dataset[name] = collapse(node.textContent); // première fois : le texte de la page est la source
     const source = node.dataset[name];
-    if (markdown) node.replaceChildren(markdownOf(source));
+    if (markdown) fill(node, markdownOf(source));
     else node.textContent = translate(catalog, source);
   }
   for (const [attribute, target] of ATTRIBUTES) {

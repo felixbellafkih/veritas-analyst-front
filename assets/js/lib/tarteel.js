@@ -29,3 +29,12 @@ export function clusterText(primary, constraint, verses) {
   const sent = (verses || []).slice(0, SENT_LIMIT);
   return `Analyse ce cluster de versets interconnectés (Triangulation : ${root}${limit ? ` ∩ ${limit}` : ''}) :\n\n${sent.join('\n\n')}`;
 }
+
+// Un verset du cluster, tel que l'API le donne : « [2:22] : texte ». L'affichage sépare la référence du
+// texte ; le texte envoyé au moteur reste l'élément tel quel (clusterText). Les espaces de bord, et le
+// caractère invisible U+FEFF que l'API place parfois en tête d'un verset, ne s'affichent pas.
+export function clusterVerse(item) {
+  const raw = String(item ?? '');
+  const match = /^\s*\[(\d{1,3}:\d{1,3})\]\s*:\s*([\s\S]*)$/.exec(raw);
+  return match ? { reference: match[1], text: match[2].trim() } : { reference: '', text: raw.trim() };
+}

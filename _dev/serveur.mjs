@@ -12,6 +12,9 @@ const HEADER = '**[TARGET: gemini-3.1-pro-preview]** | 📊 **Tokens:** Input=41
 const MODELS = ['gemini-3.1-pro-preview', 'gemini-2.5-flash', 'gemini-2.5-pro'];
 const DEV_PASSWORD = 'dev';
 const SLOW_PINGS = 27; // 8 secondes environ, à un ping toutes les 300 ms
+// Racine factice : 5 occurrences, et un cluster qui est un message du Kernel au lieu d'une liste de versets
+const MESSAGE_ROOT = 'MESSAGE';
+const KERNEL_MESSAGE = '[WARNING KERNEL] Triangulation impossible.';
 const HOSTILE = '### 1. TEXTE HOSTILE\n\n<script>window.__xss=1</script>\n\n<img src=x onerror="window.__xss=1">\n\n[lien](javascript:window.__xss=1)\n';
 const MIME = {
   '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8',
@@ -116,6 +119,7 @@ function verseRange(query, fixtures) {
 function frequencies(query, fixtures) {
   const primary = query.get('primary') || '';
   const constraint = query.get('constraint') || '';
+  if (primary === MESSAGE_ROOT) return { primary_root: primary, constraint, primary_frequency: 5, cluster_frequency: 5 };
   const table = fixtures.tarteel.frequencies;
   const alone = table[`${primary}|`];
   const pair = table[`${primary}|${constraint}`];
@@ -187,6 +191,7 @@ export async function startServer({ port = 8787, pingMs = 300 } = {}) {
       }
       if (path === '/tarteel/frequencies') return sendJson(res, 200, frequencies(query, fixtures));
       if (path === '/tarteel/cluster') {
+        if (query.get('primary') === MESSAGE_ROOT) return sendJson(res, 200, { cluster_list: KERNEL_MESSAGE });
         const list = fixtures.tarteel.clusters[`${query.get('primary') || ''}|${query.get('constraint') || ''}`];
         if (!list) return sendJson(res, 404, { detail: 'No occurrences found' });
         const offset = Number(query.get('offset') || 0);

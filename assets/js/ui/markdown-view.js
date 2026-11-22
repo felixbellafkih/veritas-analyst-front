@@ -1,7 +1,7 @@
 // Affiche l'arbre produit par lib/markdown.js. Uniquement des éléments créés un à un et des nœuds de
 // texte : rien de ce qui vient du modèle n'est lu comme du balisage.
 import { safeHref, splitRoots, splitTitle } from '../lib/markdown.js';
-import { el } from './dom.js';
+import { add, el } from './dom.js';
 
 const ARABIC = /[؀-ۿݐ-ݿࢠ-ࣿﭐ-﷿ﹰ-﻿]/;
 const LATIN = /[A-Za-zÀ-ɏ]/;
@@ -31,19 +31,19 @@ export function renderInline(inline, { breakable = false } = {}) {
   const fragment = document.createDocumentFragment();
   for (const node of inline) {
     if (node.type === 'text') {
-      fragment.append(...textNodes(node.text, breakable));
+      add(fragment, ...textNodes(node.text, breakable));
     } else if (node.type === 'strong') {
-      fragment.append(el('strong', {}, renderInline(node.inline, { breakable })));
+      add(fragment, el('strong', {}, renderInline(node.inline, { breakable })));
     } else if (node.type === 'em') {
-      fragment.append(el('em', {}, renderInline(node.inline, { breakable })));
+      add(fragment, el('em', {}, renderInline(node.inline, { breakable })));
     } else if (node.type === 'code') {
-      fragment.append(el('code', {}, textNodes(node.text, breakable)));
+      add(fragment, el('code', {}, textNodes(node.text, breakable)));
     } else if (node.type === 'link') {
       const href = safeHref(node.href); // vérifiée une seconde fois, au moment d'écrire le lien
       const content = renderInline(node.inline, { breakable });
-      fragment.append(href ? el('a', { attrs: { href, target: '_blank', rel: 'noopener noreferrer' } }, content) : content);
+      add(fragment, href ? el('a', { attrs: { href, target: '_blank', rel: 'noopener noreferrer' } }, content) : content);
     } else if (node.type === 'break') {
-      fragment.append(document.createElement('br'));
+      add(fragment, document.createElement('br'));
     }
   }
   return fragment;
@@ -61,8 +61,8 @@ function renderItem(item, options) {
   const node = el('li', { attrs: { dir: 'auto' } });
   item.forEach((block, position) => {
     // Le premier paragraphe d'un élément s'écrit directement dans l'élément
-    if (position === 0 && block.type === 'paragraph') node.append(renderInline(block.inline));
-    else node.append(renderBlock(block, options));
+    if (position === 0 && block.type === 'paragraph') add(node, renderInline(block.inline));
+    else add(node, renderBlock(block, options));
   });
   return node;
 }
@@ -89,17 +89,17 @@ function renderBlock(block, options) {
   }
   if (block.type === 'list') {
     const list = el(block.ordered ? 'ol' : 'ul', { attrs: { start: block.ordered && block.start !== 1 ? block.start : null } });
-    for (const item of block.items) list.append(renderItem(item, options));
+    for (const item of block.items) add(list, renderItem(item, options));
     return list;
   }
   if (block.type === 'table') {
     const head = el('tr');
-    for (const cell of block.header) head.append(renderCell('th', cell, { scope: 'col' }));
+    for (const cell of block.header) add(head, renderCell('th', cell, { scope: 'col' }));
     const body = el('tbody');
     for (const row of block.rows) {
       const line = el('tr');
-      for (const cell of row) line.append(renderCell('td', cell));
-      body.append(line);
+      for (const cell of row) add(line, renderCell('td', cell));
+      add(body, line);
     }
     // Le tableau défile dans son cadre, au clavier aussi : la page, elle, ne défile jamais de côté
     return el('div', { class: 'defile', attrs: { tabindex: 0, role: 'group', 'aria-label': options.tableLabel || null } },
@@ -112,6 +112,6 @@ function renderBlock(block, options) {
 
 export function renderBlocks(blocks, options = {}) {
   const fragment = document.createDocumentFragment();
-  for (const block of blocks) fragment.append(renderBlock(block, options));
+  for (const block of blocks) add(fragment, renderBlock(block, options));
   return fragment;
 }

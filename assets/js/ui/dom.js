@@ -29,6 +29,21 @@ export function clear(node) {
   return node;
 }
 
+// Ajoute des enfants à un nœud. Comme el(), ignore les valeurs absentes (null, undefined, false) et
+// déplie les listes : l'insertion native, elle, écrirait le mot « null » dans la page. Les modules
+// d'interface n'insèrent rien autrement (règle vérifiée par _dev/tests/regles.test.js).
+export function add(node, ...children) {
+  append(node, children);
+  return node;
+}
+
+// Remplace le contenu d'un nœud, avec les mêmes égards
+export function fill(node, ...children) {
+  node.replaceChildren();
+  append(node, children);
+  return node;
+}
+
 // Stockage du navigateur. L'accès peut être refusé (navigation privée) : le store garde alors ses valeurs en mémoire.
 export function browserStore() {
   const area = (name) => {

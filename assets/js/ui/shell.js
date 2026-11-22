@@ -1,7 +1,7 @@
 // Socle commun à toutes les pages : en-tête, menu, barre d'onglets du téléphone, pied de page.
 import { CLASSIC_URL } from '../lib/config.js';
 import { htmlLang, tx } from '../lib/i18n.js';
-import { clear, el } from './dom.js';
+import { add, clear, el, fill } from './dom.js';
 import { openDialog } from './dialog.js';
 import { icon, logo } from './icons.js';
 import { currentLang, languageLabel, languages, setLanguage, t, td } from './i18n-dom.js';
@@ -35,7 +35,7 @@ function toggleTheme(store) {
 function themeButton(store) {
   const button = el('button', { class: 'bouton-bord bouton-bord--icone bouton-theme', attrs: { type: 'button' }, on: { click: () => toggleTheme(store) } });
   const paint = () => {
-    clear(button).append(icon(isNight() ? 'sun' : 'moon'));
+    fill(button, icon(isNight() ? 'sun' : 'moon'));
     button.setAttribute('aria-label', isNight() ? t('Passer au thème clair') : t('Passer au thème sombre'));
   };
   document.addEventListener(THEME_EVENT, paint);
@@ -56,7 +56,7 @@ function openLanguageMenu() {
         close();
         if (!selected) setLanguage(entry.code);
       };
-      list.append(el('li', {}, el('button', {
+      add(list, el('li', {}, el('button', {
         class: 'liste-choix__bouton',
         attrs: { type: 'button', lang: htmlLang(entry.code), 'aria-current': selected ? 'true' : null },
         on: { click: choose },
@@ -67,10 +67,10 @@ function openLanguageMenu() {
   if (all.length > 8) {
     const search = el('input', { class: 'saisie', attrs: { type: 'search', 'aria-label': t('Rechercher une langue'), placeholder: t('Rechercher une langue'), autocomplete: 'off' } });
     search.addEventListener('input', () => paint(search.value.trim().toLowerCase()));
-    body.append(search);
+    add(body, search);
   }
   paint('');
-  body.append(list);
+  add(body, list);
 }
 
 function classicLink(className) {
@@ -83,14 +83,14 @@ function openMore(store) {
   const { body, close } = openDialog(t('Plus'));
   const theme = el('button', { class: 'liste-choix__bouton', attrs: { type: 'button' } });
   const paint = () => {
-    clear(theme).append(el('span', { text: isNight() ? t('Passer au thème clair') : t('Passer au thème sombre') }), icon(isNight() ? 'sun' : 'moon'));
+    fill(theme, el('span', { text: isNight() ? t('Passer au thème clair') : t('Passer au thème sombre') }), icon(isNight() ? 'sun' : 'moon'));
   };
   theme.addEventListener('click', () => {
     toggleTheme(store);
     paint();
   });
   paint();
-  body.append(el('ul', { class: 'liste-choix' },
+  add(body, el('ul', { class: 'liste-choix' },
     el('li', {}, theme),
     el('li', {}, classicLink('liste-choix__bouton')),
     el('li', {}, el('a', { class: 'liste-choix__bouton', attrs: { href: '/legal.html' }, on: { click: close } }, el('span', { text: t('Mentions légales') }))),
@@ -116,15 +116,15 @@ export function mountShell({ page, store, onKeyClick }) {
 
   const menu = el('nav', { class: 'menu', attrs: { 'aria-label': t('Outils') } });
   for (const destination of ready) {
-    menu.append(el('a', {
+    add(menu, el('a', {
       class: 'menu__lien',
       text: td(destination.label),
       attrs: { href: hrefOf(destination), 'aria-current': destination.id === page ? 'page' : null },
     }));
   }
-  menu.append(classicLink('menu__lien menu__lien--classique'));
+  add(menu, classicLink('menu__lien menu__lien--classique'));
 
-  clear(document.getElementById('entete')).append(el('div', { class: 'entete__dans' },
+  fill(document.getElementById('entete'), el('div', { class: 'entete__dans' },
     el('a', { class: 'marque', attrs: { href: HOME, 'aria-label': `VERITAS ANALYST — ${t('Accueil')}` } },
       logo(), el('span', { class: 'marque__nom', text: 'VERITAS ANALYST' })),
     el('span', { class: 'entete__titre', text: td(PAGE_TITLES[page] || ''), attrs: { 'aria-hidden': 'true' } }),
@@ -136,16 +136,16 @@ export function mountShell({ page, store, onKeyClick }) {
   const tabs = clear(document.getElementById('onglets'));
   tabs.setAttribute('aria-label', t('Outils'));
   for (const destination of ready) {
-    tabs.append(el('a', {
+    add(tabs, el('a', {
       class: 'onglets__lien',
       attrs: { href: hrefOf(destination), 'aria-current': destination.id === page ? 'page' : null },
     }, icon(destination.icon, 22), el('span', { text: td(destination.label) })));
   }
-  tabs.append(el('button', { class: 'onglets__lien', attrs: { type: 'button', 'aria-haspopup': 'dialog' }, on: { click: () => openMore(store) } },
+  add(tabs, el('button', { class: 'onglets__lien', attrs: { type: 'button', 'aria-haspopup': 'dialog' }, on: { click: () => openMore(store) } },
     icon('more', 22), el('span', { text: t('Plus') })));
 
   // ---- pied de page
-  clear(document.getElementById('pied')).append(el('div', { class: 'pied__dans' },
+  fill(document.getElementById('pied'), el('div', { class: 'pied__dans' },
     el('nav', { class: 'pied__liens', attrs: { 'aria-label': t('Liens du site') } },
       el('a', { text: 'Corpus public', attrs: { href: '/corpus/', lang: 'fr' } }),
       el('a', { text: 'Public corpus', attrs: { href: '/en/corpus/', lang: 'en' } }),

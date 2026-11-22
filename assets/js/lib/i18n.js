@@ -55,3 +55,13 @@ export const validLang = (code, codes) => typeof code === 'string' && codes.incl
 export const isRtl = (code) => RTL.has(code);
 
 export const htmlLang = (code) => (own(HTML_LANG, code) ? HTML_LANG[code] : code);
+
+// Langue de la réponse du moteur : le choix du visiteur s'il est dans la liste, sinon la langue de
+// l'interface, sinon le français. Le libellé part tel quel dans la demande (champ language) ; « Français »
+// est celui qui ne déclenche aucune consigne de traduction dans le moteur (api.py).
+export function responseLanguage(list, chosen, uiCode) {
+  const entries = Array.isArray(list) ? list : [];
+  const find = (code) => entries.find((entry) => entry && entry.code === code && typeof entry.label === 'string' && entry.label);
+  const found = find(chosen) || find(uiCode) || find('fr');
+  return found ? { code: found.code, label: found.label } : { code: 'fr', label: 'Français' };
+}

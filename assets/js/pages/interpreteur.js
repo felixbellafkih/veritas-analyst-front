@@ -7,8 +7,8 @@ import { initialState, reduce, snapshot } from '../lib/interpreter-state.js';
 import { analysisRequest, followUpRequest } from '../lib/request.js';
 import { parsePassageQuery } from '../lib/verses.js';
 import { mountAnalysis } from '../ui/analysis-view.js';
-import { browserStore, el } from '../ui/dom.js';
-import { currentLang, initI18n, languageLabel, t } from '../ui/i18n-dom.js';
+import { add, browserStore, el } from '../ui/dom.js';
+import { initI18n, t } from '../ui/i18n-dom.js';
 import { openKeyDialog } from '../ui/key-dialog.js';
 import { mountPassageForm } from '../ui/passage-form.js';
 import { mountShell } from '../ui/shell.js';
@@ -23,13 +23,17 @@ let state = initialState();
 
 const openKey = () => openKeyDialog({ store, api, onChange: showAccess });
 const shell = mountShell({ page: 'interpreteur', store, onKeyClick: openKey });
-const form = mountPassageForm(document.getElementById('passage'), { api, store, onLaunch: launch, onManageKey: openKey });
+// Passage demandé par l'adresse (venue de l'accueil) : le formulaire est seulement placé dessus, c'est le
+// visiteur qui lance l'analyse. Sinon le formulaire reprend ce qui était gardé pour l'onglet.
+const form = mountPassageForm(document.getElementById('passage'), {
+  api, store, asked: parsePassageQuery(window.location.search), onLaunch: launch, onManageKey: openKey,
+});
 const view = mountAnalysis(article, { onRetry: retry, onManageKey: openKey, onFollowUp: followUp, onNewConversation: newConversation });
 
 // En local seulement : dire quelle API répond, pour ne pas confondre le faux serveur et la vraie
 if (['localhost', '127.0.0.1'].includes(window.location.hostname)) {
   const real = apiBase(window.location) === API_PROD;
-  document.querySelector('#pied .pied__dans').append(el('span', { class: 'pied__local', text: real ? 'Essai local — API réelle' : 'Essai local — faux serveur d’API' }));
+  add(document.querySelector('#pied .pied__dans'), el('span', { class: 'pied__local', text: real ? 'Essai local — API réelle' : 'Essai local — faux serveur d’API' }));
 }
 
 // Accès en service : mode développeur, clé du visiteur, ou rien
@@ -37,11 +41,6 @@ function showAccess() {
   const status = store.getDevPassword() ? 'dev' : store.getKey() ? 'presente' : 'absente';
   shell.setKeyStatus(status);
   form.setAccess(status, store.keyIsRemembered());
-}
-
-// Langue de la réponse et modèle : pour l'instant, la langue de l'interface et le modèle par défaut
-function requestOptions() {
-  return { language: languageLabel(currentLang()), model: null, defaultModel: null };
 }
 
 function render() {
@@ -96,7 +95,7 @@ function launch(passage) {
     openKey(); // sans clé, rien ne part
     return;
   }
-  if (!dispatch({ type: 'launch', passage, request: analysisRequest(passage, requestOptions()) })) return;
+  if (!dispatch({ type: 'launch', passage, request: analysisRequest(passage, form.options()) })) return;
   showAnalysis();
   send();
 }
@@ -112,7 +111,7 @@ function followUp(message) {
     openKey();
     return;
   }
-  if (!dispatch({ type: 'followup', request: followUpRequest(message, state.history, requestOptions()) })) return;
+  if (!dispatch({ type: 'followup', request: followUpRequest(message, state.history, form.options()) })) return;
   article.scrollIntoView({ block: 'start' }); // l'état d'attente est en haut de l'analyse
   send();
 }
@@ -130,10 +129,3 @@ window.addEventListener('beforeunload', (event) => {
 
 showAccess();
 if (!dispatch({ type: 'restore', saved: store.loadConversation() })) render();
-
-// Passage demandé par l'adresse (venue de l'accueil), sinon celui du formulaire gardé pour l'onglet.
-// Dans les deux cas le formulaire est seulement placé : c'est le visiteur qui lance l'analyse.
-const asked = parsePassageQuery(window.location.search);
-const kept = store.loadForm();
-if (asked) form.setPassage(asked);
-else if (kept && kept.mode === 'verset') form.setPassage(kept);

@@ -32,6 +32,8 @@
     inset-block-start: 16px;
     max-height: calc(100dvh - 32px);
     overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--bord-fort) transparent;
   }
 }
 
@@ -47,8 +49,17 @@
 /* Dans la carte, les champs prennent la couleur du fond de page */
 .passage .saisie,
 .passage .segments,
-.passage .verset {
+.passage .verset,
+.passage .cluster {
   background: var(--fond);
+}
+
+/* Les champs d'un mode, puis ce qui est commun aux trois : langue de la réponse, modèle */
+.passage__mode,
+.passage__options {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
 }
 
 .segments {
@@ -98,6 +109,11 @@
   margin-block-start: -10px;
 }
 
+.tarteel__signal .champ__aide,
+.tarteel__cluster .champ__aide {
+  margin-block-start: 0;
+}
+
 .verset {
   display: flex;
   flex-direction: column;
@@ -130,6 +146,83 @@
 
 .verset__erreur {
   color: var(--erreur);
+}
+
+/* ------------------------------------------------------------------ modes Tarteel et Texte libre */
+
+.tarteel__aide {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tarteel__aide code {
+  color: var(--titre);
+}
+
+.tarteel__signal,
+.tarteel__cluster {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.tarteel__signal:empty,
+.tarteel__cluster:empty {
+  display: none;
+}
+
+.tarteel__signal .message,
+.tarteel__cluster .message {
+  align-self: stretch;
+}
+
+/* Les versets du cluster défilent dans leur cadre : le formulaire garde sa hauteur */
+.cluster {
+  align-self: stretch;
+  max-height: 340px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--bord-fort) transparent;
+  border: 1px solid var(--bord);
+  border-radius: var(--rayon-moyen);
+  background: var(--surface);
+}
+
+.cluster__liste {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cluster__verset {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 16px 14px;
+}
+
+.cluster__verset + .cluster__verset {
+  border-block-start: 1px solid var(--bord-doux);
+}
+
+.cluster__texte {
+  color: var(--arabe);
+  font-size: var(--t-titre);
+  line-height: 1.9;
+  text-align: start;
+}
+
+.passage__compte {
+  margin-block-start: -10px;
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Le nom complet d'un modèle doit se lire dans la colonne du passage */
+.saisie--serree {
+  font-size: var(--t-petit);
 }
 
 .passage__cle {
@@ -392,12 +485,23 @@
 
   .passage .saisie,
   .passage .segments,
-  .passage .verset {
+  .passage .verset,
+  .passage .cluster {
     background: var(--surface);
+  }
+
+  .passage__mode,
+  .passage__options {
+    gap: 14px;
   }
 
   .passage .champ__aide {
     margin-block-start: -6px;
+  }
+
+  .tarteel__signal .champ__aide,
+  .tarteel__cluster .champ__aide {
+    margin-block-start: 0;
   }
 
   .verset {

@@ -110,3 +110,12 @@ test('les modules sans interface ne touchent ni au document ni à la fenêtre', 
   assert.ok(pure.length >= 10);
   for (const path of pure) assert.doesNotMatch(read(path), /\b(document|window|localStorage|sessionStorage|navigator)\./, rel(path));
 });
+
+// L'insertion native (append, prepend, replaceChildren…) écrit le mot « null » ou « undefined » dans la page
+// quand on lui passe une valeur absente. Les modules d'interface passent donc par add() et fill() de dom.js,
+// qui ignorent ces valeurs.
+test('interface : aucune insertion native hors de dom.js', () => {
+  const dom = scripts.filter((path) => /^assets\/js\/(ui|pages)\//.test(rel(path)) && rel(path) !== 'assets/js/ui/dom.js');
+  assert.ok(dom.length >= 8);
+  for (const path of dom) assert.doesNotMatch(read(path), /\.(append|prepend|replaceChildren|before|after|replaceWith)\(/, rel(path));
+});

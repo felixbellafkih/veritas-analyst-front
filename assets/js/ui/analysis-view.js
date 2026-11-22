@@ -8,14 +8,14 @@ import { exportFileName } from '../lib/export-name.js';
 import { describeFailure } from '../lib/failures.js';
 import { outline, parseMarkdown } from '../lib/markdown.js';
 import { resultTitle } from '../lib/verses.js';
-import { clear, el } from './dom.js';
+import { add, clear, el, fill } from './dom.js';
 import { icon } from './icons.js';
 import { t, td, tm } from './i18n-dom.js';
 import { renderBlocks } from './markdown-view.js';
 
 function titleOf(passage) {
   if (passage && passage.mode === 'verset') return resultTitle(passage);
-  if (passage && passage.mode === 'tarteel') return `Tarteel : ${passage.primary}${passage.constraint ? ` ∩ ${passage.constraint}` : ''}`;
+  if (passage && passage.mode === 'tarteel') return `${t('Tarteel')} : ${passage.primary}${passage.constraint ? ` ∩ ${passage.constraint}` : ''}`;
   return t('Texte libre');
 }
 
@@ -27,7 +27,7 @@ async function copyText(text) {
   } catch {
     const area = el('textarea', { class: 'sr', attrs: { readonly: true, 'aria-hidden': 'true', tabindex: -1 } });
     area.value = text;
-    document.body.append(area);
+    add(document.body, area);
     area.select();
     let copied = false;
     try {
@@ -43,7 +43,7 @@ async function copyText(text) {
 function downloadText(name, text) {
   const url = URL.createObjectURL(new Blob([text], { type: 'text/plain;charset=utf-8' }));
   const link = el('a', { attrs: { href: url, download: name, hidden: true } });
-  document.body.append(link);
+  add(document.body, link);
   link.click();
   link.remove();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
@@ -57,7 +57,7 @@ function actionButton(name, label, onClick) {
 function earlierExchanges(previous) {
   const list = el('div', { class: 'echanges__liste' });
   for (const [request, answer] of previous) {
-    list.append(el('div', { class: 'echange' },
+    add(list, el('div', { class: 'echange' },
       el('p', { class: 'echange__role', text: t('Votre demande') }),
       el('p', { class: 'echange__demande', text: request, attrs: { dir: 'auto' } }),
       el('p', { class: 'echange__role', text: t('Réponse') }),
@@ -72,7 +72,7 @@ function earlierExchanges(previous) {
 export function mountAnalysis(container, { onRetry, onManageKey, onFollowUp, onNewConversation }) {
   const status = el('div', { class: 'analyse__etat' });
   const result = el('div', { class: 'analyse__resultat' });
-  clear(container).append(
+  fill(container,
     el('a', { class: 'analyse__retour', text: t('Modifier le passage'), attrs: { href: '#passage' } }),
     status,
     result);
@@ -139,11 +139,11 @@ export function mountAnalysis(container, { onRetry, onManageKey, onFollowUp, onN
       const list = el('span', { class: 'analyse__references' }, el('span', { text: t('Références du corpus :') }));
       references.forEach((label, position) => {
         const href = referenceHref(label);
-        if (position > 0) list.append(', ');
-        else list.append(' ');
-        list.append(href ? el('a', { class: 'analyse__reference', text: label, attrs: { href, target: '_blank', rel: 'noopener' } }) : el('span', { class: 'analyse__reference', text: label }));
+        if (position > 0) add(list, ', ');
+        else add(list, ' ');
+        add(list, href ? el('a', { class: 'analyse__reference', text: label, attrs: { href, target: '_blank', rel: 'noopener' } }) : el('span', { class: 'analyse__reference', text: label }));
       });
-      row.append(list);
+      add(row, list);
     }
     return [row, usageText];
   }
@@ -152,7 +152,7 @@ export function mountAnalysis(container, { onRetry, onManageKey, onFollowUp, onN
     showEmpty() {
       stopTimer();
       clear(status);
-      clear(result).append(
+      fill(result,
         header(t('L’analyse s’affichera ici')),
         el('p', { class: 'analyse__intro', text: t('Choisissez un passage, puis lancez l’analyse : sens littéraire, audit des déviations, conclusion, tableau des racines et compilation.') }),
         el('p', { class: 'note' }, tm("**Avertissement d'exécution :** L'accès de l'IA aux exégèses traditionnelles (Tafsir) a été bloqué au maximum pour assurer une décompilation purement mécanique. Quelques résidus dogmatiques peuvent encore transparaître, mais ce bruit s'atténuera au fil des mises à jour du Lexicon.")));
@@ -166,7 +166,7 @@ export function mountAnalysis(container, { onRetry, onManageKey, onFollowUp, onN
       const started = Date.now();
       const elapsed = el('p', { class: 'attente__duree', text: t('Durée écoulée : {n} s', { n: 0 }) });
       pingCount = el('p', { text: t('Signaux reçus du serveur : {n}', { n: 0 }) });
-      clear(status).append(el('div', { class: 'attente' },
+      fill(status, el('div', { class: 'attente' },
         // Cette partie est annoncée par les lecteurs d'écran ; la durée, qui change chaque seconde, ne l'est pas
         el('div', { attrs: { role: 'status', 'aria-live': 'polite' } },
           el('p', { class: 'attente__titre' }, el('span', { class: 'attente__rond', attrs: { 'aria-hidden': 'true' } }), el('span', { text: t('System processing...') })),
@@ -205,7 +205,7 @@ export function mountAnalysis(container, { onRetry, onManageKey, onFollowUp, onN
       const save = actionButton('download', t('Exporter'), () => downloadText(exportFileName({ reference, result: raw, input }), raw));
       const print = actionButton('printer', t('Imprimer'), () => window.print());
 
-      clear(result).append(
+      fill(result,
         previous.length ? earlierExchanges(previous) : null,
         header(titleOf(passage), el('div', { class: 'analyse__actions' }, copy, save, print, announce)),
         ...markers(headerLine),
@@ -223,7 +223,7 @@ export function mountAnalysis(container, { onRetry, onManageKey, onFollowUp, onN
       const actions = el('div', { class: 'message__actions' },
         retry ? el('button', { class: 'bouton-bord', text: t('Réessayer'), attrs: { type: 'button' }, on: { click: () => onRetry() } }) : null,
         askKey ? el('button', { class: 'bouton-bord', text: t('Gérer la clé'), attrs: { type: 'button' }, on: { click: () => onManageKey() } }) : null);
-      clear(status).append(el('div', { class: 'message message--erreur', attrs: { role: 'alert' } },
+      fill(status, el('div', { class: 'message message--erreur', attrs: { role: 'alert' } },
         el('p', { class: 'message__titre', text: td(text) }),
         // Le message du moteur est fait pour être lu : il s'affiche ouvert. Les autres détails restent repliés.
         detail ? el('details', { class: 'detail', attrs: { open: failure.kind === 'engine' } },
