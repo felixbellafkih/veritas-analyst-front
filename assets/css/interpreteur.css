@@ -1,0 +1,667 @@
+/* Nouveau site Veritas — page de l'Interpréteur : le passage à gauche, l'analyse à droite. */
+
+.interpreteur {
+  display: grid;
+  gap: 24px;
+  margin-block-start: 32px;
+}
+
+.interpreteur__passage {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+  scroll-margin-block-start: 16px;
+}
+
+.interpreteur__analyse {
+  min-width: 0;
+  padding: 32px 36px 36px;
+  scroll-margin-block-start: 16px;
+}
+
+/* À partir de 1024 px : deux colonnes, et le passage reste visible quand l'analyse défile */
+@media (min-width: 1024px) {
+  .interpreteur {
+    grid-template-columns: 360px minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .interpreteur__passage {
+    position: sticky;
+    inset-block-start: 16px;
+    max-height: calc(100dvh - 32px);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--bord-fort) transparent;
+  }
+}
+
+/* ------------------------------------------------------------------ passage */
+
+.passage {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 20px;
+}
+
+/* Dans la carte, les champs prennent la couleur du fond de page */
+.passage .saisie,
+.passage .segments,
+.passage .verset,
+.passage .cluster {
+  background: var(--fond);
+}
+
+/* Les champs d'un mode, puis ce qui est commun aux trois : langue de la réponse, modèle */
+.passage__mode,
+.passage__options {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.segments {
+  display: grid;
+  grid-auto-columns: minmax(0, 1fr);
+  grid-auto-flow: column;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid var(--bord);
+  border-radius: var(--rayon-moyen);
+  background: var(--surface);
+}
+
+.segments__bouton {
+  min-height: var(--cible);
+  padding-inline: 6px;
+  border: 0;
+  border-radius: var(--rayon-petit);
+  background: transparent;
+  color: var(--secondaire);
+  font-size: var(--t-petit);
+  font-weight: 500;
+}
+
+.segments__bouton:hover:not(:disabled):not([aria-pressed="true"]) {
+  color: var(--fort);
+}
+
+.segments__bouton[aria-pressed="true"] {
+  background: var(--surface-3);
+  color: var(--fort);
+  font-weight: 600;
+}
+
+.segments__bouton:disabled:not([aria-pressed="true"]) {
+  cursor: default;
+  opacity: 0.55;
+}
+
+.passage__versets {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.passage .champ__aide {
+  margin-block-start: -10px;
+}
+
+.tarteel__signal .champ__aide,
+.tarteel__cluster .champ__aide {
+  margin-block-start: 0;
+}
+
+.verset {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 112px;
+  padding: 14px 20px 18px;
+  border: 1px solid var(--bord);
+  border-radius: var(--rayon-moyen);
+  background: var(--surface);
+}
+
+.verset__ref {
+  color: var(--accent);
+  font-family: var(--police-codes);
+  font-size: var(--t-petit);
+}
+
+.verset__texte {
+  color: var(--arabe);
+  font-size: var(--t-arabe);
+  line-height: 1.9;
+  text-align: start;
+}
+
+.verset__attente,
+.verset__erreur {
+  color: var(--secondaire);
+  font-size: var(--t-petit);
+}
+
+.verset__erreur {
+  color: var(--erreur);
+}
+
+/* ------------------------------------------------------------------ modes Tarteel et Texte libre */
+
+.tarteel__aide {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tarteel__aide code {
+  color: var(--titre);
+}
+
+.tarteel__signal,
+.tarteel__cluster {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.tarteel__signal:empty,
+.tarteel__cluster:empty {
+  display: none;
+}
+
+.tarteel__signal .message,
+.tarteel__cluster .message {
+  align-self: stretch;
+}
+
+/* Les versets du cluster défilent dans leur cadre : le formulaire garde sa hauteur */
+.cluster {
+  align-self: stretch;
+  max-height: 340px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--bord-fort) transparent;
+  border: 1px solid var(--bord);
+  border-radius: var(--rayon-moyen);
+  background: var(--surface);
+}
+
+.cluster__liste {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Au-dessus du cadre : combien de versets sont cochés, et les deux raccourcis */
+.cluster__barre {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0 16px;
+  align-self: stretch;
+}
+
+.cluster__compte {
+  color: var(--secondaire);
+  font-size: var(--t-petit);
+}
+
+.cluster__outils {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 16px;
+}
+
+.cluster__outil {
+  font-size: var(--t-petit);
+}
+
+.cluster__outil:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+/* Une ligne par verset : toute la ligne est l'étiquette de sa case */
+.cluster__verset {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 16px 14px;
+  cursor: pointer;
+}
+
+.cluster__liste li + li {
+  border-block-start: 1px solid var(--bord-doux);
+}
+
+.cluster__case {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  margin: 4px 0 0;
+  accent-color: var(--accent);
+}
+
+.cluster__case:disabled,
+.cluster__verset:has(.cluster__case:disabled) {
+  cursor: default;
+}
+
+.cluster__verset:has(.cluster__case:checked) {
+  background: var(--surface-2);
+}
+
+.cluster__contenu {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.cluster__texte {
+  display: block;
+  color: var(--arabe);
+  font-size: var(--t-titre);
+  line-height: 1.9;
+  text-align: start;
+}
+
+.passage__compte {
+  margin-block-start: -10px;
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Le nom complet d'un modèle doit se lire dans la colonne du passage */
+.saisie--serree {
+  font-size: var(--t-petit);
+}
+
+.passage__cle {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 12px;
+  color: var(--secondaire);
+  font-size: var(--t-petit);
+}
+
+.passage__cle-etat {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.passage__cle-etat .icone {
+  color: var(--accent);
+}
+
+/* ------------------------------------------------------------------ analyse */
+
+/* Retour au formulaire : utile seulement quand le passage est au-dessus de l'analyse */
+.analyse__retour {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--cible);
+  margin-block-end: 8px;
+  font-size: var(--t-petit);
+  font-weight: 500;
+}
+
+@media (min-width: 1024px) {
+  .analyse__retour {
+    display: none;
+  }
+}
+
+.analyse__etat:not(:empty) {
+  margin-block-end: 28px;
+}
+
+.analyse__tete {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.analyse__titres {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.analyse__surtitre {
+  color: var(--discret);
+  font-size: var(--t-petit);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.analyse__titre {
+  color: var(--fort);
+  font-size: var(--t-titre);
+}
+
+.analyse__intro {
+  max-width: 700px;
+  margin-block-start: 16px;
+  color: var(--secondaire);
+}
+
+/* ------------------------------------------------------------------ conversation */
+
+/* Échanges précédents, repliés au-dessus de l'analyse affichée */
+.echanges {
+  margin-block-end: 28px;
+  border: 1px solid var(--bord);
+  border-radius: var(--rayon-moyen);
+  background: var(--fond);
+}
+
+.echanges summary {
+  display: flex;
+  align-items: center;
+  min-height: 48px;
+  padding-inline: 16px;
+  color: var(--titre);
+  font-size: var(--t-petit);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.echanges__liste {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 4px 16px 20px;
+}
+
+.echange + .echange {
+  padding-block-start: 24px;
+  border-block-start: 1px solid var(--bord);
+}
+
+.echange__role {
+  margin-block-start: 12px;
+  color: var(--discret);
+  font-size: var(--t-petit);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.echange__role:first-child {
+  margin-block-start: 0;
+}
+
+.echange__demande {
+  margin-block-start: 6px;
+  color: var(--titre);
+  white-space: pre-wrap;
+}
+
+/* Sous l'analyse : poursuivre la conversation */
+.suite {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-block-start: 40px;
+  padding: 16px;
+  border: 1px solid var(--bord-fort);
+  border-radius: var(--rayon-grand);
+  background: var(--fond);
+}
+
+.suite textarea.saisie {
+  min-height: 72px;
+  padding-block: 10px;
+}
+
+.suite__bas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.suite__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.suite__actions .bouton {
+  min-height: var(--cible);
+}
+
+/* ------------------------------------------------------------------ corpus public (mode développeur) */
+
+/* Sous l'analyse, replié : valider ou corriger le texte avant qu'il entre dans le corpus public */
+.analyse__corpus:empty {
+  display: none;
+}
+
+.corpus {
+  margin-block-start: 40px;
+  border: 1px solid var(--bord-fort);
+  border-radius: var(--rayon-grand);
+  background: var(--fond);
+}
+
+.corpus__titre {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 12px;
+  min-height: 48px;
+  padding: 8px 16px;
+  color: var(--titre);
+  font-size: var(--t-petit);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.corpus__marque {
+  color: var(--reussite);
+}
+
+.corpus__dans,
+.corpus__corps {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.corpus__dans {
+  padding: 4px 16px 16px;
+}
+
+.corpus textarea.corpus__texte {
+  min-height: 320px;
+  font-size: var(--t-petit);
+  line-height: 1.6;
+}
+
+/* Rappels avant de valider : ce que l'enregistrement fait de cette analyse-ci */
+.corpus__notes {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding-inline-start: 18px;
+  color: var(--secondaire);
+  font-size: var(--t-petit);
+}
+
+.corpus__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.corpus__actions .bouton {
+  min-height: var(--cible);
+}
+
+.corpus__info {
+  color: var(--reussite);
+  font-size: var(--t-petit);
+  font-weight: 600;
+}
+
+.corpus__erreur {
+  color: var(--erreur);
+  font-size: var(--t-petit);
+}
+
+/* ------------------------------------------------------------------ attente */
+
+.attente {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 18px 20px;
+  border: 1px solid var(--bord);
+  border-radius: var(--rayon-grand);
+  background: var(--fond);
+}
+
+.attente__titre {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--fort);
+  font-weight: 600;
+}
+
+.attente__rond {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--bord-fort);
+  border-block-start-color: var(--accent);
+  border-radius: 50%;
+  animation: tour 0.9s linear infinite;
+}
+
+@keyframes tour {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.attente__etapes {
+  margin: 6px 0 0;
+  padding-inline-start: 26px;
+  color: var(--secondaire);
+  font-family: var(--police-codes);
+  font-size: var(--t-petit);
+}
+
+.attente__duree {
+  color: var(--titre);
+  font-variant-numeric: tabular-nums;
+}
+
+.detail {
+  color: var(--secondaire);
+  font-size: var(--t-petit);
+}
+
+.detail summary {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--cible);
+  cursor: pointer;
+}
+
+.detail__texte {
+  margin: 0;
+  overflow-wrap: anywhere;
+  font-family: var(--police-codes);
+  white-space: pre-wrap;
+}
+
+/* Après une coupure ou un délai dépassé : la demande est peut-être déjà facturée */
+.message__note {
+  margin-block-start: 6px;
+  color: var(--titre);
+}
+
+/* Secours quand la mise en forme d'une analyse échoue : le texte reçu, tel quel */
+.analyse__brut {
+  margin: 24px 0 0;
+  overflow-wrap: anywhere;
+  font-family: var(--police-texte);
+  font-size: var(--t-texte);
+  white-space: pre-wrap;
+}
+
+.message__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-block-start: 10px;
+}
+
+.message__actions:empty {
+  display: none;
+}
+
+/* ------------------------------------------------------------------ téléphone */
+
+@media (max-width: 767.98px) {
+  .interpreteur {
+    gap: 20px;
+    margin-block-start: 0;
+  }
+
+  /* Le formulaire occupe l'écran sans cadre ; ses champs gardent la couleur des surfaces */
+  .passage {
+    gap: 14px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+  }
+
+  .passage .saisie,
+  .passage .segments,
+  .passage .verset,
+  .passage .cluster {
+    background: var(--surface);
+  }
+
+  .passage__mode,
+  .passage__options {
+    gap: 14px;
+  }
+
+  .passage .champ__aide {
+    margin-block-start: -6px;
+  }
+
+  .tarteel__signal .champ__aide,
+  .tarteel__cluster .champ__aide {
+    margin-block-start: 0;
+  }
+
+  .verset {
+    padding: 12px 18px 16px;
+  }
+
+  .interpreteur__analyse {
+    padding: 20px 16px 24px;
+  }
+}

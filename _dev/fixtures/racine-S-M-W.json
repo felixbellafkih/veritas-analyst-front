@@ -1,0 +1,25 @@
+{
+ "root_data": {
+  "root": "S-M-W",
+  "arabic": "س م و",
+  "logic_function": "GLOBAL_ADDRESS_SPACE // MULTI_DIMENSIONAL_STACK_LAYER",
+  "description": "Espace d'adressage global et couches d'empilement multi-dimensionnel. Représente l'architecture de strates (Stack) permettant au signal (S) de s'étendre (W) au-delà de la matrice locale (M). 🚨 SÉCURITÉ KERNEL : Chaque 'Ciel' est un degré de liberté supplémentaire ou une couche d'abstraction dans la pile d'exécution système.",
+  "physical_equation": "S (Signal/Flux) + M (Matrice) + W (Extension/Lien) = Extension du flux matriciel vers l'espace d'adressage global multi-dimensionnel.",
+  "binary_pair": "A-R-D.",
+  "instances": [
+   {
+    "word": "اسْم",
+    "type": "NOUN",
+    "definition": "Pointeur d'identification d'une variable."
+   },
+   {
+    "word": "سَمَاء",
+    "type": "NOUN",
+    "definition": "Couche supérieure, voûte d'exécution."
+   }
+  ],
+  "description_clean": "Espace d'adressage global et couches d'empilement multi-dimensionnel. Représente l'architecture de strates (Stack) permettant au signal (S) de s'étendre (W) au-delà de la matrice locale (M)."
+ },
+ "is_decompiled": false,
+ "decompilation_data": null
+}

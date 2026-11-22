@@ -1,0 +1,566 @@
+/* Nouveau site Veritas — socle : lien d'évitement, en-tête, menu, barre d'onglets, pied, fenêtres. */
+
+.evitement {
+  position: absolute;
+  inset-block-start: 8px;
+  inset-inline-start: 8px;
+  z-index: 30;
+  padding: 10px 14px;
+  border-radius: var(--rayon);
+  background: var(--bouton-fond);
+  color: var(--bouton-texte);
+  font-weight: 600;
+  text-decoration: none;
+  transform: translateY(-200%);
+}
+
+.evitement:focus {
+  transform: none;
+  color: var(--bouton-texte);
+}
+
+/* Essai en local seulement : quelle API répond (faux serveur, ou vraie API) */
+.bandeau-local {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 4px 16px;
+  padding: 8px var(--marge);
+  border-block-end: 1px solid var(--bord-fort);
+  background: var(--surface-2);
+  color: var(--attention);
+  font-size: var(--t-petit);
+  font-weight: 600;
+  text-align: center;
+}
+
+.bandeau-local--reel {
+  color: var(--erreur);
+}
+
+.bandeau-local a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--cible);
+  font-weight: 500;
+}
+
+/* ------------------------------------------------------------------ en-tête */
+
+.entete {
+  border-block-end: 1px solid var(--bord-doux);
+  background: var(--fond);
+}
+
+.entete__dans {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 36px;
+  max-width: var(--largeur);
+  min-height: 64px;
+  margin-inline: auto;
+  padding: 10px var(--marge);
+}
+
+.marque {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-width: var(--cible);
+  min-height: var(--cible);
+  color: var(--fort);
+  text-decoration: none;
+}
+
+.marque:hover {
+  color: var(--fort);
+}
+
+.marque__nom {
+  font-family: var(--police-titres);
+  font-size: var(--t-petit);
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  white-space: nowrap;
+}
+
+/* Tracés du logo : le cercle, le manche de la loupe, le V et ses trois nœuds */
+.logo {
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.logo__cercle {
+  stroke-width: 2.6;
+}
+
+.logo__manche {
+  stroke-width: 3.4;
+}
+
+.logo__v {
+  stroke-width: 1.8;
+}
+
+.logo__noeud {
+  fill: currentColor;
+  stroke: none;
+}
+
+/* Titre de la page dans la barre du haut : au téléphone seulement */
+.entete__titre {
+  display: none;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--fort);
+  font-family: var(--police-titres);
+  font-size: var(--t-sous-titre);
+  font-weight: 600;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.menu {
+  display: flex;
+  flex: 1 1 auto;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+}
+
+.menu__lien {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: var(--cible);
+  padding-inline: 14px;
+  border-radius: var(--rayon-petit);
+  color: var(--secondaire);
+  font-size: var(--t-petit);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.menu__lien:hover {
+  background: var(--surface-2);
+  color: var(--fort);
+}
+
+.menu__lien[aria-current="page"] {
+  background: var(--surface-2);
+  color: var(--fort);
+}
+
+.menu__lien--classique {
+  margin-inline-start: auto;
+}
+
+.outils {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.bouton-bord {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: var(--cible);
+  min-height: var(--cible);
+  padding-inline: 12px;
+  border: 1px solid var(--bord);
+  border-radius: var(--rayon);
+  background: transparent;
+  color: var(--titre);
+  font-size: var(--t-petit);
+  text-decoration: none;
+}
+
+.bouton-bord:hover:not(:disabled) {
+  border-color: var(--bord-fort);
+  background: var(--surface-2);
+  color: var(--fort);
+}
+
+.bouton-bord:disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+
+.bouton-bord--icone {
+  width: var(--cible);
+  padding-inline: 0;
+}
+
+.bouton-cle .icone {
+  color: var(--accent);
+}
+
+/* Témoin de la clé : visible quand une clé (ou le mode développeur) est en service */
+.temoin {
+  display: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--reussite);
+}
+
+.bouton-cle[data-etat="presente"] .temoin,
+.bouton-cle[data-etat="dev"] .temoin {
+  display: block;
+}
+
+/* ------------------------------------------------------------------ page */
+
+.page {
+  max-width: var(--largeur);
+  margin-inline: auto;
+  padding: 40px var(--marge) 72px;
+}
+
+.page__tete {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.page__titre {
+  color: var(--fort);
+  font-size: var(--t-page);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+
+.page__intro {
+  max-width: 640px;
+  color: var(--secondaire);
+}
+
+/* ------------------------------------------------------------------ pied */
+
+.pied {
+  border-block-start: 1px solid var(--bord-doux);
+}
+
+.pied__dans {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 24px;
+  max-width: var(--largeur);
+  margin-inline: auto;
+  padding: 20px var(--marge);
+  color: var(--discret);
+  font-size: var(--t-petit);
+}
+
+.pied__liens {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 20px;
+}
+
+.pied__liens a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--cible);
+  color: var(--secondaire);
+}
+
+.pied__liens a:hover {
+  color: var(--accent-survol);
+}
+
+
+/* ------------------------------------------------------------------ barre d'onglets (téléphone) */
+
+.onglets {
+  display: none;
+}
+
+.onglets__lien {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-width: 0;
+  min-height: 58px;
+  padding: 0 2px;
+  border: 0;
+  border-block-start: 2px solid transparent;
+  background: transparent;
+  color: var(--secondaire);
+  font-size: var(--t-onglet);
+  font-weight: 500;
+  line-height: 1.2;
+  text-decoration: none;
+}
+
+.onglets__lien span {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.onglets__lien[aria-current="page"] {
+  border-block-start-color: var(--accent);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* ------------------------------------------------------------------ fenêtres (dialog) */
+
+.fenetre {
+  width: min(480px, calc(100vw - 32px));
+  max-height: min(640px, calc(100dvh - 48px));
+  padding: 0;
+  border: 1px solid var(--bord-fort);
+  border-radius: var(--rayon-grand);
+  background: var(--surface);
+  color: var(--texte);
+}
+
+.fenetre::backdrop {
+  background: var(--voile);
+}
+
+.fenetre__dans {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: inherit;
+  padding: 20px;
+  overflow: auto;
+}
+
+.fenetre__tete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.fenetre__titre {
+  font-size: var(--t-sous-titre);
+}
+
+.fenetre__fermer {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: var(--cible);
+  height: var(--cible);
+  margin-inline-end: -8px;
+  border: 0;
+  border-radius: var(--rayon);
+  background: transparent;
+  color: var(--secondaire);
+}
+
+.fenetre__fermer:hover {
+  background: var(--surface-2);
+  color: var(--fort);
+}
+
+.fenetre__corps {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Question à deux réponses : le refus d'abord, la confirmation ensuite */
+.fenetre__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* Fenêtre « Clé API » */
+.cle__formulaire {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cle__saisie {
+  display: flex;
+  gap: 8px;
+}
+
+.cle__saisie .saisie {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.cle__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.cle__liens {
+  display: flex;
+  flex-direction: column;
+}
+
+.cle__lien {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: var(--cible);
+  font-size: var(--t-petit);
+  font-weight: 500;
+}
+
+.cle__dev {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  padding-block-start: 10px;
+  border-block-start: 1px solid var(--bord-doux);
+  font-size: var(--t-petit);
+}
+
+.cle__dev .cle__formulaire {
+  width: 100%;
+}
+
+.liste-choix {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.liste-choix__bouton {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  min-height: var(--cible);
+  padding-inline: 12px;
+  border: 0;
+  border-radius: var(--rayon-petit);
+  background: transparent;
+  color: var(--texte);
+  text-align: start;
+  text-decoration: none;
+}
+
+.liste-choix__bouton:hover {
+  background: var(--surface-2);
+  color: var(--fort);
+}
+
+.liste-choix__bouton[aria-current="true"] {
+  background: var(--surface-3);
+  color: var(--fort);
+  font-weight: 600;
+}
+
+/* ------------------------------------------------------------------ téléphone */
+
+@media (max-width: 767.98px) {
+  :root {
+    --marge: 16px;
+  }
+
+  body {
+    /* place de la barre d'onglets, fixée en bas */
+    padding-block-end: calc(70px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .entete__dans {
+    flex-wrap: nowrap;
+    gap: 4px;
+    min-height: 60px;
+    padding-block: 8px;
+    padding-inline: 8px;
+  }
+
+  .marque__nom,
+  .menu,
+  .bouton-bord__texte,
+  .outils .bouton-theme {
+    display: none;
+  }
+
+  .entete__titre {
+    display: block;
+  }
+
+  .outils {
+    flex-wrap: nowrap;
+    gap: 2px;
+  }
+
+  .outils .bouton-bord {
+    width: var(--cible);
+    padding-inline: 0;
+    border-color: transparent;
+  }
+
+  .onglets {
+    position: fixed;
+    inset-inline: 0;
+    inset-block-end: 0;
+    z-index: 20;
+    display: grid;
+    grid-auto-columns: minmax(0, 1fr);
+    grid-auto-flow: column;
+    padding: 0 4px calc(10px + env(safe-area-inset-bottom, 0px));
+    border-block-start: 1px solid var(--bord-doux);
+    background: var(--barre);
+  }
+
+  /* Le titre de la page est dans la barre du haut : celui du contenu reste lisible par les lecteurs d'écran */
+  .page__tete {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .page {
+    padding: 16px var(--marge) 32px;
+  }
+
+  .pied__dans {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  /* Au téléphone, une fenêtre monte du bas de l'écran */
+  .fenetre {
+    width: 100vw;
+    max-width: 100vw;
+    max-height: 86dvh;
+    margin: auto 0 0;
+    border-inline: 0;
+    border-block-end: 0;
+    border-radius: var(--rayon-grand) var(--rayon-grand) 0 0;
+  }
+}

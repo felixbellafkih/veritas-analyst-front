@@ -1,0 +1,8 @@
+# Nouveau site : fins de ligne LF sur toutes les machines (les fixtures et les tests en dépendent).
+# Les fichiers générés par la publication du corpus ne sont pas concernés.
+# « text=auto » : git reconnaît les fichiers binaires (images, polices) et les laisse intacts.
+/_dev/** text=auto eol=lf
+/assets/** text=auto eol=lf
+/accueil/** text=auto eol=lf
+/interpreteur/** text=auto eol=lf
+/assets/fonts/*.woff2 binary

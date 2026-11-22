@@ -1,0 +1,333 @@
+/* Nouveau site Veritas — une analyse affichée : actions, repères, sommaire, corps du texte.
+   Le texte vient du moteur : ces styles le mettent en forme, rien ne le réécrit. */
+
+.analyse__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* ------------------------------------------------------------------ repères */
+
+.analyse__reperes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-block-start: 16px;
+}
+
+.pastille--bouton {
+  min-height: var(--cible);
+  background: var(--fond);
+  color: var(--texte);
+}
+
+.pastille--bouton:hover {
+  border-color: var(--bord-fort);
+  color: var(--fort);
+}
+
+.pastille--bouton[aria-expanded="true"] .icone {
+  transform: rotate(180deg);
+}
+
+.analyse__references {
+  color: var(--secondaire);
+  font-size: var(--t-petit);
+}
+
+.analyse__reference {
+  font-family: var(--police-codes);
+}
+
+.analyse__jetons {
+  margin-block-start: 8px;
+  padding: 10px 12px;
+  border: 1px solid var(--bord);
+  border-radius: var(--rayon-petit);
+  background: var(--fond);
+  color: var(--texte);
+  font-family: var(--police-codes);
+  font-size: var(--t-petit);
+  overflow-wrap: anywhere;
+}
+
+/* ------------------------------------------------------------------ sommaire */
+
+.sommaire {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-block-start: 20px;
+  padding-block-start: 20px;
+  border-block-start: 1px solid var(--bord);
+}
+
+.sommaire__lien {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  min-height: var(--cible);
+  padding-inline: 14px;
+  border: 1px solid var(--bord);
+  border-radius: 999px;
+  color: var(--texte);
+  font-size: var(--t-petit);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+/* Le titre du moteur, raccourci à l'affichage ; il se lit en entier au survol */
+.sommaire__lien span {
+  max-width: 24ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sommaire__lien:hover {
+  border-color: var(--bord-fort);
+  background: var(--surface-3);
+  color: var(--fort);
+}
+
+/* ------------------------------------------------------------------ corps */
+
+.analyse__corps {
+  margin-block-start: 8px;
+}
+
+/* Lignes de 700 px au plus ; les tableaux prennent toute la largeur */
+.analyse__corps > * {
+  max-width: 700px;
+}
+
+.analyse__corps > .defile,
+.analyse__corps > .separateur,
+.analyse__corps > hr {
+  max-width: none;
+}
+
+.analyse__corps h3,
+.analyse__corps h4,
+.analyse__corps h5,
+.analyse__corps h6 {
+  margin: 36px 0 0;
+  color: var(--accent);
+  font-size: var(--t-petit);
+  letter-spacing: 0.09em;
+  line-height: 1.5;
+  scroll-margin-block-start: 16px;
+}
+
+.titre__suite {
+  color: var(--discret);
+}
+
+/* Un code de racine (R-H.-M) reste d'un seul tenant */
+.racine {
+  white-space: nowrap;
+}
+
+.analyse__corps p {
+  margin: 14px 0 0;
+  line-height: 1.7;
+}
+
+.analyse__corps ul,
+.analyse__corps ol {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 12px 0 0;
+  padding-inline-start: 22px;
+  line-height: 1.7;
+}
+
+.analyse__corps li > ul,
+.analyse__corps li > ol,
+.analyse__corps li > p {
+  margin-block-start: 8px;
+}
+
+.analyse__corps strong {
+  color: var(--titre);
+  font-weight: 600;
+}
+
+.analyse__corps code {
+  padding: 1px 5px;
+  border: 1px solid var(--bord);
+  border-radius: 5px;
+  background: var(--fond);
+  color: var(--accent);
+  font-size: 0.86em;
+}
+
+.analyse__corps pre {
+  margin: 16px 0 0;
+  padding: 14px 16px;
+  overflow-x: auto;
+  border: 1px solid var(--bord);
+  border-radius: var(--rayon);
+  background: var(--fond);
+}
+
+.analyse__corps pre code {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--texte);
+}
+
+.analyse__corps blockquote {
+  margin: 16px 0 0;
+  padding-inline-start: 16px;
+  border-inline-start: 3px solid var(--bord-fort);
+  color: var(--secondaire);
+}
+
+.analyse__corps blockquote > :first-child {
+  margin-block-start: 0;
+}
+
+.analyse__corps hr {
+  margin: 32px 0 0;
+  border: 0;
+  border-block-start: 1px solid var(--bord);
+}
+
+/* Séparateur à libellé, comme « --- DÉTAILS TECHNIQUES --- » */
+.analyse__corps .separateur {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-block-start: 36px;
+  color: var(--discret);
+  font-size: var(--t-petit);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+}
+
+.separateur::before,
+.separateur::after {
+  flex: 1 1 24px;
+  height: 1px;
+  background: var(--bord);
+  content: "";
+}
+
+/* Note : l'avertissement de l'auteur, dans l'interface comme dans une analyse */
+.note {
+  max-width: 700px;
+  margin-block-start: 24px;
+  padding: 14px 16px;
+  border: 1px solid var(--bord);
+  border-inline-start: 3px solid var(--accent);
+  border-radius: var(--rayon);
+  background: var(--fond);
+  color: var(--secondaire);
+  font-size: var(--t-petit);
+  line-height: 1.6;
+}
+
+.analyse__corps p.note {
+  margin-block-start: 24px;
+  line-height: 1.6;
+}
+
+.note strong {
+  color: var(--titre);
+}
+
+/* ------------------------------------------------------------------ tableau */
+
+/* Le tableau défile dans son cadre : la page, elle, ne défile jamais de côté */
+.defile {
+  margin-block-start: 16px;
+  overflow-x: auto;
+  border: 1px solid var(--bord);
+  border-radius: var(--rayon-moyen);
+}
+
+.defile table {
+  width: 100%;
+  min-width: 680px;
+  border-collapse: collapse;
+  font-size: var(--t-petit);
+  line-height: 1.55;
+}
+
+.defile th,
+.defile td {
+  padding: 14px 12px;
+  overflow-wrap: normal;
+  text-align: start;
+  vertical-align: top;
+}
+
+.defile th {
+  border-block-end: 1px solid var(--bord);
+  background: var(--fond);
+  color: var(--secondaire);
+  font-weight: 500;
+  vertical-align: bottom;
+}
+
+.defile td {
+  border-block-end: 1px solid var(--bord-doux);
+}
+
+.defile tr:last-child td {
+  border-block-end: 0;
+}
+
+.defile td[lang="ar"] {
+  padding-block: 10px;
+  color: var(--arabe);
+  font-size: calc(var(--t-arabe) * 0.8);
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+/* Tableau de la décompilation (cinq colonnes) : mot arabe, racine, équation, fonction logique, description */
+.defile table[data-colonnes="5"] td:nth-child(2) {
+  color: var(--accent);
+  font-family: var(--police-codes);
+  white-space: nowrap;
+}
+
+.defile table[data-colonnes="5"] td:nth-child(3) {
+  min-width: 150px;
+}
+
+.defile table[data-colonnes="5"] td:nth-child(5) {
+  min-width: 170px;
+}
+
+/* Les noms de fonction ne se coupent qu'après « _ » ou « // » (repères posés à l'affichage) */
+.defile table[data-colonnes="5"] td:nth-child(4) {
+  min-width: 150px;
+  font-family: var(--police-codes);
+  font-size: 0.86em;
+  hyphens: none;
+  word-break: keep-all;
+}
+
+@media (max-width: 767.98px) {
+  .analyse__actions .bouton-bord span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .analyse__actions .bouton-bord {
+    width: var(--cible);
+    padding-inline: 0;
+  }
+}

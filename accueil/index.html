@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="fr" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://api.veritas-analyst.org; base-uri 'none'; form-action 'none'">
+<meta name="robots" content="noindex">
+<title>VERITAS | Analyse systémique du texte coranique</title>
+<meta name="description" content="Veritas décode chaque racine du texte coranique par la charge physique de ses lettres (Maqasid al-Huruf), sans recours aux exégèses traditionnelles.">
+
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://veritas-analyst.org/">
+<meta property="og:title" content="VERITAS | Kernel d'Analyse Systémique">
+<meta property="og:description" content="Décompilation logique et morphologique du texte source. Extraction brute du code source original.">
+<meta property="og:image" content="https://felixbellafkih.github.io/veritas-analyst-front/static/veritas_logo.jpg">
+<meta property="og:image:secure_url" content="https://felixbellafkih.github.io/veritas-analyst-front/static/veritas_logo.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://felixbellafkih.github.io/veritas-analyst-front/static/veritas_logo.jpg">
+
+<link rel="icon" href="/assets/img/favicon.svg?v=1" type="image/svg+xml">
+<link rel="stylesheet" href="/assets/css/base.css?v=1">
+<link rel="stylesheet" href="/assets/css/socle.css?v=1">
+<link rel="stylesheet" href="/assets/css/composants.css?v=1">
+<link rel="stylesheet" href="/assets/css/accueil.css?v=1">
+<script src="/assets/js/theme-init.js?v=1"></script>
+<script type="module" src="/assets/js/v1/pages/accueil.js?v=1"></script>
+</head>
+<body>
+<a class="evitement" href="#contenu" data-i18n>Aller au contenu</a>
+<header id="entete" class="entete"></header>
+
+<main id="contenu" class="accueil">
+
+<section class="ouverture">
+<div class="ouverture__texte">
+<p class="surtitre" data-i18n>Analyse systémique du texte coranique</p>
+<h1 class="ouverture__titre" data-i18n>Décrypter l'architecture du texte coranique.</h1>
+<p class="ouverture__phrase" data-i18n>Veritas décode chaque racine par la charge physique de ses lettres (Maqasid al-Huruf), sans recours aux exégèses traditionnelles.</p>
+<form id="selecteur" class="selecteur carte" data-i18n-aria-label="Passage à analyser" novalidate></form>
+<p class="ouverture__corpus"><span data-i18n>Pas encore de clé API ?</span> <a href="/corpus/" data-corpus data-i18n>Lire une analyse validée du corpus</a></p>
+</div>
+<aside id="racine" class="racine carte" data-i18n-aria-label="Exemple de racine" hidden></aside>
+</section>
+
+<div class="reperes"><div id="reperes" class="reperes__dans"></div></div>
+
+<section class="section" aria-labelledby="titre-outils">
+<h2 id="titre-outils" class="section__titre" data-i18n>Les outils</h2>
+<div class="outils-grille">
+<a class="outil carte" href="/interpreteur/">
+<span class="outil__icone" data-icone="book"></span>
+<span class="outil__nom" data-i18n>Interpréteur</span>
+<span class="outil__texte" data-i18n>Décompilation d'un passage par l'IA, sous contrainte lexicale stricte : sens littéraire, audit des déviations, tableau des racines.</span>
+</a>
+<a class="outil carte" href="https://veritas-analyst.streamlit.app" target="_blank" rel="noopener">
+<span class="outil__icone" data-icone="list"></span>
+<span class="outil__nom" data-i18n>Tarteel</span>
+<span class="outil__texte" data-i18n>Toutes les occurrences d'une racine dans le Coran, croisées avec une racine de contrainte.</span>
+<span class="outil__mention"><span data-i18n>dans la version classique</span><span class="outil__sortie" data-icone="external" data-taille="14"></span></span>
+</a>
+<a class="outil carte" href="https://veritas-analyst.streamlit.app" target="_blank" rel="noopener">
+<span class="outil__icone" data-icone="nodes"></span>
+<span class="outil__nom" data-i18n>Séquenceur</span>
+<span class="outil__texte" data-i18n>Autopsie syntaxique d'une séquence : opérateurs, états de surface (Tasreef) et graphe causal.</span>
+<span class="outil__mention"><span data-i18n>dans la version classique</span><span class="outil__sortie" data-icone="external" data-taille="14"></span></span>
+</a>
+<a class="outil carte" href="https://veritas-analyst.streamlit.app" target="_blank" rel="noopener">
+<span class="outil__icone" data-icone="search"></span>
+<span class="outil__nom" data-i18n>Scanner</span>
+<span class="outil__texte" data-i18n>Interrogation directe d'une racine, ou décompilation d'un mot jusqu'à sa racine.</span>
+<span class="outil__mention"><span data-i18n>dans la version classique</span><span class="outil__sortie" data-icone="external" data-taille="14"></span></span>
+</a>
+</div>
+</section>
+
+<section class="section corpus-public" aria-labelledby="titre-corpus">
+<div class="corpus-public__intro">
+<h2 id="titre-corpus" class="section__titre" data-i18n>Corpus public</h2>
+<p data-i18n>Chaque analyse a été relue, validée ou corrigée par le développeur. Corpus publié sous licence CC BY 4.0, réutilisable librement.</p>
+<a class="lien-fleche" href="/corpus/" data-corpus><span data-i18n>Parcourir tout le corpus</span><span data-icone="arrow" data-taille="16"></span></a>
+</div>
+<ul class="corpus-public__liste">
+<li><a class="entree" href="/corpus/1/1/" data-corpus><span class="entree__tete"><span class="entree__ref">1:1</span><span class="entree__nom">Al-Fatihah</span></span><span class="entree__extrait" hidden></span></a></li>
+<li><a class="entree" href="/corpus/6/159/" data-corpus><span class="entree__tete"><span class="entree__ref">6:159</span><span class="entree__nom">Al-Anam</span></span><span class="entree__extrait" hidden></span></a></li>
+<li><a class="entree" href="/corpus/18/96-97/" data-corpus><span class="entree__tete"><span class="entree__ref">18:96-97</span><span class="entree__nom">Al-Kahf</span></span><span class="entree__extrait" hidden></span></a></li>
+</ul>
+</section>
+
+<section class="section" aria-labelledby="titre-methode">
+<h2 id="titre-methode" class="section__titre" data-i18n>Comment ça marche</h2>
+<ol class="etapes">
+<li class="etape"><span class="etape__numero">01</span><span class="etape__nom" data-i18n>Verset</span><span class="etape__texte" data-i18n>Le signal brut : un verset coranique, en graphie uthmanie.</span></li>
+<li class="etape"><span class="etape__numero">02</span><span class="etape__nom" data-i18n>Isolation</span><span class="etape__texte" data-i18n>Neutralisation des affixes et extraction des racines.</span></li>
+<li class="etape"><span class="etape__numero">03</span><span class="etape__nom" data-i18n>Noyau Veritas</span><span class="etape__texte" data-i18n>Lecture des définitions de chaque racine dans le LEXICON.</span></li>
+<li class="etape"><span class="etape__numero">04</span><span class="etape__nom" data-i18n>Analyse</span><span class="etape__texte" data-i18n>Tableau matrice, analyse logique et littéraire, puis rupture de consensus.</span></li>
+</ol>
+</section>
+
+<section class="section" aria-labelledby="titre-limites">
+<div class="limites carte">
+<h2 id="titre-limites" class="limites__titre" data-i18n>Limites du système</h2>
+<div class="limites__texte">
+<p data-i18n>Il est fondamental de préciser que l'architecture VERITAS ne prétend en aucun cas détenir la vérité absolue ni épuiser l'infinité du texte coranique. Ce noyau demeure un modèle heuristique et une tentative humaine. Son unique ambition est de proposer une démarche rationnelle, méthodique et transparente pour se rapprocher au mieux de la pureté du code source originel. C'est un outil d'exploration conçu pour rendre la mécanique du Message accessible à l'intellect humain, avec humilité, sans jamais s'ériger en autorité définitive.</p>
+<p id="avertissement"></p>
+</div>
+</div>
+</section>
+
+</main>
+
+<footer id="pied" class="pied"><!-- corpus-link -->
+<div class="pied__dans"><nav class="pied__liens"><a href="/corpus/" lang="fr">Corpus public</a><a href="/en/corpus/" lang="en">Public corpus</a><a href="/legal.html" data-i18n>Mentions légales</a></nav><span>VERITAS ANALYST</span></div>
+</footer>
+<nav id="onglets" class="onglets"></nav>
+</body>
+</html>
