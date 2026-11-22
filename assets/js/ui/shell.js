@@ -125,7 +125,7 @@ export function mountShell({ page, store, onKeyClick }) {
   add(menu, classicLink('menu__lien menu__lien--classique'));
 
   fill(document.getElementById('entete'), el('div', { class: 'entete__dans' },
-    el('a', { class: 'marque', attrs: { href: HOME, 'aria-label': `VERITAS ANALYST — ${t('Accueil')}` } },
+    el('a', { class: 'marque', attrs: { href: HOME, 'aria-label': `VERITAS ANALYST — ${t('Accueil')}`, 'aria-current': page === 'accueil' ? 'page' : null } },
       logo(), el('span', { class: 'marque__nom', text: 'VERITAS ANALYST' })),
     el('span', { class: 'entete__titre', text: td(PAGE_TITLES[page] || ''), attrs: { 'aria-hidden': 'true' } }),
     menu,

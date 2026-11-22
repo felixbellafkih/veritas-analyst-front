@@ -1,0 +1,479 @@
+/* Nouveau site Veritas — page d'accueil : ouverture, repères, outils, corpus, méthode, limites. */
+
+.accueil {
+  padding-block-end: 88px;
+}
+
+.ouverture,
+.section {
+  max-width: var(--largeur);
+  margin-inline: auto;
+  padding-inline: var(--marge);
+}
+
+/* ------------------------------------------------------------------ ouverture */
+
+.ouverture {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 48px 64px;
+  padding-block: 72px 64px;
+}
+
+/* Largeur fixe : l'arrivée de la carte de racine ne déplace pas le texte */
+.ouverture__texte {
+  display: flex;
+  flex: 1 1 520px;
+  flex-direction: column;
+  gap: 22px;
+  max-width: 660px;
+  min-width: 0;
+}
+
+.surtitre {
+  color: var(--accent);
+  font-size: var(--t-petit);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.ouverture__titre {
+  color: var(--fort);
+  font-size: var(--t-accroche);
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+.ouverture__phrase {
+  max-width: 600px;
+  color: var(--secondaire);
+  font-size: var(--t-sous-titre);
+}
+
+.ouverture__corpus {
+  color: var(--secondaire);
+  font-size: var(--t-petit);
+}
+
+.ouverture__corpus a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--cible);
+  font-weight: 500;
+}
+
+/* Sélecteur de passage : il mène à l'Interpréteur, sans lancer l'analyse */
+.selecteur {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+  max-width: 640px;
+  min-height: 112px; /* la place est tenue avant que le module ne dessine les champs */
+  margin-block-start: 10px;
+  padding: 18px;
+}
+
+.selecteur .saisie {
+  background: var(--fond);
+}
+
+.selecteur__sourate {
+  flex: 3 1 200px;
+}
+
+.selecteur__verset {
+  flex: 1 1 76px;
+}
+
+.selecteur .bouton {
+  flex: 1 1 150px;
+}
+
+/* ------------------------------------------------------------------ exemple de racine */
+
+.racine {
+  display: flex;
+  flex: 0 1 430px;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+  padding: 28px;
+}
+
+.racine__tete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.racine__surtitre {
+  color: var(--discret);
+  font-size: var(--t-petit);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.racine__code {
+  color: var(--accent);
+  font-family: var(--police-codes);
+  font-size: var(--t-petit);
+  font-weight: 500;
+}
+
+/* Une tuile par lettre, dans le sens de l'écriture arabe */
+.racine__lettres {
+  display: grid;
+  grid-auto-columns: minmax(0, 1fr);
+  grid-auto-flow: column;
+  gap: 10px;
+}
+
+.racine__tuile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+  padding: 14px 8px 12px;
+  border: 1px solid var(--bord);
+  border-radius: var(--rayon-moyen);
+  background: var(--fond);
+  text-align: center;
+}
+
+.racine__lettre,
+.racine__arabe {
+  color: var(--arabe);
+  font-size: var(--t-accroche);
+  line-height: 1.25;
+}
+
+.racine__arabe {
+  text-align: center;
+}
+
+.racine__latin {
+  color: var(--accent);
+  font-family: var(--police-codes);
+  font-size: var(--t-petit);
+}
+
+.racine__charge {
+  max-width: 100%;
+  color: var(--titre);
+  font-size: var(--t-petit);
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+
+.racine__sens {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-block-start: 18px;
+  border-block-start: 1px solid var(--bord);
+}
+
+.racine__fonction {
+  color: var(--fort);
+  font-family: var(--police-codes);
+  font-size: var(--t-petit);
+  font-weight: 500;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.racine__equation {
+  color: var(--secondaire);
+  font-size: var(--t-petit);
+}
+
+/* ------------------------------------------------------------------ repères */
+
+.reperes {
+  border-block: 1px solid var(--bord-doux);
+}
+
+.reperes__dans {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 40px;
+  max-width: var(--largeur);
+  min-height: 62px; /* la place est tenue avant l'arrivée des chiffres */
+  margin-inline: auto;
+  padding: 16px var(--marge);
+  color: var(--secondaire);
+  font-size: var(--t-petit);
+}
+
+.repere strong {
+  color: var(--fort);
+  font-family: var(--police-titres);
+  font-size: var(--t-texte);
+  font-weight: 600;
+}
+
+/* ------------------------------------------------------------------ sections */
+
+.section {
+  padding-block-start: 76px;
+}
+
+.section__titre {
+  color: var(--fort);
+  font-size: var(--t-titre);
+  letter-spacing: -0.01em;
+}
+
+.lien-fleche {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 8px;
+  min-height: var(--cible);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.lien-fleche [data-icone],
+.outil__sortie {
+  display: inline-flex;
+}
+
+/* ------------------------------------------------------------------ outils */
+
+.outils-grille {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(250px, 100%), 1fr));
+  gap: 16px;
+  margin-block-start: 28px;
+}
+
+.outil {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 24px;
+  color: var(--titre);
+  text-decoration: none;
+}
+
+.outil:hover {
+  border-color: var(--bord-fort);
+  background: var(--surface-2);
+  color: var(--titre);
+}
+
+.outil__icone {
+  display: flex;
+  height: 26px; /* la place de l'icône est tenue avant qu'elle ne soit dessinée */
+  color: var(--accent);
+}
+
+.outil__nom {
+  color: var(--fort);
+  font-family: var(--police-titres);
+  font-size: var(--t-sous-titre);
+  font-weight: 600;
+}
+
+.outil__texte {
+  color: var(--secondaire);
+  font-size: var(--t-petit);
+}
+
+/* « dans la version classique » : l'outil n'est pas encore refait sur le nouveau site */
+.outil__mention {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-block-start: auto;
+  padding-block-start: 4px;
+  color: var(--discret);
+  font-size: var(--t-petit);
+}
+
+/* ------------------------------------------------------------------ corpus public */
+
+.corpus-public {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 32px 64px;
+}
+
+.corpus-public__intro {
+  display: flex;
+  flex: 1 1 320px;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+
+.corpus-public__intro p {
+  max-width: 400px;
+  color: var(--secondaire);
+}
+
+.corpus-public__liste {
+  flex: 999 1 520px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border-block-start: 1px solid var(--bord);
+  list-style: none;
+}
+
+.entree {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-block: 22px;
+  border-block-end: 1px solid var(--bord);
+  color: var(--titre);
+  text-decoration: none;
+}
+
+.entree:hover .entree__nom {
+  color: var(--accent-survol);
+}
+
+.entree__tete {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.entree__ref {
+  color: var(--accent);
+  font-family: var(--police-codes);
+  font-size: var(--t-petit);
+  font-weight: 500;
+}
+
+.entree__nom {
+  color: var(--fort);
+  font-family: var(--police-titres);
+  font-size: var(--t-texte);
+  font-weight: 600;
+}
+
+.entree__extrait {
+  max-width: 720px;
+  color: var(--secondaire);
+}
+
+/* ------------------------------------------------------------------ méthode, limites */
+
+.etapes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
+  gap: 16px 32px;
+  margin: 28px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.etape {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-block-start: 16px;
+  border-block-start: 2px solid var(--bord-fort);
+}
+
+.etape:first-child {
+  border-block-start-color: var(--accent);
+}
+
+.etape__numero {
+  color: var(--accent);
+  font-family: var(--police-codes);
+  font-size: var(--t-petit);
+}
+
+.etape__nom {
+  color: var(--fort);
+  font-family: var(--police-titres);
+  font-size: var(--t-sous-titre);
+  font-weight: 600;
+}
+
+.etape__texte {
+  color: var(--secondaire);
+  font-size: var(--t-petit);
+}
+
+.limites {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 48px;
+  padding: 28px 32px;
+}
+
+.limites__titre {
+  flex: 1 1 220px;
+  color: var(--fort);
+  font-size: var(--t-sous-titre);
+  line-height: 1.3;
+}
+
+.limites__texte {
+  display: flex;
+  flex: 999 1 480px;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 760px;
+  color: var(--secondaire);
+}
+
+.limites__texte p:empty {
+  display: none;
+}
+
+.limites__texte strong {
+  color: var(--titre);
+}
+
+/* ------------------------------------------------------------------ téléphone */
+
+@media (max-width: 767.98px) {
+  .accueil {
+    padding-block-end: 48px;
+  }
+
+  .ouverture {
+    gap: 32px;
+    padding-block: 28px 40px;
+  }
+
+  .ouverture__texte {
+    gap: 18px;
+  }
+
+  .selecteur {
+    padding: 14px;
+  }
+
+  .racine {
+    flex-basis: 100%;
+    padding: 20px;
+  }
+
+  .section {
+    padding-block-start: 56px;
+  }
+
+  .limites {
+    padding: 20px;
+  }
+}
