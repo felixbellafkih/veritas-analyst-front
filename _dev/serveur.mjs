@@ -35,6 +35,7 @@ async function loadFixtures() {
   const text = (name) => readFile(join(FIXTURES, name), 'utf8');
   return {
     stats: await json('stats.json'), metadata: await json('metadata.json'), root: await json('racine-S-M-W.json'),
+    roots: await json('racines.json'), // fiches du Scanner : { saisie: réponse entière de l'API }
     verses: await json('versets.json'), tarteel: await json('tarteel.json'),
     analysis: await text('analyse-1-1.txt'), analysisEn: await text('analyse-1-1-en.txt'),
   };
@@ -305,6 +306,7 @@ export async function startServer({ port = 8787, pingMs = 300 } = {}) {
       if (path.startsWith('/analyze/root/')) {
         const root = decodeURIComponent(path.slice('/analyze/root/'.length));
         if (root === 'S-M-W') return sendJson(res, 200, fixtures.root);
+        if (Object.hasOwn(fixtures.roots, root)) return sendJson(res, 200, fixtures.roots[root]);
         return sendJson(res, 404, { detail: 'Signal does not match any known physical root.' });
       }
       if (path === '/tarteel/frequencies') return sendJson(res, 200, frequencies(query, fixtures));

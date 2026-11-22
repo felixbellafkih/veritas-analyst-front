@@ -1,0 +1,153 @@
+{
+ "S-M-W": {
+  "root_data": {
+   "root": "S-M-W",
+   "arabic": "س م و",
+   "logic_function": "GLOBAL_ADDRESS_SPACE // MULTI_DIMENSIONAL_STACK_LAYER",
+   "description": "Espace d'adressage global et couches d'empilement multi-dimensionnel. Représente l'architecture de strates (Stack) permettant au signal (S) de s'étendre (W) au-delà de la matrice locale (M). 🚨 SÉCURITÉ KERNEL : Chaque 'Ciel' est un degré de liberté supplémentaire ou une couche d'abstraction dans la pile d'exécution système.",
+   "physical_equation": "S (Signal/Flux) + M (Matrice) + W (Extension/Lien) = Extension du flux matriciel vers l'espace d'adressage global multi-dimensionnel.",
+   "binary_pair": "A-R-D.",
+   "instances": [
+    {
+     "word": "اسْم",
+     "type": "NOUN",
+     "definition": "Pointeur d'identification d'une variable."
+    },
+    {
+     "word": "سَمَاء",
+     "type": "NOUN",
+     "definition": "Couche supérieure, voûte d'exécution."
+    }
+   ],
+   "description_clean": "Espace d'adressage global et couches d'empilement multi-dimensionnel. Représente l'architecture de strates (Stack) permettant au signal (S) de s'étendre (W) au-delà de la matrice locale (M)."
+  },
+  "is_decompiled": false,
+  "decompilation_data": null
+ },
+ "A-R-D.": {
+  "root_data": {
+   "root": "A-R-D.",
+   "arabic": "أ ر ض",
+   "logic_function": "LOWER_PLATFORM // HOST_DRIVE",
+   "description": "Le support de base où les processus sont déployés. 🚨 SÉCURITÉ KERNEL : C'est le substrat matériel, l'infrastructure d'hébergement physique du cluster.",
+   "physical_equation": "A (Instanciation) + R (Cycle/Ordre) + D. (Masse/Solide) = La source ordonne un cycle de consolidation matérielle (LOWER_PLATFORM).",
+   "binary_pair": "S-M-W",
+   "instances": [
+    {
+     "word": "أَرْض",
+     "type": "NOUN",
+     "definition": "Disque hôte ou infrastructure matérielle."
+    }
+   ],
+   "description_clean": "Le support de base où les processus sont déployés."
+  },
+  "is_decompiled": false,
+  "decompilation_data": null
+ },
+ "D.-R-B": {
+  "root_data": {
+   "root": "D.-R-B",
+   "arabic": "ض ر ب",
+   "logic_function": "VECTOR_PROJECTION // STATE_MODIFICATION",
+   "description": "Action d'imposer une mesure, d'appliquer un paramètre ou d'enclencher un vecteur pour provoquer un changement d'état. 🚨 SÉCURITÉ KERNEL : D.-R-B désigne exclusivement la projection vectorielle d'un vecteur ou l'application d'une mesure induisant un changement d'état. Couplé à bi + R-J-L (la jambe comme vecteur), il décrit le levée ou l'extension délibérée du membre inférieur : élever la jambe, allonger exagérément le pas ou la projeter latéralement. Ce n'est en aucun cas un impact physique du pied sur le sol.",
+   "binary_pair": "None",
+   "physical_equation": "D. (Masse) + R (Cycle/Routage) + B (Base/Interface) = Projection vectorielle d'une mesure (D+R) sur une base (B) opérant un transfert ou une modification d'état.",
+   "instances": [
+    {
+     "word": "ضَرَبَ",
+     "type": "VERB_FORM_I",
+     "definition": "Projeter un vecteur, imposer une réforme, établir une mise à distance ou modifier l'état d'une base."
+    },
+    {
+     "word": "D.-R-B + bi + R-J-L",
+     "type": "COMPOUND_VECTOR",
+     "definition": "Lever ou étendre délibérément la jambe comme vecteur cinétique — élever le membre inférieur, allonger le pas de façon exagérée ou projeter la jambe vers l'avant ou sur le côté afin de soulever le vêtement et de rendre ainsi perceptible la configuration attractive dissimulée en dessous. Ce n'est pas le contact du pied avec le sol, mais le déploiement vertical ou horizontal du membre comme vecteur d'exposition du corps."
+    }
+   ],
+   "description_clean": "Action d'imposer une mesure, d'appliquer un paramètre ou d'enclencher un vecteur pour provoquer un changement d'état."
+  },
+  "is_decompiled": false,
+  "decompilation_data": null
+ },
+ "بِسْمِ": {
+  "root_data": {
+   "root": "S-M-W",
+   "arabic": "س م و",
+   "logic_function": "GLOBAL_ADDRESS_SPACE // MULTI_DIMENSIONAL_STACK_LAYER",
+   "description": "Espace d'adressage global et couches d'empilement multi-dimensionnel. Représente l'architecture de strates (Stack) permettant au signal (S) de s'étendre (W) au-delà de la matrice locale (M). 🚨 SÉCURITÉ KERNEL : Chaque 'Ciel' est un degré de liberté supplémentaire ou une couche d'abstraction dans la pile d'exécution système.",
+   "physical_equation": "S (Signal/Flux) + M (Matrice) + W (Extension/Lien) = Extension du flux matriciel vers l'espace d'adressage global multi-dimensionnel.",
+   "binary_pair": "A-R-D.",
+   "instances": [
+    {
+     "word": "اسْم",
+     "type": "NOUN",
+     "definition": "Pointeur d'identification d'une variable."
+    },
+    {
+     "word": "سَمَاء",
+     "type": "NOUN",
+     "definition": "Couche supérieure, voûte d'exécution."
+    }
+   ],
+   "description_clean": "Espace d'adressage global et couches d'empilement multi-dimensionnel. Représente l'architecture de strates (Stack) permettant au signal (S) de s'étendre (W) au-delà de la matrice locale (M)."
+  },
+  "is_decompiled": true,
+  "decompilation_data": {
+   "original_signal": "بِسْمِ",
+   "tasreef": {
+    "tag": "SYS_BASE",
+    "logic_mod": "[BASE_VARIABLE]",
+    "desc": "Noyau fondamental non modifié ou racine pure"
+   },
+   "quantifiers": [],
+   "buses": [
+    {
+     "tag": "BUS_WITH",
+     "logic_mod": "[INSTRUMENTAL_BIND]"
+    }
+   ],
+   "pointers": []
+  }
+ },
+ "يَضْرِبُونَ": {
+  "root_data": {
+   "root": "D.-R-B",
+   "arabic": "ض ر ب",
+   "logic_function": "VECTOR_PROJECTION // STATE_MODIFICATION",
+   "description": "Action d'imposer une mesure, d'appliquer un paramètre ou d'enclencher un vecteur pour provoquer un changement d'état. 🚨 SÉCURITÉ KERNEL : D.-R-B désigne exclusivement la projection vectorielle d'un vecteur ou l'application d'une mesure induisant un changement d'état. Couplé à bi + R-J-L (la jambe comme vecteur), il décrit le levée ou l'extension délibérée du membre inférieur : élever la jambe, allonger exagérément le pas ou la projeter latéralement. Ce n'est en aucun cas un impact physique du pied sur le sol.",
+   "binary_pair": "None",
+   "physical_equation": "D. (Masse) + R (Cycle/Routage) + B (Base/Interface) = Projection vectorielle d'une mesure (D+R) sur une base (B) opérant un transfert ou une modification d'état.",
+   "instances": [
+    {
+     "word": "ضَرَبَ",
+     "type": "VERB_FORM_I",
+     "definition": "Projeter un vecteur, imposer une réforme, établir une mise à distance ou modifier l'état d'une base."
+    },
+    {
+     "word": "D.-R-B + bi + R-J-L",
+     "type": "COMPOUND_VECTOR",
+     "definition": "Lever ou étendre délibérément la jambe comme vecteur cinétique — élever le membre inférieur, allonger le pas de façon exagérée ou projeter la jambe vers l'avant ou sur le côté afin de soulever le vêtement et de rendre ainsi perceptible la configuration attractive dissimulée en dessous. Ce n'est pas le contact du pied avec le sol, mais le déploiement vertical ou horizontal du membre comme vecteur d'exposition du corps."
+    }
+   ],
+   "description_clean": "Action d'imposer une mesure, d'appliquer un paramètre ou d'enclencher un vecteur pour provoquer un changement d'état."
+  },
+  "is_decompiled": true,
+  "decompilation_data": {
+   "original_signal": "يَضْرِبُونَ",
+   "tasreef": {
+    "tag": "SYS_EXEC",
+    "logic_mod": "[DYNAMIC_EXECUTION]",
+    "desc": "Action dynamique instanciée (Mudari')"
+   },
+   "quantifiers": [
+    {
+     "tag": "SYS_PLURAL",
+     "logic_mod": "[PLURAL_STATE]",
+     "desc": "Multiplicité / Réseau"
+    }
+   ],
+   "buses": [],
+   "pointers": []
+  }
+ }
+}
