@@ -48,7 +48,7 @@ function setup() {
   return { api, timers, views, probe };
 }
 
-const VERSES = ['[2:22] : a', '[2:164] : b'];
+const VERSES = ['[2:22] : a', '[2:164] : b', '[3:5] : c'];
 
 // Mène une saisie jusqu'aux fréquences demandées
 async function asked(context, primary, constraint = '') {
@@ -56,6 +56,14 @@ async function asked(context, primary, constraint = '') {
   context.timers.fire();
   await tick();
   return context.api.calls.at(-1);
+}
+
+// Mène une saisie jusqu'au cluster lu : les versets sont à l'écran, aucun n'est coché
+async function ready(context, primary = 'S-M-W', constraint = 'N-Z-L', verses = VERSES) {
+  (await asked(context, primary, constraint)).resolve({ primaryFrequency: 352, clusterFrequency: verses.length });
+  await tick();
+  context.api.calls.at(-1).resolve(verses);
+  await tick();
 }
 
 test('pas de racine primaire : rien à vérifier, aucun appel', async () => {
@@ -81,34 +89,109 @@ test('saisie : la vérification attend 400 ms après la dernière frappe, puis d
   assert.deepEqual([api.calls[0].kind, api.calls[0].primary, api.calls[0].constraint], ['frequencies', 'S-M-W', 'N-Z-L']);
 });
 
-test('surcharge, triangulation insuffisante, aucune occurrence : le signal est annoncé, le cluster n’est pas lu', async () => {
+test('aucune occurrence : le signal est annoncé, le cluster n’est pas lu', async () => {
+  const context = setup();
+  (await asked(context, 'X-X-X')).resolve({ primaryFrequency: 0, clusterFrequency: 0 });
+  await tick();
+  assert.deepEqual(context.views.at(-1), { step: 'signal', state: 'aucune', count: 0 });
+  assert.equal(context.api.calls.length, 1);
+  assert.equal(context.probe.passage(), null);
+});
+
+test('une racine très fréquente n’est plus refusée : tous ses versets sont demandés', async () => {
   const cases = [
-    [['S-M-W', ''], { primaryFrequency: 352, clusterFrequency: 352 }, { step: 'signal', state: 'surcharge', count: 352, constraintRequired: true }],
-    [['S-M-W', 'A-R-D.'], { primaryFrequency: 352, clusterFrequency: 224 }, { step: 'signal', state: 'insuffisant', count: 224, constraintRequired: true }],
-    [['X-X-X', ''], { primaryFrequency: 0, clusterFrequency: 0 }, { step: 'signal', state: 'aucune', count: 0, constraintRequired: false }],
+    [['S-M-W', ''], { primaryFrequency: 352, clusterFrequency: 352 }, 352],
+    [['S-M-W', 'A-R-D.'], { primaryFrequency: 352, clusterFrequency: 224 }, 224],
+    [['S-M-W', 'N-Z-L'], { primaryFrequency: 352, clusterFrequency: 47 }, 47],
   ];
-  for (const [roots, frequencies, expected] of cases) {
+  for (const [roots, frequencies, count] of cases) {
     const context = setup();
     (await asked(context, ...roots)).resolve(frequencies);
     await tick();
-    assert.deepEqual(context.views.at(-1), expected);
-    assert.equal(context.api.calls.length, 1);
-    assert.equal(context.probe.passage(), null);
+    assert.deepEqual(context.views.at(-1), { step: 'lecture', count });
+    const call = context.api.calls.at(-1);
+    assert.deepEqual([call.kind, call.primary, call.constraint, call.limit], ['cluster', roots[0], roots[1], count]);
   }
 });
 
-test('signal pur : les 30 premiers versets sont lus, et le cluster peut partir', async () => {
+test('cluster lu : les versets sont à l’écran, aucun n’est coché, rien ne peut partir', async () => {
   const context = setup();
-  (await asked(context, 'S-M-W', 'N-Z-L')).resolve({ primaryFrequency: 352, clusterFrequency: 47 });
-  await tick();
-  assert.deepEqual(context.views.at(-1), { step: 'lecture', count: 47, constraintRequired: true });
+  await ready(context);
+  assert.deepEqual(context.views.at(-1), { step: 'pret', count: 3, verses: VERSES });
+  assert.deepEqual(context.probe.selection(), { chosen: 0, total: 3 });
   assert.equal(context.probe.passage(), null);
-  const call = context.api.calls.at(-1);
-  assert.deepEqual([call.kind, call.primary, call.constraint, call.limit], ['cluster', 'S-M-W', 'N-Z-L', 30]);
-  call.resolve(VERSES);
+});
+
+test('les versets cochés partent seuls, dans l’ordre du cluster', async () => {
+  const context = setup();
+  await ready(context);
+  context.probe.select(2, true);
+  assert.deepEqual(context.probe.passage(), { primary: 'S-M-W', constraint: 'N-Z-L', verses: ['[3:5] : c'] });
+  context.probe.select(0, true);
+  assert.deepEqual(context.probe.passage().verses, ['[2:22] : a', '[3:5] : c']);
+  assert.deepEqual(context.probe.selection(), { chosen: 2, total: 3 });
+  assert.equal(context.probe.isSelected(0), true);
+  assert.equal(context.probe.isSelected(1), false);
+  context.probe.select(2, false);
+  assert.deepEqual(context.probe.passage().verses, ['[2:22] : a']);
+  context.probe.select(0, false);
+  assert.equal(context.probe.passage(), null);
+});
+
+test('tout sélectionner, tout désélectionner', async () => {
+  const context = setup();
+  await ready(context);
+  context.probe.selectAll(true);
+  assert.deepEqual(context.probe.selection(), { chosen: 3, total: 3 });
+  assert.deepEqual(context.probe.passage().verses, VERSES);
+  context.probe.selectAll(false);
+  assert.deepEqual(context.probe.selection(), { chosen: 0, total: 3 });
+  assert.equal(context.probe.passage(), null);
+});
+
+test('cocher ne redemande rien au serveur et n’annonce rien', async () => {
+  const context = setup();
+  await ready(context);
+  const calls = context.api.calls.length;
+  const views = context.views.length;
+  context.probe.select(1, true);
+  context.probe.selectAll(true);
+  assert.equal(context.api.calls.length, calls);
+  assert.equal(context.views.length, views);
+});
+
+test('une case qui ne correspond à aucun verset, ou cochée avant la lecture du cluster, est sans effet', async () => {
+  const context = setup();
+  (await asked(context, 'S-M-W', 'N-Z-L')).resolve({ primaryFrequency: 352, clusterFrequency: 3 });
   await tick();
-  assert.deepEqual(context.views.at(-1), { step: 'pret', count: 47, constraintRequired: true, verses: VERSES });
-  assert.deepEqual(context.probe.passage(), { primary: 'S-M-W', constraint: 'N-Z-L', verses: VERSES });
+  context.probe.select(0, true); // le cluster n'est pas encore lu
+  context.probe.selectAll(true);
+  assert.deepEqual(context.probe.selection(), { chosen: 0, total: 0 });
+  context.api.calls.at(-1).resolve(VERSES);
+  await tick();
+  assert.deepEqual(context.probe.selection(), { chosen: 0, total: 3 });
+  context.probe.select(3, true);
+  context.probe.select(-1, true);
+  context.probe.select(1.5, true);
+  assert.deepEqual(context.probe.selection(), { chosen: 0, total: 3 });
+  assert.equal(context.probe.passage(), null);
+});
+
+test('une frappe vide la sélection : le cluster suivant arrive sans case cochée', async () => {
+  const context = setup();
+  await ready(context);
+  context.probe.selectAll(true);
+  context.probe.input('S-M-W', 'N-Z'); // une frappe : rien n'est encore vérifié pour cette saisie
+  assert.deepEqual(context.probe.selection(), { chosen: 0, total: 0 });
+  assert.equal(context.probe.passage(), null);
+  context.timers.fire();
+  await tick();
+  context.api.calls.at(-1).resolve({ primaryFrequency: 352, clusterFrequency: 2 });
+  await tick();
+  context.api.calls.at(-1).resolve(['[7:1] : x', '[7:2] : y']);
+  await tick();
+  assert.deepEqual(context.probe.selection(), { chosen: 0, total: 2 });
+  assert.equal(context.probe.passage(), null);
 });
 
 test('le Kernel répond par un texte au lieu d’une liste : c’est un message, rien ne peut partir', async () => {
@@ -117,7 +200,8 @@ test('le Kernel répond par un texte au lieu d’une liste : c’est un message,
   await tick();
   context.api.calls.at(-1).resolve('[WARNING KERNEL] Triangulation impossible.');
   await tick();
-  assert.deepEqual(context.views.at(-1), { step: 'message', count: 5, constraintRequired: false, text: '[WARNING KERNEL] Triangulation impossible.' });
+  assert.deepEqual(context.views.at(-1), { step: 'message', count: 5, text: '[WARNING KERNEL] Triangulation impossible.' });
+  context.probe.selectAll(true);
   assert.equal(context.probe.passage(), null);
 });
 
@@ -130,7 +214,7 @@ test('cluster vide, illisible ou introuvable (404) : aucun verset', async () => 
     if (answer instanceof ApiFailure) call.reject(answer);
     else call.resolve(answer);
     await tick();
-    assert.deepEqual(context.views.at(-1), { step: 'absent', count: 9, constraintRequired: false });
+    assert.deepEqual(context.views.at(-1), { step: 'absent', count: 9 });
     assert.equal(context.probe.passage(), null);
   }
 });
@@ -157,7 +241,7 @@ test('échec à la lecture du cluster : le signal reste connu', async () => {
   const failure = new ApiFailure('http', { status: 500, detail: 'x' });
   context.api.calls.at(-1).reject(failure);
   await tick();
-  assert.deepEqual(context.views.at(-1), { step: 'echec', stage: 'cluster', failure, count: 9, constraintRequired: false });
+  assert.deepEqual(context.views.at(-1), { step: 'echec', stage: 'cluster', failure, count: 9 });
   assert.equal(context.probe.passage(), null);
 });
 
@@ -175,10 +259,11 @@ test('la saisie change pendant une vérification : l’ancienne réponse n’est
   await tick();
   const second = context.api.calls.at(-1);
   assert.deepEqual([second.primary, second.constraint], ['S-M-W', 'N-Z-L']);
-  second.resolve({ primaryFrequency: 352, clusterFrequency: 47 });
+  second.resolve({ primaryFrequency: 352, clusterFrequency: 3 });
   await tick();
   context.api.calls.at(-1).resolve(VERSES);
   await tick();
+  context.probe.selectAll(true);
   assert.deepEqual(context.probe.passage(), { primary: 'S-M-W', constraint: 'N-Z-L', verses: VERSES });
 });
 
@@ -192,15 +277,14 @@ test('la saisie change pendant la lecture du cluster : les anciens versets ne se
   reading.resolve(['[112:2] : x']);
   await tick();
   assert.deepEqual(context.views.at(-1), { step: 'attente' });
+  context.probe.selectAll(true);
   assert.equal(context.probe.passage(), null);
 });
 
 test('un cluster prêt cesse de l’être dès la frappe suivante', async () => {
   const context = setup();
-  (await asked(context, 'S.-M-D')).resolve({ primaryFrequency: 1, clusterFrequency: 1 });
-  await tick();
-  context.api.calls.at(-1).resolve(['[112:2] : x']);
-  await tick();
+  await ready(context, 'S.-M-D', '', ['[112:2] : x']);
+  context.probe.selectAll(true);
   assert.notEqual(context.probe.passage(), null);
   context.probe.input('S.-M-D', 'N'); // une frappe : rien n'est encore vérifié pour cette saisie
   assert.equal(context.probe.passage(), null);
@@ -241,5 +325,5 @@ test('check : revérifie les racines en place (bouton « Réessayer »)', async 
   assert.deepEqual([context.api.calls[1].primary, context.api.calls[1].constraint], ['S-M-W', '']);
   context.api.calls[1].resolve({ primaryFrequency: 352, clusterFrequency: 352 });
   await tick();
-  assert.equal(context.views.at(-1).state, 'surcharge');
+  assert.deepEqual(context.views.at(-1), { step: 'lecture', count: 352 });
 });

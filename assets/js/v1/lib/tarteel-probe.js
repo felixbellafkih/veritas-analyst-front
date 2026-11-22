@@ -1,35 +1,41 @@
-// Vérification d'une saisie du mode Tarteel, sans interface : les fréquences, l'état du signal et, s'il
-// est pur, les versets du cluster.
+// Vérification d'une saisie du mode Tarteel, sans interface : les fréquences, l'état du signal, tous les
+// versets du cluster, et ceux que le visiteur a cochés.
 //
-// Une frappe annule aussitôt ce qui était vérifié ou en cours de vérification : seule la réponse à la
-// dernière saisie est annoncée, et le cluster rendu par passage() est toujours celui des racines en
-// place. Sans cela, une réponse arrivée en retard ferait partir à l'analyse un autre cluster que celui
-// que le visiteur a sous les yeux.
+// Une frappe annule aussitôt ce qui était vérifié ou en cours de vérification, et vide la sélection :
+// seule la réponse à la dernière saisie est annoncée, et les versets rendus par passage() sont toujours
+// ceux du cluster à l'écran. Sans cela, une réponse arrivée en retard ferait partir à l'analyse d'autres
+// versets que ceux que le visiteur a sous les yeux.
 //
 // Ce qu'il faut afficher (onChange) :
-//   {step:'vide'}                                        pas de racine primaire
-//   {step:'attente'}                                     saisie en cours, ou fréquences demandées
-//   {step:'signal', state, count, constraintRequired}    state : 'surcharge' | 'insuffisant' | 'aucune'
-//   {step:'lecture', count, constraintRequired}          signal pur : les versets sont demandés
-//   {step:'pret', count, constraintRequired, verses}     le cluster peut être analysé
-//   {step:'message', count, constraintRequired, text}    le Kernel a répondu par un message
-//   {step:'absent', count, constraintRequired}           aucun verset
-//   {step:'echec', stage, failure[, count, constraintRequired]}   stage : 'frequences' | 'cluster'
-import { SENT_LIMIT, tarteelState } from './tarteel.js';
+//   {step:'vide'}                           pas de racine primaire
+//   {step:'attente'}                        saisie en cours, ou fréquences demandées
+//   {step:'signal', state:'aucune', count}  aucune occurrence
+//   {step:'lecture', count}                 des occurrences : les versets sont demandés
+//   {step:'pret', count, verses}            le cluster est lu : le visiteur coche les versets à analyser
+//   {step:'message', count, text}           le Kernel a répondu par un message
+//   {step:'absent', count}                  aucun verset
+//   {step:'echec', stage, failure[, count]} stage : 'frequences' | 'cluster'
+// Cocher une case n'annonce rien : la page tient son compteur d'après selection().
+import { pickVerses, tarteelState } from './tarteel.js';
 
 // api : frequencies(primary, constraint, {signal}) et cluster(primary, constraint, limit, {signal})
 // delay : pause après la dernière frappe, en millisecondes ; setTimer, clearTimer : la minuterie
 export function createTarteelProbe({ api, onChange, delay = 400, setTimer = setTimeout, clearTimer = clearTimeout }) {
   let roots = { primary: '', constraint: '' };
   let view = { step: 'vide' };
+  let chosen = new Set(); // rangs des versets cochés dans le cluster à l'écran
   let token = 0;      // change à chaque saisie et à chaque vérification : une réponse d'un autre jeton est ignorée
   let timer = null;   // vérification en attente de la fin de la saisie
   let pending = null; // demande en cours
 
+  // Toute nouvelle annonce part d'une sélection vide : un autre cluster n'hérite d'aucune case cochée
   function show(next) {
     view = next;
+    chosen = new Set();
     onChange(view);
   }
+
+  const total = () => (view.step === 'pret' ? view.verses.length : 0);
 
   function invalidate() {
     token += 1;
@@ -64,14 +70,15 @@ export function createTarteelProbe({ api, onChange, delay = 400, setTimer = setT
         show({ step: 'echec', stage, failure: null });
         return;
       }
-      known = { count: found.count, constraintRequired: found.constraintRequired };
+      known = { count: found.count };
       if (found.state !== 'pur') {
         show({ step: 'signal', state: found.state, ...known });
         return;
       }
       stage = 'cluster';
       show({ step: 'lecture', ...known });
-      const list = await api.cluster(primary, constraint, SENT_LIMIT, { signal: controller.signal });
+      // Tous les versets du cluster : le visiteur choisit ensuite ceux qui partent
+      const list = await api.cluster(primary, constraint, found.count, { signal: controller.signal });
       if (mine !== token) return;
       if (typeof list === 'string') show({ step: 'message', ...known, text: list }); // un texte : message du Kernel
       else if (!Array.isArray(list) || !list.length) show({ step: 'absent', ...known });
@@ -111,7 +118,26 @@ export function createTarteelProbe({ api, onChange, delay = 400, setTimer = setT
 
     view: () => view,
 
-    // Le cluster à analyser : seulement quand il a été lu pour les racines en place
-    passage: () => (view.step === 'pret' ? { primary: roots.primary, constraint: roots.constraint, verses: view.verses } : null),
+    // Coche ou décoche le verset de ce rang, dans le cluster à l'écran
+    select(index, on) {
+      if (!Number.isInteger(index) || index < 0 || index >= total()) return;
+      if (on) chosen.add(index);
+      else chosen.delete(index);
+    },
+
+    // Tout sélectionner, ou tout désélectionner
+    selectAll(on) {
+      chosen = new Set(on ? Array.from({ length: total() }, (_, index) => index) : []);
+    },
+
+    isSelected: (index) => chosen.has(index),
+
+    selection: () => ({ chosen: chosen.size, total: total() }),
+
+    // Ce qui part à l'analyse : les versets cochés du cluster lu pour les racines en place ; sinon rien
+    passage() {
+      if (view.step !== 'pret' || !chosen.size) return null;
+      return { primary: roots.primary, constraint: roots.constraint, verses: pickVerses(view.verses, chosen) };
+    },
   };
 }

@@ -1,10 +1,13 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { CEILING, SENT_LIMIT, clusterText, clusterVerse, tarteelState } from '../../assets/js/v1/lib/tarteel.js';
+import * as tarteel from '../../assets/js/v1/lib/tarteel.js';
+import { clusterText, clusterVerse, pickVerses, tarteelState } from '../../assets/js/v1/lib/tarteel.js';
 
-test('seuils : plafond de 57 occurrences, 30 versets envoyés', () => {
-  assert.equal(CEILING, 57);
-  assert.equal(SENT_LIMIT, 30);
+// Décision de l'auteur du 22/11/2026 : plus de plafond de 57 occurrences, plus de limite de 30 versets
+// envoyés. Le visiteur coche lui-même les versets à analyser.
+test('plus de plafond ni de limite d’envoi', () => {
+  assert.equal('CEILING' in tarteel, false);
+  assert.equal('SENT_LIMIT' in tarteel, false);
 });
 
 test('pas de racine primaire : rien à dire', () => {
@@ -16,31 +19,21 @@ test('fréquences pas encore connues : rien à dire', () => {
   assert.equal(tarteelState({ primary: 'S-M-W', constraint: '' }).state, 'vide');
 });
 
-test('surcharge : racine au-dessus du plafond, sans contrainte', () => {
-  assert.deepEqual(tarteelState({ primary: 'S-M-W', constraint: '', primaryFrequency: 352, clusterFrequency: 352 }),
-    { state: 'surcharge', count: 352, constraintRequired: true });
-  assert.equal(tarteelState({ primary: 'S-M-W', constraint: '  ', primaryFrequency: 58, clusterFrequency: 58 }).state, 'surcharge');
+test('signal pur dès une occurrence, quel que soit leur nombre', () => {
+  assert.deepEqual(tarteelState({ primary: 'S-M-W', constraint: '', primaryFrequency: 352, clusterFrequency: 352 }), { state: 'pur', count: 352 });
+  assert.deepEqual(tarteelState({ primary: 'S-M-W', constraint: 'A-R-D.', primaryFrequency: 352, clusterFrequency: 224 }), { state: 'pur', count: 224 });
+  assert.deepEqual(tarteelState({ primary: 'S-M-W', constraint: 'N-Z-L', primaryFrequency: 352, clusterFrequency: 47 }), { state: 'pur', count: 47 });
+  assert.deepEqual(tarteelState({ primary: 'Q', constraint: 'Y', primaryFrequency: 40, clusterFrequency: 1 }), { state: 'pur', count: 1 });
 });
 
-test('triangulation insuffisante : le cluster dépasse encore le plafond', () => {
-  assert.deepEqual(tarteelState({ primary: 'S-M-W', constraint: 'A-R-D.', primaryFrequency: 352, clusterFrequency: 224 }),
-    { state: 'insuffisant', count: 224, constraintRequired: true });
-  assert.equal(tarteelState({ primary: 'S-M-W', constraint: 'X', primaryFrequency: 352, clusterFrequency: 58 }).state, 'insuffisant');
-});
-
-test('signal pur : de 1 à 57 occurrences', () => {
-  assert.deepEqual(tarteelState({ primary: 'S-M-W', constraint: 'X', primaryFrequency: 352, clusterFrequency: 57 }),
-    { state: 'pur', count: 57, constraintRequired: true });
-  assert.deepEqual(tarteelState({ primary: 'Q', constraint: '', primaryFrequency: 40, clusterFrequency: 40 }),
-    { state: 'pur', count: 40, constraintRequired: false });
-  assert.equal(tarteelState({ primary: 'Q', constraint: '', primaryFrequency: 57, clusterFrequency: 57 }).state, 'pur');
-  assert.equal(tarteelState({ primary: 'Q', constraint: 'Y', primaryFrequency: 40, clusterFrequency: 1 }).state, 'pur');
+test('sans contrainte, le nombre est celui de la racine primaire ; avec, celui du croisement', () => {
+  assert.equal(tarteelState({ primary: 'Q', constraint: '  ', primaryFrequency: 40, clusterFrequency: 3 }).count, 40);
+  assert.equal(tarteelState({ primary: 'Q', constraint: 'Y', primaryFrequency: 40, clusterFrequency: 3 }).count, 3);
 });
 
 test('aucune occurrence', () => {
-  assert.deepEqual(tarteelState({ primary: 'S-M-W', constraint: 'X', primaryFrequency: 352, clusterFrequency: 0 }),
-    { state: 'aucune', count: 0, constraintRequired: true });
-  assert.equal(tarteelState({ primary: 'X-X-X', constraint: '', primaryFrequency: 0, clusterFrequency: 0 }).state, 'aucune');
+  assert.deepEqual(tarteelState({ primary: 'S-M-W', constraint: 'X', primaryFrequency: 352, clusterFrequency: 0 }), { state: 'aucune', count: 0 });
+  assert.deepEqual(tarteelState({ primary: 'X-X-X', constraint: '', primaryFrequency: 0, clusterFrequency: 0 }), { state: 'aucune', count: 0 });
 });
 
 test('clusterText : la phrase que le corpus reconnaît, au caractère près', () => {
@@ -52,12 +45,24 @@ test('clusterText : la phrase que le corpus reconnaît, au caractère près', ()
     'Analyse ce cluster de versets interconnectés (Triangulation : ض ر ب ∩ ع ب د) :\n\n[2:22] : x');
 });
 
-test('clusterText : 30 versets au plus', () => {
-  const verses = Array.from({ length: 31 }, (_, index) => `[2:${index + 1}] : verset ${index + 1}`);
-  const text = clusterText('S-M-W', 'N-Z-L', verses);
-  assert.ok(text.includes('verset 30'));
-  assert.ok(!text.includes('verset 31'));
-  assert.equal(text.split('\n\n').length, 31); // la phrase, puis 30 versets
+test('clusterText : tous les versets reçus partent, sans coupe', () => {
+  const verses = Array.from({ length: 120 }, (_, index) => `[2:${index + 1}] : verset ${index + 1}`);
+  const text = clusterText('S-M-W', '', verses);
+  assert.ok(text.endsWith('[2:120] : verset 120'));
+  assert.equal(text.split('\n\n').length, 121); // la phrase, puis les 120 versets
+});
+
+test('pickVerses : les versets cochés, dans l’ordre du cluster', () => {
+  const verses = ['a', 'b', 'c', 'd'];
+  assert.deepEqual(pickVerses(verses, new Set([2, 0])), ['a', 'c']);
+  assert.deepEqual(pickVerses(verses, [3, 3, 1]), ['b', 'd']);
+  assert.deepEqual(pickVerses(verses, new Set()), []);
+});
+
+test('pickVerses : une case qui ne correspond à aucun verset est ignorée', () => {
+  assert.deepEqual(pickVerses(['a', 'b'], new Set([9, -1, 1.5, 1])), ['b']);
+  assert.deepEqual(pickVerses(null, new Set([0])), []);
+  assert.deepEqual(pickVerses(['a'], null), []);
 });
 
 test('clusterVerse : sépare la référence du texte, pour l’affichage', () => {

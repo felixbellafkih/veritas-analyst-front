@@ -1,6 +1,6 @@
 // Colonne « Passage » de l'Interpréteur : le choix de ce qui sera analysé, en trois modes.
 // - Verset : sourate, du verset, au verset (10 versets au plus), avec le texte arabe affiché aussitôt.
-// - Tarteel : racine primaire et contrainte, selon les règles de l'app actuelle (lib/tarteel.js).
+// - Tarteel : racine primaire et contrainte, puis tous les versets du cluster, à cocher (lib/tarteel-probe.js).
 // - Texte libre : une zone de 10 000 caractères.
 // Puis, communs aux trois modes : la langue de la réponse, le modèle Gemini, le lancement, l'état de la clé.
 import { ApiFailure, describeFailure } from '../lib/failures.js';
@@ -120,31 +120,52 @@ export function mountPassageForm(container, { api, store, asked, onLaunch, onMan
   const rootAttrs = { type: 'text', maxlength: ROOT_MAX, autocomplete: 'off', autocapitalize: 'off', spellcheck: 'false', dir: 'auto' };
   const primary = el('input', { class: 'saisie', attrs: { id: 'racine-primaire', ...rootAttrs } });
   const constraint = el('input', { class: 'saisie', attrs: { id: 'racine-contrainte', ...rootAttrs } });
-  const constraintLabel = el('label', { class: 'champ__etiquette', attrs: { for: 'racine-contrainte' } });
   const signal = el('div', { class: 'tarteel__signal', attrs: { role: 'status', 'aria-live': 'polite' } });
-  const clusterBox = el('div', { class: 'tarteel__cluster', attrs: { 'aria-live': 'polite' } });
-  let tarteelFix = primary; // champ à corriger quand le signal ne permet pas l'analyse
-  let tarteelStep = '';     // dernière étape affichée
+  const clusterBox = el('div', { class: 'tarteel__cluster' });
+  let clusterUi = null;      // cases et compteur du cluster à l'écran
+  let tarteelStep = '';      // dernière étape affichée
   let tarteelSynced = false; // faux tant que la saisie gardée pour l'onglet n'a pas été vérifiée
 
-  // La contrainte est requise quand la racine primaire dépasse le plafond
-  function setConstraintRequired(required) {
-    constraintLabel.textContent = required ? t('2. Racine Contrainte / Tasreef (Requise)') : t('2. Contrainte (Optionnelle)');
-    constraint.setAttribute('aria-required', String(required));
-  }
-
-  function clusterList(verses, total) {
+  // Tous les versets du cluster, une case devant chacun : le visiteur coche ceux qu'il veut faire analyser.
+  // Rien n'est coché au départ. La sélection elle-même est tenue par la sonde (lib/tarteel-probe.js).
+  function clusterList(verses) {
+    const count = el('p', { class: 'cluster__compte', attrs: { role: 'status' } });
+    const hint = el('p', { class: 'message message--attention', text: t('Cochez au moins un verset.'), attrs: { role: 'alert', hidden: true } });
+    const boxes = [];
+    const paint = () => {
+      const { chosen, total } = probe.selection();
+      count.textContent = t('Versets cochés : {n} sur {total}', { n: chosen, total });
+      if (chosen) hint.hidden = true;
+    };
+    const setAll = (on) => {
+      probe.selectAll(on);
+      for (const box of boxes) box.checked = on;
+      paint();
+    };
     const list = el('ul', { class: 'cluster__liste' });
-    for (const item of verses) {
+    verses.forEach((item, index) => {
       const { reference: label, text } = clusterVerse(item);
-      add(list, el('li', { class: 'cluster__verset' },
-        label ? el('span', { class: 'verset__ref', text: label }) : null,
-        el('p', { class: 'cluster__texte', text, attrs: label ? { lang: 'ar', dir: 'rtl' } : { dir: 'auto' } })));
-    }
+      const box = el('input', { class: 'cluster__case', attrs: { type: 'checkbox' } });
+      box.addEventListener('change', () => {
+        probe.select(index, box.checked);
+        paint();
+      });
+      boxes.push(box);
+      // Toute la ligne est l'étiquette de sa case : un clic sur le verset le coche
+      add(list, el('li', {}, el('label', { class: 'cluster__verset' }, box,
+        el('span', { class: 'cluster__contenu' },
+          label ? el('span', { class: 'verset__ref', text: label }) : null,
+          el('span', { class: 'cluster__texte', text, attrs: label ? { lang: 'ar', dir: 'rtl' } : { dir: 'auto' } })))));
+    });
+    clusterUi = { hint, first: boxes[0] };
+    paint();
     return [
-      // Le moteur reçoit 30 versets au plus : le visiteur voit combien partent, et sur combien
-      total > verses.length ? el('p', { class: 'champ__aide', text: t('{n} versets envoyés sur {total}', { n: verses.length, total }) }) : null,
-      el('div', { class: 'cluster', attrs: { tabindex: 0, role: 'group', 'aria-label': t('Versets du cluster') } }, list),
+      el('div', { class: 'cluster__barre' }, count,
+        el('div', { class: 'cluster__outils' },
+          el('button', { class: 'bouton-lien cluster__outil', text: t('Tout sélectionner'), attrs: { type: 'button' }, on: { click: () => setAll(true) } }),
+          el('button', { class: 'bouton-lien cluster__outil', text: t('Tout désélectionner'), attrs: { type: 'button' }, on: { click: () => setAll(false) } }))),
+      hint,
+      el('div', { class: 'cluster', attrs: { role: 'group', 'aria-label': t('Versets du cluster') } }, list),
     ];
   }
 
@@ -161,31 +182,24 @@ export function mountPassageForm(container, { api, store, asked, onLaunch, onMan
     const repeated = view.step === 'attente' && tarteelStep === 'attente'; // à chaque frappe : rien de neuf à annoncer
     tarteelStep = view.step;
     if (repeated) return;
-    tarteelFix = primary;
-    if (view.step === 'vide') setConstraintRequired(false);
-    else if ('constraintRequired' in view) setConstraintRequired(view.constraintRequired);
+    clusterUi = null;
 
+    // Plus de plafond : dès une occurrence, le signal est pur, et c'est le visiteur qui choisit les versets
     if (view.step === 'vide') {
       clear(signal);
     } else if (view.step === 'attente') {
       fill(signal, el('p', { class: 'champ__aide', text: t('Recherche des occurrences…') }));
     } else if (view.step === 'echec' && view.stage === 'frequences') {
       fill(signal, tarteelFailure(view.failure));
-    } else if (view.step === 'signal' && view.state === 'surcharge') {
-      tarteelFix = constraint;
-      fill(signal, message('attention', t('Surcharge matérielle ({n} occurrences sur la racine primaire). Définissez une contrainte pour trianguler le signal.', { n: view.count })));
-    } else if (view.step === 'signal' && view.state === 'insuffisant') {
-      tarteelFix = constraint;
-      fill(signal, message('attention', t('Triangulation insuffisante. Le cluster combiné contient encore {n} occurrences (Plafond absolu: 57). Affinez la contrainte (ex: utilisez un Tasreef plus long).', { n: view.count })));
     } else if (view.step === 'signal') {
       fill(signal, message('erreur', t("Aucune occurrence détectée (0 résultat). Assurez-vous d'avoir introduit une racine valide. Ex : S-M-W  س م و | D.-R-B ض ر ب | DH-K-R ذ ك ر  | A.-B-D ع ب د")));
     } else {
-      fill(signal, message('reussite', t("Signal pur ({n} occurrences triangulées). Volume matériel optimal pour l'injection.", { n: view.count })));
+      fill(signal, message('reussite', t('Signal pur ({n} occurrences triangulées).', { n: view.count })));
     }
 
     // Sous le signal : les versets du cluster, ou ce qui en tient lieu
     if (view.step === 'lecture') fill(clusterBox, el('p', { class: 'champ__aide', text: t('Chargement du texte…') }));
-    else if (view.step === 'pret') fill(clusterBox, clusterList(view.verses, view.count));
+    else if (view.step === 'pret') fill(clusterBox, clusterList(view.verses));
     else if (view.step === 'message') fill(clusterBox, message('erreur', td(view.text)));
     else if (view.step === 'absent') fill(clusterBox, message('erreur', t('Zéro occurrence matérielle trouvée pour cette triangulation.')));
     else if (view.step === 'echec' && view.stage === 'cluster') fill(clusterBox, tarteelFailure(view.failure));
@@ -209,7 +223,7 @@ export function mountPassageForm(container, { api, store, asked, onLaunch, onMan
   const tarteelPanel = el('div', { class: 'passage__mode' },
     el('div', { class: 'texte-auteur tarteel__aide' }, renderBlocks(parseMarkdown(t("Module d'extraction par triangulation. Pour isoler un sujet lié à une racine à haute fréquence, croisez avec une racine de contrainte ou un Tasreef précis afin d'éviter la saturation du processeur IA (Buffer Overflow).\n\n💡 **Support Bi-directionnel :** Saisie acceptée en **Arabe** (ex: ض ر ب) ou en **Latin**.\n*Rappel Latin (Emphatiques) :* `A.` (ع) | `H.` (ح) | `S.` (ص) | `D.` (ض) | `T.` (ط) | `Z.` (ظ)")), { ids: false })),
     field('racine-primaire', t('1. Racine Primaire (ex: D.-R-B)'), primary),
-    el('div', { class: 'champ' }, constraintLabel, constraint),
+    field('racine-contrainte', t('2. Contrainte (Optionnelle)'), constraint),
     signal,
     clusterBox);
 
@@ -351,8 +365,15 @@ export function mountPassageForm(container, { api, store, asked, onLaunch, onMan
       verse.scrollIntoView({ block: 'nearest' });
     } else if (state.mode === 'tarteel') {
       probe.flush(); // la saisie vient de changer : la vérification part tout de suite
-      signal.scrollIntoView({ block: 'nearest' });
-      tarteelFix.focus({ preventScroll: true });
+      if (probe.view().step === 'pret' && clusterUi) {
+        // Le cluster est à l'écran, mais aucun verset n'est coché
+        clusterUi.hint.hidden = false;
+        clusterBox.scrollIntoView({ block: 'nearest' });
+        clusterUi.first.focus({ preventScroll: true });
+      } else {
+        signal.scrollIntoView({ block: 'nearest' });
+        primary.focus({ preventScroll: true });
+      }
     } else {
       freeText.focus();
     }
@@ -374,7 +395,6 @@ export function mountPassageForm(container, { api, store, asked, onLaunch, onMan
   paintVerseFields();
   primary.value = state.primary;
   constraint.value = state.constraint;
-  setConstraintRequired(false);
   freeText.value = state.text;
   paintCounter();
   showMode(state.mode);
@@ -384,7 +404,7 @@ export function mountPassageForm(container, { api, store, asked, onLaunch, onMan
     // Pendant une analyse, le formulaire est verrouillé
     setDisabled(value) {
       disabled = Boolean(value);
-      for (const control of form.querySelectorAll('select, input, textarea, .segments__bouton, button[type="submit"]')) control.disabled = disabled;
+      for (const control of form.querySelectorAll('select, input, textarea, .segments__bouton, .cluster__outil, button[type="submit"]')) control.disabled = disabled;
     },
     // Relance le formulaire tel qu'il est (« Réessayer » après un lancement en échec)
     submit,
