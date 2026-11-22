@@ -1,7 +1,7 @@
 // Portage de tests/test_conversation.py (classe TestConversation) du Kernel.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { MAX_EXCHANGES, addExchange, previousExchanges } from '../../assets/js/v1/lib/conversation.js';
+import { MAX_EXCHANGES, addExchange, previousExchanges } from '../../assets/js/v2/lib/conversation.js';
 
 const H = '**[TARGET: gemini-3.1-pro-preview]** | 📊 **Tokens:** Input=1 | Output=1 | Thinking=0 | Total=2 | Cost=$0.0000 | 📚 **Références :** 18:96 (verset)\n\n';
 const A = H + '### 1. TABLEAU\nok';

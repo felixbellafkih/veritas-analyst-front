@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { outline, parseInline, parseMarkdown, plainText, safeHref, splitRoots, splitTitle } from '../../assets/js/v1/lib/markdown.js';
+import { outline, parseInline, parseMarkdown, plainText, safeHref, splitRoots, splitTitle } from '../../assets/js/v2/lib/markdown.js';
 
 const text = (value) => ({ type: 'text', text: value });
 const para = (...inline) => ({ type: 'paragraph', inline });

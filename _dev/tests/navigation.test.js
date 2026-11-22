@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { leavesPage } from '../../assets/js/v1/lib/navigation.js';
+import { leavesPage } from '../../assets/js/v2/lib/navigation.js';
 
 const HERE = 'https://veritas-analyst.org/interpreteur/?s=1&de=1&a=7';
 

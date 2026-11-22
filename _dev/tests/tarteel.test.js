@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import * as tarteel from '../../assets/js/v1/lib/tarteel.js';
-import { clusterText, clusterVerse, pickVerses, tarteelState } from '../../assets/js/v1/lib/tarteel.js';
+import * as tarteel from '../../assets/js/v2/lib/tarteel.js';
+import { clusterText, clusterVerse, pickVerses, tarteelState } from '../../assets/js/v2/lib/tarteel.js';
 
 // Décision de l'auteur du 22/11/2026 : plus de plafond de 57 occurrences, plus de limite de 30 versets
 // envoyés. Le visiteur coche lui-même les versets à analyser.

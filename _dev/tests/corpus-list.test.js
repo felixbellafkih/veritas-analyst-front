@@ -4,7 +4,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { corpusExcerpts } from '../../assets/js/v1/lib/corpus-list.js';
+import { corpusExcerpts } from '../../assets/js/v2/lib/corpus-list.js';
 
 const page = (path) => readFileSync(fileURLToPath(new URL(`../../${path}`, import.meta.url)), 'utf8');
 
