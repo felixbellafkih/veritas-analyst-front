@@ -79,6 +79,10 @@ export function createApi({ base, fetch: fetchImpl = globalThis.fetch }) {
       return (await json(`/analyze/root/${encodeURIComponent(code)}`)).root_data;
     },
 
+    // Scanner : la réponse entière, {root_data, is_decompiled, decompilation_data}. La saisie est une racine
+    // (code latin ou lettres arabes) ou un mot complexe, que l'API ramène à sa racine. Inconnue : échec 404.
+    scan: (query, { signal } = {}) => json(`/analyze/root/${encodeURIComponent(query)}`, { signal }),
+
     async verseRange(sura, start, end, { signal } = {}) {
       return (await json(`/verse/range?${query({ sura, start, end })}`, { signal })).verse_text;
     },

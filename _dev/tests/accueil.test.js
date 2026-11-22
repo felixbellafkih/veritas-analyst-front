@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { CLASSIC_URL } from '../../assets/js/v1/lib/config.js';
+import { CLASSIC_URL } from '../../assets/js/v2/lib/config.js';
 
 const SITE = fileURLToPath(new URL('../..', import.meta.url));
 const path = join(SITE, 'accueil', 'index.html');
@@ -30,14 +30,18 @@ test('les trois analyses du corpus : un lien chacune, vers une page publiée en 
   }
 });
 
-test('outils : l’Interpréteur mène au nouveau site, les trois autres à la version classique', () => {
-  assert.ok(html.includes('href="/interpreteur/"'));
-  const classic = [...html.matchAll(/<a\b[^>]*>/g)].map((match) => match[0]).filter((tag) => tag.includes(`href="${CLASSIC_URL}"`));
-  assert.equal(classic.length, 3);
-  for (const tag of classic) {
-    assert.ok(tag.includes('target="_blank"'), tag);
-    assert.ok(tag.includes('rel="noopener"'), tag);
+// Étape 2 : le Tarteel et le Scanner ont leur page ; le Séquenceur reste dans la version classique
+test('outils : Interpréteur, Tarteel et Scanner mènent au nouveau site ; le Séquenceur à la version classique', () => {
+  const cards = [...html.matchAll(/<a class="outil carte"[^>]*>[\s\S]*?<\/a>/g)].map((match) => match[0]);
+  assert.equal(cards.length, 4);
+  const card = (name) => cards.find((text) => text.includes(`data-i18n>${name}</span>`));
+  for (const [name, href] of [['Interpréteur', '/interpreteur/'], ['Tarteel', '/tarteel/'], ['Scanner', '/scanner/']]) {
+    assert.ok(card(name).startsWith(`<a class="outil carte" href="${href}">`), name);
+    assert.ok(!card(name).includes('dans la version classique'), name);
   }
+  const classic = card('Séquenceur');
+  assert.ok(classic.includes(`href="${CLASSIC_URL}"`) && classic.includes('target="_blank"') && classic.includes('rel="noopener"'));
+  assert.ok(classic.includes('dans la version classique'));
 });
 
 // Ce qui vient du LEXICON ou de l'API n'est jamais recopié dans la page : une correction du LEXICON se
@@ -52,4 +56,16 @@ test('aucun extrait d’analyse écrit dans la page : il est lu sur la liste pub
   assert.ok(html.includes('<body'));
   assert.ok(!html.includes('pointeur d'), 'extrait de 1:1');
   assert.ok(!html.includes('architecture réseau'), 'extrait de 6:159');
+});
+
+test('la carte de racine mène à sa fiche dans le Scanner', () => {
+  const page = readFileSync(fileURLToPath(new URL('../../assets/js/v2/pages/accueil.js', import.meta.url)), 'utf8');
+  assert.match(page, /scannerHref\(/);
+  assert.match(page, /Ouvrir cette racine dans le Scanner/);
+});
+
+test('menu : Interpréteur, Tarteel, Scanner, Corpus, dans cet ordre', () => {
+  const source = readFileSync(fileURLToPath(new URL('../../assets/js/v2/ui/shell.js', import.meta.url)), 'utf8');
+  const ready = [...source.matchAll(/\{ id: '([a-z]+)',[^}]*ready: (true|false) \}/g)].filter((match) => match[2] === 'true').map((match) => match[1]);
+  assert.deepEqual(ready, ['interpreteur', 'tarteel', 'scanner', 'corpus']);
 });

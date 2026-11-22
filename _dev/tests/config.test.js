@@ -1,13 +1,13 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { API_PROD, CLASSIC_URL, STORAGE, apiBase, apiChoice } from '../../assets/js/v1/lib/config.js';
+import { API_PROD, CLASSIC_URL, STORAGE, apiBase, apiChoice } from '../../assets/js/v2/lib/config.js';
 
 test('constantes', () => {
   assert.equal(API_PROD, 'https://api.veritas-analyst.org');
   assert.equal(CLASSIC_URL, 'https://veritas-analyst.streamlit.app');
   assert.deepEqual(STORAGE, {
     theme: 'veritas.theme', lang: 'veritas.lang', key: 'veritas.cle', dev: 'veritas.dev',
-    conversation: 'veritas.conversation', model: 'veritas.modele', form: 'veritas.formulaire', api: 'veritas.api',
+    conversation: 'veritas.conversation', model: 'veritas.modele', form: 'veritas.formulaire', api: 'veritas.api', handoff: 'veritas.tarteel',
   });
 });
 

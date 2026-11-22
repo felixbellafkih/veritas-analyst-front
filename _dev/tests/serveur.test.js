@@ -370,3 +370,40 @@ test('corpus : un texte de plus de 50 000 caractères est refusé, comme par le 
   assert.equal(update.status, 500);
   assert.deepEqual(await update.json(), { detail: 'Texte trop long pour une cellule (50000 caractères max) : final_output.' });
 });
+
+// ------------------------------------------------------------------ Scanner : fiches de racines (étape 2)
+
+test('racines : la fiche d’une racine, telle que la vraie API la rend', async () => {
+  const roots = JSON.parse(await readFile(new URL('../fixtures/racines.json', import.meta.url), 'utf8'));
+  for (const query of ['S-M-W', 'A-R-D.', 'D.-R-B']) {
+    const response = await api(`/analyze/root/${encodeURIComponent(query)}`);
+    assert.equal(response.status, 200, query);
+    const data = await response.json();
+    assert.deepEqual(data, roots[query], query);
+    assert.equal(data.root_data.root, query);
+    assert.equal(data.is_decompiled, false);
+  }
+  assert.equal(roots['D.-R-B'].root_data.binary_pair, 'None'); // une racine sans opposée : le texte « None »
+});
+
+test('racines : un mot complexe est ramené à sa racine, avec sa décompilation', async () => {
+  const bismi = await (await api(`/analyze/root/${encodeURIComponent('بِسْمِ')}`)).json();
+  assert.equal(bismi.is_decompiled, true);
+  assert.equal(bismi.root_data.root, 'S-M-W');
+  assert.equal(bismi.decompilation_data.tasreef.logic_mod, '[BASE_VARIABLE]');
+  assert.equal(bismi.decompilation_data.buses[0].logic_mod, '[INSTRUMENTAL_BIND]');
+  const verb = await (await api(`/analyze/root/${encodeURIComponent('يَضْرِبُونَ')}`)).json();
+  assert.equal(verb.root_data.root, 'D.-R-B');
+  assert.equal(verb.decompilation_data.quantifiers[0].logic_mod, '[PLURAL_STATE]');
+});
+
+test('racines : une saisie inconnue rend 404, avec le message de l’API', async () => {
+  const response = await api('/analyze/root/zzz');
+  assert.equal(response.status, 404);
+  assert.deepEqual(await response.json(), { detail: 'Signal does not match any known physical root.' });
+});
+
+test('racines : la fiche de S-M-W reste celle de l’accueil', async () => {
+  const card = JSON.parse(await readFile(new URL('../fixtures/racine-S-M-W.json', import.meta.url), 'utf8'));
+  assert.deepEqual(await (await api('/analyze/root/S-M-W')).json(), card);
+});

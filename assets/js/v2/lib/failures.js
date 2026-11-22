@@ -42,6 +42,14 @@ export function describeFailure(failure) {
   return { ...(Object.prototype.hasOwnProperty.call(BY_KIND, failure.kind) ? BY_KIND[failure.kind] : GENERAL) };
 }
 
+// Lecture publique du Scanner ou de la page Tarteel : ni analyse, ni clé. Le texte français source dit
+// seulement si c'est le réseau, un blocage du serveur, ou une erreur du serveur.
+export function describeReadFailure(failure) {
+  if (failure && failure.kind === 'network') return BY_KIND.network.text;
+  if (failure && failure.kind === 'http' && failure.status === 403) return BY_STATUS[403].text;
+  return SERVER_ERROR.text;
+}
+
 // Après une coupure ou un délai dépassé, le serveur a pu terminer l'analyse (et la clé être facturée) sans
 // que la réponse arrive : le visiteur doit le savoir avant de relancer.
 export const BILLED_NOTICE = tx('Cette demande a peut-être été facturée : le serveur a pu terminer l’analyse sans pouvoir vous l’envoyer. Réessayer lance une nouvelle demande.');

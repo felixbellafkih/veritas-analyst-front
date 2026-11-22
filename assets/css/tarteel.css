@@ -1,0 +1,120 @@
+/* Nouveau site Veritas — page Tarteel : les versets d'une racine, en pleine largeur. */
+
+.exploration {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ------------------------------------------------------------------ saisie */
+
+.exploration__saisie {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 860px;
+  padding: 20px;
+}
+
+.exploration__champs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+/* ------------------------------------------------------------------ chiffres, filtre, copie */
+
+.exploration__chiffres {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.exploration__chiffres:empty {
+  display: none;
+}
+
+.exploration__compte {
+  color: var(--titre);
+  font-family: var(--police-titres);
+  font-size: var(--t-sous-titre);
+}
+
+.exploration__outils {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.exploration__filtre {
+  flex: 1 1 240px;
+  max-width: 360px;
+}
+
+.exploration__outils .bouton-bord {
+  min-height: 48px;
+}
+
+/* ------------------------------------------------------------------ versets */
+
+/* Ici la liste prend toute la largeur et défile avec la page, et non dans un cadre */
+.exploration .cluster {
+  max-height: none;
+  overflow: visible;
+}
+
+/* Au bout de chaque verset : l'ouvrir seul dans l'Interpréteur */
+.cluster__lien {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: var(--cible);
+  min-height: var(--cible);
+  margin-block-start: 6px;
+  margin-inline-end: 6px;
+  border-radius: var(--rayon-petit);
+  color: var(--secondaire);
+}
+
+.cluster__lien:hover {
+  background: var(--surface-2);
+  color: var(--accent);
+}
+
+/* ------------------------------------------------------------------ vers l'Interpréteur */
+
+/* Le bouton reste en vue en bas de l'écran pendant qu'on parcourt une longue liste */
+.exploration__envoi {
+  position: sticky;
+  inset-block-end: 12px;
+  z-index: 2;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.exploration__envoi .bouton[hidden] {
+  display: none;
+}
+
+/* ------------------------------------------------------------------ écrans étroits */
+
+@media (max-width: 767.98px) {
+  .exploration__champs {
+    grid-template-columns: 1fr;
+  }
+
+  .exploration__saisie {
+    padding: 16px;
+  }
+
+  /* Au-dessus de la barre d'onglets du téléphone */
+  .exploration__envoi {
+    inset-block-end: 76px;
+  }
+
+  .exploration__envoi .bouton {
+    width: 100%;
+  }
+}

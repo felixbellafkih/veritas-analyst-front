@@ -3,28 +3,23 @@
 // - Tarteel : racine primaire et contrainte, puis tous les versets du cluster, à cocher (lib/tarteel-probe.js).
 // - Texte libre : une zone de 10 000 caractères.
 // Puis, communs aux trois modes : la langue de la réponse, le modèle Gemini, le lancement, l'état de la clé.
-import { ApiFailure, describeFailure } from '../lib/failures.js';
 import { FREE_TEXT_MAX, ROOT_MAX, formState } from '../lib/form-state.js';
 import { responseLanguage } from '../lib/i18n.js';
 import { createLatest } from '../lib/interpreter-state.js';
-import { parseMarkdown } from '../lib/markdown.js';
+import { handoffSlot } from '../lib/tarteel-handoff.js';
+import { tarteelQuery } from '../lib/tarteel-stats.js';
 import { modelMenu } from '../lib/models.js';
 import { createTarteelProbe } from '../lib/tarteel-probe.js';
-import { CORPUS_CELL_LIMIT, tooLongForCorpus } from '../lib/corpus-panel.js';
-import { LARGE_SELECTION, clusterText, clusterVerse, largeSelection } from '../lib/tarteel.js';
 import { MAX_VERSES, SURAS, clampRange, cleanVerseText, referenceLabel } from '../lib/verses.js';
+import { mountClusterList } from './cluster-list.js';
 import { add, clear, el, fill } from './dom.js';
 import { icon } from './icons.js';
 import { currentLang, languages, t, td } from './i18n-dom.js';
-import { renderBlocks } from './markdown-view.js';
+import { clusterNodes, signalNodes, tarteelHelp } from './tarteel-status.js';
 
 // Champ étiqueté : l'étiquette est liée au champ par son identifiant
 function field(id, label, control) {
   return el('div', { class: 'champ' }, el('label', { class: 'champ__etiquette', text: label, attrs: { for: id } }), control);
-}
-
-function message(kind, text) {
-  return el('p', { class: `message message--${kind}`, text, attrs: { dir: 'auto' } });
 }
 
 // asked : passage demandé par l'adresse de la page (il l'emporte sur le formulaire gardé pour l'onglet) ;
@@ -123,116 +118,39 @@ export function mountPassageForm(container, { api, store, asked, onLaunch, onMan
   const constraint = el('input', { class: 'saisie', attrs: { id: 'racine-contrainte', ...rootAttrs } });
   const signal = el('div', { class: 'tarteel__signal', attrs: { role: 'status', 'aria-live': 'polite' } });
   const clusterBox = el('div', { class: 'tarteel__cluster' });
-  let clusterUi = null;      // cases et compteur du cluster à l'écran
+  // Sélection reportée de la page Tarteel : lue une fois dans l'onglet, ici, à l'ouverture de la page
+  const handoff = handoffSlot(store.takeTarteelHandoff());
+  let clusterUi = null;      // la liste des versets à l'écran (ui/cluster-list.js), quand un cluster est lu
   let devMode = false;       // mode développeur : la limite du corpus est rappelée à l'auteur
   let tarteelStep = '';      // dernière étape affichée
   let tarteelSynced = false; // faux tant que la saisie gardée pour l'onglet n'a pas été vérifiée
 
-  // Tous les versets du cluster, une case devant chacun : le visiteur coche ceux qu'il veut faire analyser.
-  // Rien n'est coché au départ. La sélection elle-même est tenue par la sonde (lib/tarteel-probe.js).
-  function clusterList(verses) {
-    const count = el('p', { class: 'cluster__compte', attrs: { role: 'status' } });
-    const hint = el('p', { class: 'message message--attention', text: t('Cochez au moins un verset.'), attrs: { role: 'alert', hidden: true } });
-    // Plus de plafond : c'est au visiteur de mesurer ce qu'il envoie. Au-delà de 30 versets, le formulaire le dit.
-    const large = el('p', {
-      class: 'champ__aide',
-      text: t('Au-delà de {n} versets, l’analyse est plus longue et plus coûteuse ; chaque message de suite renvoie aussi ces versets.', { n: LARGE_SELECTION }),
-      attrs: { hidden: true },
-    });
-    // Pour l'auteur seul (mode développeur, texte non traduit) : le corpus refuse une saisie trop longue
-    const limit = el('p', { class: 'message message--attention', attrs: { hidden: true, lang: 'fr', dir: 'ltr' } });
-    const boxes = [];
-    const paint = () => {
-      const { chosen, total } = probe.selection();
-      count.textContent = t('Versets cochés : {n} sur {total}', { n: chosen, total });
-      if (chosen) hint.hidden = true;
-      large.hidden = !largeSelection(chosen);
-      // Ce qui partirait au moteur : c'est ce texte que le corpus garderait comme saisie
-      const sent = devMode ? probe.passage() : null;
-      const text = sent ? clusterText(sent.primary, sent.constraint, sent.verses) : '';
-      limit.hidden = !tooLongForCorpus(text);
-      if (!limit.hidden) limit.textContent = `Mode développeur : cette sélection fait ${text.length} caractères. Au-delà de ${CORPUS_CELL_LIMIT}, le corpus refusera d’enregistrer l’analyse.`;
-    };
-    const setAll = (on) => {
-      probe.selectAll(on);
-      for (const box of boxes) box.checked = on;
-      paint();
-    };
-    const list = el('ul', { class: 'cluster__liste' });
-    // Entrée sur une case la coche ou la décoche : sans cela, la touche lancerait l'analyse (le formulaire
-    // part sur Entrée), donc une demande facturée pour une sélection à moitié faite.
-    list.addEventListener('keydown', (event) => {
-      if (event.key !== 'Enter' || !event.target.classList.contains('cluster__case')) return;
-      event.preventDefault();
-      event.target.click();
-    });
-    verses.forEach((item, index) => {
-      const { reference: label, text } = clusterVerse(item);
-      const box = el('input', { class: 'cluster__case', attrs: { type: 'checkbox' } });
-      box.addEventListener('change', () => {
-        probe.select(index, box.checked);
-        paint();
-      });
-      boxes.push(box);
-      // Toute la ligne est l'étiquette de sa case : un clic sur le verset le coche
-      add(list, el('li', {}, el('label', { class: 'cluster__verset' }, box,
-        el('span', { class: 'cluster__contenu' },
-          label ? el('span', { class: 'verset__ref', text: label }) : null,
-          el('span', { class: 'cluster__texte', text, attrs: label ? { lang: 'ar', dir: 'rtl' } : { dir: 'auto' } })))));
-    });
-    const all = el('button', { class: 'bouton-lien cluster__outil', text: t('Tout sélectionner'), attrs: { type: 'button' }, on: { click: () => setAll(true) } });
-    clusterUi = { hint, all, paint };
-    paint();
-    return [
-      el('div', { class: 'cluster__barre' }, count,
-        el('div', { class: 'cluster__outils' },
-          all,
-          el('button', { class: 'bouton-lien cluster__outil', text: t('Tout désélectionner'), attrs: { type: 'button' }, on: { click: () => setAll(false) } }))),
-      hint,
-      large,
-      limit,
-      el('div', { class: 'cluster', attrs: { role: 'group', 'aria-label': t('Versets du cluster') } }, list),
-    ];
-  }
-
-  function tarteelFailure(failure) {
-    return [
-      // Fréquences de forme inattendue (failure absent) : le message est celui d'une erreur du serveur
-      message('erreur', td(describeFailure(failure || new ApiFailure('http')).text)),
-      el('button', { class: 'bouton-lien', text: t('Réessayer'), attrs: { type: 'button' }, on: { click: () => probe.check() } }),
-    ];
-  }
-
-  // Affiche ce que la vérification annonce (lib/tarteel-probe.js)
+  // Affiche ce que la vérification annonce (lib/tarteel-probe.js) ; les messages sont ceux de ui/tarteel-status.js
   function showTarteel(view) {
     const repeated = view.step === 'attente' && tarteelStep === 'attente'; // à chaque frappe : rien de neuf à annoncer
     tarteelStep = view.step;
     if (repeated) return;
     clusterUi = null;
-
-    // Plus de plafond : dès une occurrence, le signal est pur, et c'est le visiteur qui choisit les versets
-    if (view.step === 'vide') {
-      clear(signal);
-    } else if (view.step === 'attente') {
-      fill(signal, el('p', { class: 'champ__aide', text: t('Recherche des occurrences…') }));
-    } else if (view.step === 'echec' && view.stage === 'frequences') {
-      fill(signal, tarteelFailure(view.failure));
-    } else if (view.step === 'signal') {
-      fill(signal, message('erreur', t("Aucune occurrence détectée (0 résultat). Assurez-vous d'avoir introduit une racine valide. Ex : S-M-W  س م و | D.-R-B ض ر ب | DH-K-R ذ ك ر  | A.-B-D ع ب د")));
-    } else {
-      fill(signal, message('reussite', t('Signal pur ({n} occurrences triangulées).', { n: view.count })));
-    }
+    fill(signal, signalNodes(view, () => probe.check()));
 
     // Sous le signal : les versets du cluster, ou ce qui en tient lieu
-    if (view.step === 'lecture') fill(clusterBox, el('p', { class: 'champ__aide', text: t('Chargement du texte…') }));
-    else if (view.step === 'pret') fill(clusterBox, clusterList(view.verses));
-    else if (view.step === 'message') fill(clusterBox, message('erreur', td(view.text)));
-    else if (view.step === 'absent') fill(clusterBox, message('erreur', t('Zéro occurrence matérielle trouvée pour cette triangulation.')));
-    else if (view.step === 'echec' && view.stage === 'cluster') fill(clusterBox, tarteelFailure(view.failure));
-    else clear(clusterBox);
+    if (view.step === 'pret') {
+      // Tous les versets, une case devant chacun ; rien n'est coché au départ
+      // Venu de la page Tarteel : les versets cochés là-bas le sont ici aussi, si ce sont les mêmes racines.
+      // Le report ne sert qu'une fois, au premier cluster prêt, et rien ne part : c'est le visiteur qui
+      // lance l'analyse.
+      probe.selectMany(handoff.take(state.primary, state.constraint, view.verses));
+      clusterUi = mountClusterList(clusterBox, { probe, verses: view.verses, devMode: () => devMode });
+      clusterUi.setDisabled(disabled);
+    } else {
+      fill(clusterBox, clusterNodes(view, () => probe.check()));
+    }
   }
 
   const probe = createTarteelProbe({ api, onChange: showTarteel });
+
+  const explore = el('a', { class: 'bouton-lien', attrs: { href: '/tarteel/' } }, el('span', { text: t('Explorer en pleine page') }), icon('arrow', 16));
+  const paintExplore = () => explore.setAttribute('href', `/tarteel/${tarteelQuery({ primary: state.primary, constraint: state.constraint })}`);
 
   // À chaque frappe : ce qui était vérifié ne vaut plus, et la vérification attend la fin de la saisie
   function rootsChanged() {
@@ -240,6 +158,7 @@ export function mountPassageForm(container, { api, store, asked, onLaunch, onMan
     state.constraint = constraint.value;
     save();
     tarteelSynced = true;
+    paintExplore();
     probe.input(state.primary, state.constraint);
   }
 
@@ -247,11 +166,13 @@ export function mountPassageForm(container, { api, store, asked, onLaunch, onMan
   constraint.addEventListener('input', rootsChanged);
 
   const tarteelPanel = el('div', { class: 'passage__mode' },
-    el('div', { class: 'texte-auteur tarteel__aide' }, renderBlocks(parseMarkdown(t("Module d'extraction par triangulation. Pour isoler un sujet lié à une racine à haute fréquence, croisez avec une racine de contrainte ou un Tasreef précis afin d'éviter la saturation du processeur IA (Buffer Overflow).\n\n💡 **Support Bi-directionnel :** Saisie acceptée en **Arabe** (ex: ض ر ب) ou en **Latin**.\n*Rappel Latin (Emphatiques) :* `A.` (ع) | `H.` (ح) | `S.` (ص) | `D.` (ض) | `T.` (ط) | `Z.` (ظ)")), { ids: false })),
+    tarteelHelp(),
     field('racine-primaire', t('1. Racine Primaire (ex: D.-R-B)'), primary),
     field('racine-contrainte', t('2. Contrainte (Optionnelle)'), constraint),
     signal,
-    clusterBox);
+    clusterBox,
+    // La même recherche en pleine page, sans clé : répartition par sourate, copie, adresse à partager
+    explore);
 
   // ------------------------------------------------------------------ mode Texte libre
 
@@ -393,10 +314,10 @@ export function mountPassageForm(container, { api, store, asked, onLaunch, onMan
       probe.flush(); // la saisie vient de changer : la vérification part tout de suite
       if (probe.view().step === 'pret' && clusterUi) {
         // Le cluster est à l'écran, mais aucun verset n'est coché
-        clusterUi.hint.hidden = false;
+        clusterUi.showHint();
         clusterBox.scrollIntoView({ block: 'nearest' });
         // Le curseur va sur un bouton visible, au-dessus de la liste : une case pourrait être hors de vue
-        clusterUi.all.focus();
+        clusterUi.focusTools();
       } else {
         signal.scrollIntoView({ block: 'nearest' });
         primary.focus({ preventScroll: true });
@@ -422,6 +343,7 @@ export function mountPassageForm(container, { api, store, asked, onLaunch, onMan
   paintVerseFields();
   primary.value = state.primary;
   constraint.value = state.constraint;
+  paintExplore();
   freeText.value = state.text;
   paintCounter();
   showMode(state.mode);
@@ -431,7 +353,9 @@ export function mountPassageForm(container, { api, store, asked, onLaunch, onMan
     // Pendant une analyse, le formulaire est verrouillé
     setDisabled(value) {
       disabled = Boolean(value);
-      for (const control of form.querySelectorAll('select, input, textarea, .segments__bouton, .cluster__outil, button[type="submit"]')) control.disabled = disabled;
+      for (const control of form.querySelectorAll('select, input, textarea, .segments__bouton, button[type="submit"]')) control.disabled = disabled;
+      // La liste des versets se verrouille elle-même : ses lignes s'affichent par tranches
+      if (clusterUi) clusterUi.setDisabled(disabled);
     },
     // Relance le formulaire tel qu'il est (« Réessayer » après un lancement en échec)
     submit,

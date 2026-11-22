@@ -47,6 +47,13 @@ await writeJson('stats.json', await get('/content/manifesto/stats'));
 await writeJson('metadata.json', await get('/verse/metadata'));
 await writeJson('racine-S-M-W.json', await get('/analyze/root/S-M-W'));
 
+// Fiches du Scanner : des racines (dont une sans racine opposée) et deux mots complexes, que l'API décompile
+const roots = {};
+for (const query of ['S-M-W', 'A-R-D.', 'D.-R-B', 'بِسْمِ', 'يَضْرِبُونَ']) {
+  roots[query] = await get('/analyze/root/' + encodeURIComponent(query));
+}
+await writeJson('racines.json', roots);
+
 const verses = {};
 for (const [sura, count] of [[1, 7], [112, 4]]) {
   for (let verse = 1; verse <= count; verse++) {

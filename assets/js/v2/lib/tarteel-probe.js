@@ -130,6 +130,15 @@ export function createTarteelProbe({ api, onChange, delay = 400, setTimer = setT
       chosen = new Set(on ? Array.from({ length: total() }, (_, index) => index) : []);
     },
 
+    // Coche plusieurs versets d'un coup (sélection reportée de la page Tarteel) ; les rangs hors du cluster
+    // sont ignorés, et rien ne se passe tant que le cluster n'est pas lu
+    selectMany(indexes) {
+      if (!Array.isArray(indexes)) return;
+      for (const index of indexes) {
+        if (Number.isInteger(index) && index >= 0 && index < total()) chosen.add(index);
+      }
+    },
+
     isSelected: (index) => chosen.has(index),
 
     selection: () => ({ chosen: chosen.size, total: total() }),

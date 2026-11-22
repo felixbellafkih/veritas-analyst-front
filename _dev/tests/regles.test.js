@@ -4,11 +4,12 @@ import assert from 'node:assert/strict';
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { PAGES as PAGE_DIRS } from '../pages.mjs';
 
 const SITE = fileURLToPath(new URL('../..', import.meta.url));
 const CSP = '<meta http-equiv="Content-Security-Policy" content="default-src \'none\'; script-src \'self\'; style-src \'self\'; img-src \'self\' data:; font-src \'self\'; connect-src \'self\' https://api.veritas-analyst.org; base-uri \'none\'; form-action \'none\'">';
-const SERVED = ['assets', 'accueil', 'interpreteur'];
-const PAGES = ['interpreteur/index.html', 'accueil/index.html'].filter((page) => existsSync(join(SITE, page)));
+const SERVED = ['assets', ...PAGE_DIRS];
+const PAGES = PAGE_DIRS.map((name) => `${name}/index.html`).filter((page) => existsSync(join(SITE, page)));
 
 function walk(dir) {
   if (!existsSync(dir)) return [];
@@ -30,8 +31,17 @@ const versionDirs = existsSync(JS) ? readdirSync(JS).filter((name) => /^v\d+$/.t
 const MODULES = join(JS, versionDirs[0] || 'v0');
 const moduleRel = (path) => relative(MODULES, path).replace(/\\/g, '/');
 
-test('la page de l’Interpréteur existe', () => {
-  assert.ok(PAGES.includes('interpreteur/index.html'));
+test('les pages du site existent : accueil, Interpréteur, Scanner, Tarteel', () => {
+  for (const name of ['accueil', 'interpreteur', 'scanner', 'tarteel']) assert.ok(PAGES.includes(`${name}/index.html`), name);
+});
+
+// Une page oubliée dans _dev/pages.mjs garderait son ancien numéro de version à la mise en ligne suivante
+test('toute page qui charge un module du site est recensée dans _dev/pages.mjs', () => {
+  const found = readdirSync(SITE).filter((name) => {
+    const page = join(SITE, name, 'index.html');
+    return !name.startsWith('.') && !name.startsWith('_') && existsSync(page) && /<script type="module" src="\/assets\/js\/v\d+\//.test(read(page));
+  });
+  assert.deepEqual(found.sort(), [...PAGE_DIRS].sort());
 });
 
 for (const page of PAGES) {
@@ -164,12 +174,60 @@ test('.gitattributes : aucun dossier entier forcé en texte', () => {
   for (const line of folders) assert.match(line, /\stext=auto(\s|$)/, line);
 });
 
-// Relecture du 22/11/2026, formulaire du mode Tarteel (module d'interface, sans autre test automatique) :
-// la touche Entrée sur la case d'un verset lançait l'analyse, donc une demande facturée, et « Analyser »
-// sans case cochée plaçait le curseur sur une case hors de vue.
+// Relecture du 22/11/2026, liste des versets du mode Tarteel (module d'interface, sans autre test
+// automatique) : la touche Entrée sur la case d'un verset lançait l'analyse, donc une demande facturée, et
+// « Analyser » sans case cochée plaçait le curseur sur une case hors de vue.
 test('Tarteel : Entrée sur une case ne lance pas l’analyse ; le curseur va sur un bouton visible', () => {
+  const list = read(scripts.find((path) => path.endsWith(join('ui', 'cluster-list.js'))));
+  assert.match(list, /list\.addEventListener\('keydown'/, 'aucune écoute du clavier sur la liste des versets');
+  assert.match(list, /event\.key === 'Enter'[\s\S]{0,120}event\.preventDefault\(\)/, 'Entrée n’est pas neutralisée');
+  const form = read(scripts.find((path) => path.endsWith(join('ui', 'passage-form.js'))));
+  assert.doesNotMatch(form, /first\.focus\(\{ preventScroll: true \}\)/, 'curseur placé sur une case sans la montrer');
+  assert.match(form, /focusTools\(\)/, 'le curseur doit aller sur « Tout sélectionner »');
+});
+
+// Étape 2 : la liste des versets est un module partagé par l'Interpréteur et la page Tarteel. Deux copies
+// de cette liste finiraient par diverger sur ce qui part à l'analyse.
+test('la liste des versets d’un cluster n’est bâtie qu’à un endroit : ui/cluster-list.js', () => {
+  const builders = scripts.filter((path) => /cluster__case/.test(read(path))).map(rel);
+  assert.deepEqual(builders.map((path) => path.split('/').slice(-2).join('/')), ['ui/cluster-list.js']);
+  const form = read(scripts.find((path) => path.endsWith(join('ui', 'passage-form.js'))));
+  assert.match(form, /mountClusterList\(/);
+});
+
+// Une page sans cette ligne prendrait des fins de ligne Windows sur ce PC, à la différence des autres
+test('.gitattributes : chaque page du site garde ses fins de ligne LF', () => {
+  const lines = read(join(SITE, '.gitattributes')).split('\n').map((line) => line.trim());
+  for (const name of PAGE_DIRS) assert.ok(lines.includes(`/${name}/** text=auto eol=lf`), name);
+});
+
+// Les deux pages qui montrent un cluster disent la même chose du signal : un seul module les écrit
+test('Tarteel : les messages du signal ne sont écrits qu’à un endroit (ui/tarteel-status.js)', () => {
+  const writers = scripts.filter((path) => /Signal pur \(\{n\} occurrences triangulées\)/.test(read(path))).map((path) => rel(path).split('/').slice(-2).join('/'));
+  assert.deepEqual(writers, ['ui/tarteel-status.js']);
+});
+
+// Ni le Scanner ni la page Tarteel n'envoient de clé : elles ne font que des lectures publiques
+test('pages de lecture : aucune analyse n’y est lancée, aucune clé n’y est envoyée', () => {
+  for (const name of ['scanner.js', 'tarteel.js']) {
+    const source = read(scripts.find((path) => path.endsWith(join('pages', name))));
+    assert.doesNotMatch(source, /api\.(analyze|models|corpus[A-Z]\w*|devMode)\(/, name);
+    assert.doesNotMatch(source, /credentials\(\)/, name);
+  }
+});
+
+// Un point final dans une adresse se perd au copier-coller : seules ces deux fonctions savent l'encoder
+test('les adresses du Scanner et du Tarteel sont bâties par scannerHref et tarteelQuery', () => {
+  const byHand = scripts.filter((path) => /\/(tarteel\/\?p=|scanner\/\?q=)/.test(read(path))).map((path) => rel(path).split('/').slice(-2).join('/'));
+  assert.deepEqual(byHand, ['lib/roots-index.js']);
+});
+
+// Le report d'une sélection est pris une fois, à l'ouverture de l'Interpréteur, et non à chaque cluster prêt
+test('Interpréteur : le report du Tarteel est lu à l’ouverture de la page, hors de l’affichage du cluster', () => {
   const source = read(scripts.find((path) => path.endsWith(join('ui', 'passage-form.js'))));
-  assert.match(source, /list\.addEventListener\('keydown'/, 'aucune écoute du clavier sur la liste des versets');
-  assert.match(source, /event\.key !== 'Enter'[\s\S]{0,200}event\.preventDefault\(\)/, 'Entrée n’est pas neutralisée');
-  assert.doesNotMatch(source, /first\.focus\(\{ preventScroll: true \}\)/, 'curseur placé sur une case sans la montrer');
+  assert.equal(source.split('takeTarteelHandoff(').length - 1, 1);
+  const show = source.slice(source.indexOf('function showTarteel('), source.indexOf('const probe = createTarteelProbe'));
+  assert.ok(show.length > 0);
+  assert.doesNotMatch(show, /takeTarteelHandoff/);
+  assert.match(show, /handoff\.take\(/);
 });

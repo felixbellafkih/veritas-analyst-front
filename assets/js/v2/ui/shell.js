@@ -10,15 +10,15 @@ import { currentLang, interfaceLanguages, languageLabel, setLanguage, t, td } fr
 // Les noms sont ceux de l'app mobile.
 export const DESTINATIONS = [
   { id: 'interpreteur', label: tx('Interpréteur'), href: '/interpreteur/', icon: 'book', ready: true },
-  { id: 'tarteel', label: tx('Tarteel'), href: '/tarteel/', icon: 'list', ready: false },
+  { id: 'tarteel', label: tx('Tarteel'), href: '/tarteel/', icon: 'list', ready: true },
   { id: 'sequenceur', label: tx('Séquenceur'), href: '/sequenceur/', icon: 'nodes', ready: false },
-  { id: 'scanner', label: tx('Scanner'), href: '/scanner/', icon: 'search', ready: false },
+  { id: 'scanner', label: tx('Scanner'), href: '/scanner/', icon: 'search', ready: true },
   { id: 'corpus', label: tx('Corpus'), href: '/corpus/', hrefOther: '/en/corpus/', icon: 'layers', ready: true },
   { id: 'bibliotheque', label: tx('Bibliothèque'), href: '/bibliotheque/', icon: 'book', ready: false },
 ];
 
 const HOME = '/accueil/';
-const PAGE_TITLES = { accueil: tx('Accueil'), interpreteur: tx('Interpréteur') };
+const PAGE_TITLES = { accueil: tx('Accueil'), interpreteur: tx('Interpréteur'), scanner: tx('Scanner'), tarteel: tx('Tarteel') };
 const THEME_EVENT = 'veritas:theme';
 
 // Le corpus a une page française et une page anglaise

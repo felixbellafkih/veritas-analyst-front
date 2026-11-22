@@ -8,6 +8,7 @@ import { EXPORT_LINK_LIFETIME_MS, exportFileName } from '../lib/export-name.js';
 import { BILLED_NOTICE, describeFailure, maybeBilled } from '../lib/failures.js';
 import { outline, parseMarkdown } from '../lib/markdown.js';
 import { resultTitle } from '../lib/verses.js';
+import { copyText } from './clipboard.js';
 import { corpusPanel } from './corpus-panel.js';
 import { add, clear, el, fill } from './dom.js';
 import { icon } from './icons.js';
@@ -18,27 +19,6 @@ function titleOf(passage) {
   if (passage && passage.mode === 'verset') return resultTitle(passage);
   if (passage && passage.mode === 'tarteel') return `${t('Tarteel')} : ${passage.primary}${passage.constraint ? ` ∩ ${passage.constraint}` : ''}`;
   return t('Texte libre');
-}
-
-// Copie dans le presse-papiers ; si le navigateur refuse l'accès direct, par une zone de texte invisible
-async function copyText(text) {
-  try {
-    await navigator.clipboard.writeText(text);
-    return true;
-  } catch {
-    const area = el('textarea', { class: 'sr', attrs: { readonly: true, 'aria-hidden': 'true', tabindex: -1 } });
-    area.value = text;
-    add(document.body, area);
-    area.select();
-    let copied = false;
-    try {
-      copied = document.execCommand('copy');
-    } catch {
-      copied = false;
-    }
-    area.remove();
-    return copied;
-  }
 }
 
 function downloadText(name, text) {
