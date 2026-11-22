@@ -3,12 +3,11 @@
 // - Tarteel : racine primaire et contrainte, puis tous les versets du cluster, à cocher (lib/tarteel-probe.js).
 // - Texte libre : une zone de 10 000 caractères.
 // Puis, communs aux trois modes : la langue de la réponse, le modèle Gemini, le lancement, l'état de la clé.
-import { ApiFailure, describeFailure } from '../lib/failures.js';
 import { FREE_TEXT_MAX, ROOT_MAX, formState } from '../lib/form-state.js';
 import { responseLanguage } from '../lib/i18n.js';
 import { createLatest } from '../lib/interpreter-state.js';
 import { applyHandoff } from '../lib/tarteel-handoff.js';
-import { parseMarkdown } from '../lib/markdown.js';
+import { tarteelQuery } from '../lib/tarteel-stats.js';
 import { modelMenu } from '../lib/models.js';
 import { createTarteelProbe } from '../lib/tarteel-probe.js';
 import { MAX_VERSES, SURAS, clampRange, cleanVerseText, referenceLabel } from '../lib/verses.js';
@@ -16,15 +15,11 @@ import { mountClusterList } from './cluster-list.js';
 import { add, clear, el, fill } from './dom.js';
 import { icon } from './icons.js';
 import { currentLang, languages, t, td } from './i18n-dom.js';
-import { renderBlocks } from './markdown-view.js';
+import { clusterNodes, signalNodes, tarteelHelp } from './tarteel-status.js';
 
 // Champ étiqueté : l'étiquette est liée au champ par son identifiant
 function field(id, label, control) {
   return el('div', { class: 'champ' }, el('label', { class: 'champ__etiquette', text: label, attrs: { for: id } }), control);
-}
-
-function message(kind, text) {
-  return el('p', { class: `message message--${kind}`, text, attrs: { dir: 'auto' } });
 }
 
 // asked : passage demandé par l'adresse de la page (il l'emporte sur le formulaire gardé pour l'onglet) ;
@@ -128,51 +123,31 @@ export function mountPassageForm(container, { api, store, asked, onLaunch, onMan
   let tarteelStep = '';      // dernière étape affichée
   let tarteelSynced = false; // faux tant que la saisie gardée pour l'onglet n'a pas été vérifiée
 
-  function tarteelFailure(failure) {
-    return [
-      // Fréquences de forme inattendue (failure absent) : le message est celui d'une erreur du serveur
-      message('erreur', td(describeFailure(failure || new ApiFailure('http')).text)),
-      el('button', { class: 'bouton-lien', text: t('Réessayer'), attrs: { type: 'button' }, on: { click: () => probe.check() } }),
-    ];
-  }
-
-  // Affiche ce que la vérification annonce (lib/tarteel-probe.js)
+  // Affiche ce que la vérification annonce (lib/tarteel-probe.js) ; les messages sont ceux de ui/tarteel-status.js
   function showTarteel(view) {
     const repeated = view.step === 'attente' && tarteelStep === 'attente'; // à chaque frappe : rien de neuf à annoncer
     tarteelStep = view.step;
     if (repeated) return;
     clusterUi = null;
-
-    // Plus de plafond : dès une occurrence, le signal est pur, et c'est le visiteur qui choisit les versets
-    if (view.step === 'vide') {
-      clear(signal);
-    } else if (view.step === 'attente') {
-      fill(signal, el('p', { class: 'champ__aide', text: t('Recherche des occurrences…') }));
-    } else if (view.step === 'echec' && view.stage === 'frequences') {
-      fill(signal, tarteelFailure(view.failure));
-    } else if (view.step === 'signal') {
-      fill(signal, message('erreur', t("Aucune occurrence détectée (0 résultat). Assurez-vous d'avoir introduit une racine valide. Ex : S-M-W  س م و | D.-R-B ض ر ب | DH-K-R ذ ك ر  | A.-B-D ع ب د")));
-    } else {
-      fill(signal, message('reussite', t('Signal pur ({n} occurrences triangulées).', { n: view.count })));
-    }
+    fill(signal, signalNodes(view, () => probe.check()));
 
     // Sous le signal : les versets du cluster, ou ce qui en tient lieu
-    if (view.step === 'lecture') fill(clusterBox, el('p', { class: 'champ__aide', text: t('Chargement du texte…') }));
-    else if (view.step === 'pret') {
+    if (view.step === 'pret') {
       // Tous les versets, une case devant chacun ; rien n'est coché au départ
       // Venu de la page Tarteel : les versets cochés là-bas le sont ici aussi, si ce sont les mêmes racines.
       // Le report ne sert qu'une fois, et rien ne part : c'est le visiteur qui lance l'analyse.
       probe.selectMany(applyHandoff(store.takeTarteelHandoff(), state.primary, state.constraint, view.verses));
       clusterUi = mountClusterList(clusterBox, { probe, verses: view.verses, devMode: () => devMode });
       clusterUi.setDisabled(disabled);
+    } else {
+      fill(clusterBox, clusterNodes(view, () => probe.check()));
     }
-    else if (view.step === 'message') fill(clusterBox, message('erreur', td(view.text)));
-    else if (view.step === 'absent') fill(clusterBox, message('erreur', t('Zéro occurrence matérielle trouvée pour cette triangulation.')));
-    else if (view.step === 'echec' && view.stage === 'cluster') fill(clusterBox, tarteelFailure(view.failure));
-    else clear(clusterBox);
   }
 
   const probe = createTarteelProbe({ api, onChange: showTarteel });
+
+  const explore = el('a', { class: 'bouton-lien', attrs: { href: '/tarteel/' } }, el('span', { text: t('Explorer en pleine page') }), icon('arrow', 16));
+  const paintExplore = () => explore.setAttribute('href', `/tarteel/${tarteelQuery({ primary: state.primary, constraint: state.constraint })}`);
 
   // À chaque frappe : ce qui était vérifié ne vaut plus, et la vérification attend la fin de la saisie
   function rootsChanged() {
@@ -180,6 +155,7 @@ export function mountPassageForm(container, { api, store, asked, onLaunch, onMan
     state.constraint = constraint.value;
     save();
     tarteelSynced = true;
+    paintExplore();
     probe.input(state.primary, state.constraint);
   }
 
@@ -187,11 +163,13 @@ export function mountPassageForm(container, { api, store, asked, onLaunch, onMan
   constraint.addEventListener('input', rootsChanged);
 
   const tarteelPanel = el('div', { class: 'passage__mode' },
-    el('div', { class: 'texte-auteur tarteel__aide' }, renderBlocks(parseMarkdown(t("Module d'extraction par triangulation. Pour isoler un sujet lié à une racine à haute fréquence, croisez avec une racine de contrainte ou un Tasreef précis afin d'éviter la saturation du processeur IA (Buffer Overflow).\n\n💡 **Support Bi-directionnel :** Saisie acceptée en **Arabe** (ex: ض ر ب) ou en **Latin**.\n*Rappel Latin (Emphatiques) :* `A.` (ع) | `H.` (ح) | `S.` (ص) | `D.` (ض) | `T.` (ط) | `Z.` (ظ)")), { ids: false })),
+    tarteelHelp(),
     field('racine-primaire', t('1. Racine Primaire (ex: D.-R-B)'), primary),
     field('racine-contrainte', t('2. Contrainte (Optionnelle)'), constraint),
     signal,
-    clusterBox);
+    clusterBox,
+    // La même recherche en pleine page, sans clé : répartition par sourate, copie, adresse à partager
+    explore);
 
   // ------------------------------------------------------------------ mode Texte libre
 
@@ -362,6 +340,7 @@ export function mountPassageForm(container, { api, store, asked, onLaunch, onMan
   paintVerseFields();
   primary.value = state.primary;
   constraint.value = state.constraint;
+  paintExplore();
   freeText.value = state.text;
   paintCounter();
   showMode(state.mode);

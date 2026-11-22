@@ -31,8 +31,8 @@ const versionDirs = existsSync(JS) ? readdirSync(JS).filter((name) => /^v\d+$/.t
 const MODULES = join(JS, versionDirs[0] || 'v0');
 const moduleRel = (path) => relative(MODULES, path).replace(/\\/g, '/');
 
-test('les pages du site existent : accueil, Interpréteur, Scanner', () => {
-  for (const name of ['accueil', 'interpreteur', 'scanner']) assert.ok(PAGES.includes(`${name}/index.html`), name);
+test('les pages du site existent : accueil, Interpréteur, Scanner, Tarteel', () => {
+  for (const name of ['accueil', 'interpreteur', 'scanner', 'tarteel']) assert.ok(PAGES.includes(`${name}/index.html`), name);
 });
 
 // Une page oubliée dans _dev/pages.mjs garderait son ancien numéro de version à la mise en ligne suivante
@@ -199,4 +199,19 @@ test('la liste des versets d’un cluster n’est bâtie qu’à un endroit : ui
 test('.gitattributes : chaque page du site garde ses fins de ligne LF', () => {
   const lines = read(join(SITE, '.gitattributes')).split('\n').map((line) => line.trim());
   for (const name of PAGE_DIRS) assert.ok(lines.includes(`/${name}/** text=auto eol=lf`), name);
+});
+
+// Les deux pages qui montrent un cluster disent la même chose du signal : un seul module les écrit
+test('Tarteel : les messages du signal ne sont écrits qu’à un endroit (ui/tarteel-status.js)', () => {
+  const writers = scripts.filter((path) => /Signal pur \(\{n\} occurrences triangulées\)/.test(read(path))).map((path) => rel(path).split('/').slice(-2).join('/'));
+  assert.deepEqual(writers, ['ui/tarteel-status.js']);
+});
+
+// Ni le Scanner ni la page Tarteel n'envoient de clé : elles ne font que des lectures publiques
+test('pages de lecture : aucune analyse n’y est lancée, aucune clé n’y est envoyée', () => {
+  for (const name of ['scanner.js', 'tarteel.js']) {
+    const source = read(scripts.find((path) => path.endsWith(join('pages', name))));
+    assert.doesNotMatch(source, /api\.(analyze|models|corpus[A-Z]\w*|devMode)\(/, name);
+    assert.doesNotMatch(source, /credentials\(\)/, name);
+  }
 });

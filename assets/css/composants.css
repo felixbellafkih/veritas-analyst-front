@@ -289,6 +289,35 @@ textarea.saisie {
   text-align: start;
 }
 
+/* Mode Tarteel : le texte d'aide, le signal, puis la liste ou ce qui en tient lieu */
+.tarteel__aide {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tarteel__aide code {
+  color: var(--titre);
+}
+
+.tarteel__signal,
+.tarteel__cluster {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.tarteel__signal:empty,
+.tarteel__cluster:empty {
+  display: none;
+}
+
+.tarteel__signal .message,
+.tarteel__cluster .message {
+  align-self: stretch;
+}
+
 /* ------------------------------------------------------------------ messages */
 
 .message {

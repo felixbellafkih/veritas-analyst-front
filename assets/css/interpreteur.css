@@ -144,34 +144,6 @@
 
 /* ------------------------------------------------------------------ modes Tarteel et Texte libre */
 
-.tarteel__aide {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.tarteel__aide code {
-  color: var(--titre);
-}
-
-.tarteel__signal,
-.tarteel__cluster {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 8px;
-}
-
-.tarteel__signal:empty,
-.tarteel__cluster:empty {
-  display: none;
-}
-
-.tarteel__signal .message,
-.tarteel__cluster .message {
-  align-self: stretch;
-}
-
 .passage__compte {
   margin-block-start: -10px;
   text-align: end;
