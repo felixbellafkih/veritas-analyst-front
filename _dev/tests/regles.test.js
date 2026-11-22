@@ -163,3 +163,13 @@ test('.gitattributes : aucun dossier entier forcé en texte', () => {
   assert.ok(folders.length >= 4, `${folders.length} dossiers`);
   for (const line of folders) assert.match(line, /\stext=auto(\s|$)/, line);
 });
+
+// Relecture du 22/11/2026, formulaire du mode Tarteel (module d'interface, sans autre test automatique) :
+// la touche Entrée sur la case d'un verset lançait l'analyse, donc une demande facturée, et « Analyser »
+// sans case cochée plaçait le curseur sur une case hors de vue.
+test('Tarteel : Entrée sur une case ne lance pas l’analyse ; le curseur va sur un bouton visible', () => {
+  const source = read(scripts.find((path) => path.endsWith(join('ui', 'passage-form.js'))));
+  assert.match(source, /list\.addEventListener\('keydown'/, 'aucune écoute du clavier sur la liste des versets');
+  assert.match(source, /event\.key !== 'Enter'[\s\S]{0,200}event\.preventDefault\(\)/, 'Entrée n’est pas neutralisée');
+  assert.doesNotMatch(source, /first\.focus\(\{ preventScroll: true \}\)/, 'curseur placé sur une case sans la montrer');
+});

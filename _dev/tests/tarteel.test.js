@@ -76,3 +76,14 @@ test('clusterVerse : un élément d’une autre forme s’affiche tel quel', () 
   assert.deepEqual(clusterVerse(null), { reference: '', text: '' });
   assert.deepEqual(clusterVerse(42), { reference: '', text: '42' });
 });
+
+// Relecture du 22/11/2026 : sans plafond, rien ne disait au visiteur qu'une grande sélection coûte plus cher,
+// ni que chaque message de suite la renvoie. Au-delà de ce que l'app a toujours envoyé (30 versets), le
+// formulaire le dit, sans rien bloquer.
+test('grande sélection : au-delà de 30 versets cochés, le formulaire prévient', () => {
+  assert.equal(tarteel.LARGE_SELECTION, 30);
+  assert.equal(tarteel.largeSelection(0), false);
+  assert.equal(tarteel.largeSelection(30), false);
+  assert.equal(tarteel.largeSelection(31), true);
+  assert.equal(tarteel.largeSelection(1879), true);
+});

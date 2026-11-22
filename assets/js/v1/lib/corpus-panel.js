@@ -40,6 +40,34 @@ export function updateRequest(saved, { reference, finalText, note }) {
   };
 }
 
+// Le corpus est tenu dans un tableur : une cellule n'accepte pas plus de 50 000 caractères, et le serveur
+// refuse l'entrée dont un texte les dépasse (engine/corpus_store.py, CELL_LIMIT). La saisie d'un grand
+// cluster peut les atteindre.
+export const CORPUS_CELL_LIMIT = 50000;
+export const tooLongForCorpus = (text) => String(text ?? '').length > CORPUS_CELL_LIMIT;
+
+// Après un échec, l'enregistrement a-t-il pu se faire quand même ? Oui, sauf refus net du serveur (400 à 499)
+// ou demande jamais partie : une coupure, une erreur du serveur ou du relais, une réponse illisible laissent
+// le doute. Un second « Valider » créerait alors une seconde entrée.
+export function maybeSaved(failure) {
+  if (!failure) return true;
+  if (failure.kind === 'credential') return false;
+  if (failure.kind !== 'http') return true;
+  // Le serveur rend 500 pour tous ses refus d'écriture ; celui d'un texte trop long est certain : rien n'est écrit
+  if (failure.status === 500 && String(failure.detail ?? '').startsWith('Texte trop long')) return false;
+  return !(failure.status >= 400 && failure.status < 500);
+}
+
+// Ce que l'auteur doit savoir avant de valider : verses, le nombre de versets analysés d'un cluster (sinon
+// null) ; followUp, l'analyse est une réponse de conversation ; tooLong, la saisie dépasse la limite du corpus.
+export function entryContext({ passage, first, input }) {
+  return {
+    verses: passage && passage.mode === 'tarteel' && Array.isArray(passage.verses) ? passage.verses.length : null,
+    followUp: !first,
+    tooLong: tooLongForCorpus(input),
+  };
+}
+
 // Une entrée rendue par le serveur : son identifiant et ses champs modifiables, tous en texte
 export function validEntry(entry) {
   return Boolean(entry) && typeof entry === 'object' && typeof entry.id === 'string' && entry.id !== ''

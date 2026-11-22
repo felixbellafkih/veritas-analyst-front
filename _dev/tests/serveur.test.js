@@ -356,3 +356,17 @@ test('corpus : le journal des analyses ne compte pas ces demandes', async () => 
   await corpus('/corpus/draft', { verse_input: 'x', result: `${TARGET}y` });
   assert.equal((await (await api('/__demandes')).json()).count, 0);
 });
+
+test('corpus : un texte de plus de 50 000 caractères est refusé, comme par le vrai serveur', async () => {
+  const long = 'x'.repeat(50001);
+  const input = await corpus('/corpus/entries', saveBody({ verse_input: long }));
+  assert.equal(input.status, 500);
+  assert.deepEqual(await input.json(), { detail: 'Texte trop long pour une cellule (50000 caractères max) : verse_input.' });
+  const output = await corpus('/corpus/entries', saveBody({ result: `${TARGET}${long}`, final_text: long }));
+  assert.deepEqual(await output.json(), { detail: 'Texte trop long pour une cellule (50000 caractères max) : raw_output, final_output.' });
+
+  const { entry } = await (await corpus('/corpus/entries', saveBody())).json();
+  const update = await corpus(`/corpus/entries/${entry.id}`, { reference: '2:255', final_text: long, note: '', expected: entry }, { method: 'PUT' });
+  assert.equal(update.status, 500);
+  assert.deepEqual(await update.json(), { detail: 'Texte trop long pour une cellule (50000 caractères max) : final_output.' });
+});

@@ -134,6 +134,14 @@ function frequencies(query, fixtures) {
 // ---- Corpus public : les règles du vrai serveur (api.py, section 8, et engine/corpus_store.py), sans
 // Google Sheet ni publication. Les entrées vivent en mémoire, le temps du serveur local.
 const CORPUS_EDITABLE = ['reference', 'status', 'final_output', 'note'];
+const CORPUS_CELL_LIMIT = 50000; // plafond d'une cellule du tableur : au-delà, le vrai serveur refuse l'entrée
+// Les colonnes de texte, dans l'ordre du tableur
+const CORPUS_TEXT_COLUMNS = ['reference', 'verse_input', 'raw_output', 'final_output', 'note'];
+
+function tooLongCells(entry) {
+  const names = CORPUS_TEXT_COLUMNS.filter((name) => String(entry[name] ?? '').length > CORPUS_CELL_LIMIT);
+  return names.length ? { status: 500, data: { detail: `Texte trop long pour une cellule (${CORPUS_CELL_LIMIT} caractères max) : ${names.join(', ')}.` } } : null;
+}
 const normalize = (text) => String(text || '').replace(/\r\n/g, '\n').trim();
 // Deux textes qui ne diffèrent que par des blancs : ce n'est pas une correction
 const sameContent = (a, b) => String(a || '').replace(/\s+/g, '') === String(b || '').replace(/\s+/g, '');
@@ -191,10 +199,13 @@ function corpusSave(body, entries) {
     id: Array.from({ length: 12 }, () => Math.floor(Math.random() * 16).toString(16)).join(''),
     reference: String(body.reference).trim(),
     status: finalText === raw ? 'validated' : 'corrected',
+    verse_input: normalize(body.verse_input),
     raw_output: raw,
     final_output: finalText,
     note: String(body.note || '').trim(),
   };
+  const refused = tooLongCells(entry);
+  if (refused) return refused;
   entries.set(entry.id, entry);
   return { status: 200, data: { entry: corpusFields(entry) } };
 }
@@ -212,6 +223,8 @@ function corpusUpdate(id, body, entries) {
   };
   if (!revised.reference) return { status: 400, data: { detail: 'Indique la référence du verset (ex. 2:255).' } };
   if (CORPUS_EDITABLE.every((name) => revised[name] === current[name])) return { status: 200, data: { entry: corpusFields(current), changed: false } };
+  const refused = tooLongCells(revised);
+  if (refused) return refused;
   const expected = body.expected || {};
   if (CORPUS_EDITABLE.some((name) => normalize(current[name]) !== normalize(String(expected[name] ?? '')))) {
     return { status: 500, data: { detail: 'Cette entrée a été modifiée ailleurs depuis son chargement (Google Sheet ou autre écran) : recharge le corpus avant de la mettre à jour.' } };

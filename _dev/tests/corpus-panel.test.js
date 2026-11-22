@@ -55,3 +55,42 @@ test('validEntry : une entrée porte un identifiant et ses champs modifiables, t
     assert.equal(validEntry(doubtful), false, JSON.stringify(doubtful));
   }
 });
+
+// ------------------------------------------------------------------ relecture du 22/11/2026
+
+import { CORPUS_CELL_LIMIT, entryContext, maybeSaved, tooLongForCorpus } from '../../assets/js/v1/lib/corpus-panel.js';
+import { ApiFailure } from '../../assets/js/v1/lib/failures.js';
+
+test('limite du corpus : une saisie de plus de 50 000 caractères ne peut pas être enregistrée', () => {
+  assert.equal(CORPUS_CELL_LIMIT, 50000);
+  assert.equal(tooLongForCorpus('x'.repeat(50000)), false);
+  assert.equal(tooLongForCorpus('x'.repeat(50001)), true);
+  assert.equal(tooLongForCorpus(null), false);
+});
+
+test('maybeSaved : après un échec sans refus net du serveur, l’enregistrement a peut-être été fait', () => {
+  // la demande a pu arriver : réseau coupé, erreur du serveur ou du relais, réponse 200 illisible
+  for (const failure of [new ApiFailure('network'), new ApiFailure('http', { status: 500, detail: 'x' }), new ApiFailure('http', { status: 502 }),
+    new ApiFailure('http', { status: 524 }), new ApiFailure('http', { status: 200, detail: 'Réponse illisible' }), null, undefined]) {
+    assert.equal(maybeSaved(failure), true, JSON.stringify(failure));
+  }
+  // refus net : rien n'a été écrit
+  for (const failure of [new ApiFailure('http', { status: 400, detail: 'x' }), new ApiFailure('http', { status: 401 }), new ApiFailure('http', { status: 404 }),
+    new ApiFailure('http', { status: 422 }), new ApiFailure('credential')]) {
+    assert.equal(maybeSaved(failure), false, JSON.stringify(failure));
+  }
+});
+
+test('entryContext : ce que l’auteur doit savoir avant de valider', () => {
+  const cluster = { mode: 'tarteel', primary: 'S-M-W', constraint: '', verses: ['[2:19] : x', '[2:29] : y'] };
+  assert.deepEqual(entryContext({ passage: VERSE, first: true, input: 'ٱللَّهُ' }), { verses: null, followUp: false, tooLong: false });
+  assert.deepEqual(entryContext({ passage: cluster, first: true, input: 'Analyse ce cluster…' }), { verses: 2, followUp: false, tooLong: false });
+  assert.deepEqual(entryContext({ passage: cluster, first: false, input: 'Objection' }), { verses: 2, followUp: true, tooLong: false });
+  assert.deepEqual(entryContext({ passage: null, first: true, input: 'x'.repeat(50001) }), { verses: null, followUp: false, tooLong: true });
+});
+
+test('maybeSaved : le refus d’un texte trop long est net, bien qu’il arrive avec un code 500', () => {
+  const refused = new ApiFailure('http', { status: 500, detail: 'Texte trop long pour une cellule (50000 caractères max) : verse_input.' });
+  assert.equal(maybeSaved(refused), false);
+  assert.equal(maybeSaved(new ApiFailure('http', { status: 500, detail: 'Échec de l\'écriture dans le Google Sheet : timeout' })), true);
+});

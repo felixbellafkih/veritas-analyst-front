@@ -494,6 +494,17 @@
   line-height: 1.6;
 }
 
+/* Rappels avant de valider : ce que l'enregistrement fait de cette analyse-ci */
+.corpus__notes {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding-inline-start: 18px;
+  color: var(--secondaire);
+  font-size: var(--t-petit);
+}
+
 .corpus__actions {
   display: flex;
   flex-wrap: wrap;

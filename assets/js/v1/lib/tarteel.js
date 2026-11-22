@@ -24,6 +24,11 @@ export function clusterText(primary, constraint, verses) {
   return `Analyse ce cluster de versets interconnectés (Triangulation : ${root}${limit ? ` ∩ ${limit}` : ''}) :\n\n${(verses || []).join('\n\n')}`;
 }
 
+// Au-delà de ce que l'app a toujours envoyé (30 versets), le formulaire prévient : l'analyse est plus longue
+// et plus coûteuse, et chaque message de suite renvoie ces versets. Rien n'est bloqué.
+export const LARGE_SELECTION = 30;
+export const largeSelection = (count) => count > LARGE_SELECTION;
+
 // Les versets cochés, dans l'ordre du cluster. chosen : les rangs cochés (à partir de 0).
 export function pickVerses(verses, chosen) {
   const picked = new Set(chosen || []);

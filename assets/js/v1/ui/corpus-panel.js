@@ -4,7 +4,7 @@
 // tel quel ou corrige ; ensuite, toute modification réécrit la même entrée du corpus.
 // Un enregistrement est publié : le serveur lance la publication du corpus (site et jeu de données).
 // Ces textes ne s'affichent qu'à l'auteur : comme dans les deux apps, ils sont en français, non traduits.
-import { draftRequest, saveRequest, updateRequest } from '../lib/corpus-panel.js';
+import { CORPUS_CELL_LIMIT, draftRequest, entryContext, maybeSaved, saveRequest, updateRequest } from '../lib/corpus-panel.js';
 import { describeFailure } from '../lib/failures.js';
 import { el, fill } from './dom.js';
 import { td } from './i18n-dom.js';
@@ -21,6 +21,16 @@ function failureText(failure) {
 }
 
 const savedText = (entry) => `Enregistré dans le corpus : ${entry.status === 'validated' ? 'validé tel quel.' : 'version corrigée.'}`;
+
+// Ce que l'auteur doit savoir avant de valider cette analyse-ci (lib/corpus-panel.js, entryContext)
+function contextNotes(shown) {
+  const { verses, followUp, tooLong } = entryContext({ passage: shown.passage, first: shown.first, input: shown.lastInput });
+  const notes = ['L’entrée la plus récente d’une référence remplace la page publiée sous cette référence.'];
+  if (verses !== null) notes.push(`Cluster : l’analyse porte sur ${verses} verset(s) cochés, mais sa référence est celle de toute la triangulation.`);
+  if (followUp) notes.push('Cette analyse est une réponse de conversation : vérifie la référence et le type avant de valider.');
+  if (tooLong) notes.push(`La saisie de cette analyse dépasse ${CORPUS_CELL_LIMIT} caractères : le corpus refusera de l’enregistrer.`);
+  return notes;
+}
 
 // source : {api, credentials()} ;
 // shown : ce que la page affiche, {result, passage, lastInput, first, language, corpusEntry} ;
@@ -79,7 +89,11 @@ export function corpusPanel({ api, credentials }, shown, onSaved) {
       }
       onSaved(result, saved);
     } catch (failure) {
-      say('', failureText(failure));
+      // Sans refus net du serveur, la demande a pu aboutir : un second « Valider » créerait une seconde entrée
+      const doubt = !maybeSaved(failure) ? ''
+        : saved ? ' La mise à jour a peut-être été faite : vérifie le Google Sheet.'
+          : ' L’enregistrement a peut-être été fait : vérifie le Google Sheet avant de valider à nouveau.';
+      say('', failureText(failure) + doubt);
     } finally {
       busy = false;
       paintButtons();
@@ -103,6 +117,7 @@ export function corpusPanel({ api, credentials }, shown, onSaved) {
       busy = false;
       paintButtons();
       fill(body,
+        el('ul', { class: 'corpus__notes' }, contextNotes(shown).map((note) => el('li', { text: note }))),
         again,
         field('corpus-reference', 'Référence (ex. 2:255 ou 2:1-5)', reference, kindHelp),
         field('corpus-texte', 'Texte final (corrige directement ici)', finalText),
@@ -117,7 +132,8 @@ export function corpusPanel({ api, credentials }, shown, onSaved) {
     }
   }
 
-  const panel = el('details', { class: 'corpus' },
+  // Textes en français quel que soit le sens d'écriture de l'interface
+  const panel = el('details', { class: 'corpus', attrs: { lang: 'fr', dir: 'ltr' } },
     el('summary', { class: 'corpus__titre' }, el('span', { text: 'Corpus public : valider / corriger' }), mark),
     el('div', { class: 'corpus__dans' },
       el('p', { class: 'champ__aide', text: 'Seuls les textes validés ou corrigés ici entrent dans le corpus public (licence CC BY 4.0). La réponse brute est conservée à côté du texte final.' }),
