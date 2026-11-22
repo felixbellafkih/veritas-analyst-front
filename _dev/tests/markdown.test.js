@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { outline, parseInline, parseMarkdown, plainText, safeHref } from '../../assets/js/lib/markdown.js';
+import { outline, parseInline, parseMarkdown, plainText, safeHref, splitRoots, splitTitle } from '../../assets/js/lib/markdown.js';
 
 const text = (value) => ({ type: 'text', text: value });
 const para = (...inline) => ({ type: 'paragraph', inline });
@@ -268,6 +268,38 @@ test('plainText : tout le texte, dans l’ordre', () => {
     const at = flat.indexOf(word, from);
     assert.ok(at >= from, word);
     from = at + word.length;
+  }
+});
+
+test('splitTitle : la parenthèse finale d’un titre se détache, sans changer un caractère', () => {
+  assert.deepEqual(splitTitle('1. RESTAURATION DU SENS LITTÉRAIRE (MÉCANIQUE PHYSIQUE ET BIOLOGIQUE)'),
+    { main: '1. RESTAURATION DU SENS LITTÉRAIRE', tail: '(MÉCANIQUE PHYSIQUE ET BIOLOGIQUE)' });
+  assert.deepEqual(splitTitle('4. SYSTEMIC DECOMPILATION (SOURCE CODE)'), { main: '4. SYSTEMIC DECOMPILATION', tail: '(SOURCE CODE)' });
+  assert.deepEqual(splitTitle('3. CONCLUSION LOGIQUE ET TOPOLOGIQUE'), { main: '3. CONCLUSION LOGIQUE ET TOPOLOGIQUE', tail: '' });
+  assert.deepEqual(splitTitle('(TOUT ENTRE PARENTHÈSES)'), { main: '(TOUT ENTRE PARENTHÈSES)', tail: '' });
+  assert.deepEqual(splitTitle('A (b) c'), { main: 'A (b) c', tail: '' });
+  assert.deepEqual(splitTitle(''), { main: '', tail: '' });
+  for (const title of ['1. A (B)', '2. C', 'D (E (F))']) {
+    const { main, tail } = splitTitle(title);
+    assert.equal(tail ? `${main} ${tail}` : main, title);
+  }
+});
+
+test('splitRoots : les codes de racines se repèrent, pour ne pas être coupés en fin de ligne', () => {
+  const root = (text) => ({ text, root: true });
+  const plain = (text) => ({ text, root: false });
+  assert.deepEqual(splitRoots('issues de la même racine (R-H.-M, la matrice)'),
+    [plain('issues de la même racine ('), root('R-H.-M'), plain(', la matrice)')]);
+  assert.deepEqual(splitRoots('S-M-W et GH-D.-B puis A.-B-D'), [root('S-M-W'), plain(' et '), root('GH-D.-B'), plain(' puis '), root('A.-B-D')]);
+  assert.deepEqual(splitRoots('DH-K-R'), [root('DH-K-R')]);
+  assert.deepEqual(splitRoots('H.-S.-H.-S.'), [root('H.-S.-H.-S.')]);
+  // Ce qui n'est pas une racine reste du texte ordinaire
+  for (const text of ['Pay-As-You-Go', 'un mot-clé', 'CODE-SOURCE', 'ROOT_AUTHORITY // MASTER_NODE', 'verset 2:1-5', 'بِسْمِ ٱللَّهِ', '']) {
+    assert.deepEqual(splitRoots(text), text ? [plain(text)] : [], text);
+  }
+  // Aucun caractère ne change
+  for (const text of ['(R-H.-M / GH-D.-B) :', 'racine N-Y-R, puis S.-M-D.']) {
+    assert.equal(splitRoots(text).map((part) => part.text).join(''), text);
   }
 });
 

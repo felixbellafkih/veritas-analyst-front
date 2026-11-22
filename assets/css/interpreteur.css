@@ -23,7 +23,7 @@
 /* À partir de 1024 px : deux colonnes, et le passage reste visible quand l'analyse défile */
 @media (min-width: 1024px) {
   .interpreteur {
-    grid-template-columns: minmax(360px, 420px) minmax(0, 1fr);
+    grid-template-columns: 360px minmax(0, 1fr);
     align-items: start;
   }
 
@@ -206,32 +206,6 @@
   max-width: 700px;
   margin-block-start: 16px;
   color: var(--secondaire);
-}
-
-.analyse__brut {
-  margin: 24px 0 0;
-  font-family: var(--police-texte);
-  font-size: var(--t-texte);
-  line-height: 1.7;
-  white-space: pre-wrap;
-}
-
-/* Note : l'avertissement de l'auteur, dans l'interface comme dans une analyse */
-.note {
-  max-width: 700px;
-  margin-block-start: 24px;
-  padding: 14px 16px;
-  border: 1px solid var(--bord);
-  border-inline-start: 3px solid var(--accent);
-  border-radius: var(--rayon);
-  background: var(--fond);
-  color: var(--secondaire);
-  font-size: var(--t-petit);
-  line-height: 1.6;
-}
-
-.note strong {
-  color: var(--titre);
 }
 
 /* ------------------------------------------------------------------ attente */

@@ -507,6 +507,36 @@ export function outline(blocks) {
   return blocks.filter((block) => block.type === 'heading' && block.id).map((block) => ({ id: block.id, title: inlineText(block.inline) }));
 }
 
+// Titre d'une section : sa parenthèse finale, comme « (MÉCANIQUE PHYSIQUE ET BIOLOGIQUE) », se détache
+// pour s'afficher plus discrètement. Aucun caractère ne change : main + ' ' + tail redonne le titre.
+export function splitTitle(text) {
+  const title = String(text ?? '');
+  const match = /^(.*\S) (\([^()]*\))$/.exec(title);
+  return match ? { main: match[1], tail: match[2] } : { main: title, tail: '' };
+}
+
+// Codes de racines (R-H.-M, GH-D.-B, A.-B-D, H.-S.-H.-S.) : trois ou quatre segments d'une ou deux
+// majuscules, avec ou sans point, reliés par des tirets. Les repérer permet de ne pas les couper en fin
+// de ligne. Rend les morceaux du texte, dans l'ordre : [{text, root}], sans changer un caractère.
+const ROOT_CODE = /[A-Z]{1,2}\.?(?:-[A-Z]{1,2}\.?){2,3}(?![A-Za-z0-9_-])/g;
+const ROOT_NEIGHBOUR = /[A-Za-z0-9_.-]/;
+
+export function splitRoots(text) {
+  const source = String(text ?? '');
+  const parts = [];
+  let last = 0;
+  for (const match of source.matchAll(ROOT_CODE)) {
+    // Un code de racine ne prolonge pas un mot (CODE-SOURCE, Pay-As-You-Go ne sont pas des racines)
+    if (match.index > 0 && ROOT_NEIGHBOUR.test(source[match.index - 1])) continue;
+    if (match.index < last) continue;
+    if (match.index > last) parts.push({ text: source.slice(last, match.index), root: false });
+    parts.push({ text: match[0], root: true });
+    last = match.index + match[0].length;
+  }
+  if (last < source.length) parts.push({ text: source.slice(last), root: false });
+  return parts;
+}
+
 // Tout le texte de l'arbre, dans l'ordre du document (sert aux tests : rien ne doit se perdre)
 export function plainText(blocks) {
   const parts = [];

@@ -44,7 +44,7 @@ function render() {
   document.body.dataset.attente = waiting ? 'oui' : 'non';
   if (state.phase === 'vide') view.showEmpty();
   else if (waiting) view.showWaiting();
-  else if (state.phase === 'resultat') view.showResult({ result: state.result, passage: state.resultPassage });
+  else if (state.phase === 'resultat') view.showResult({ result: state.result, passage: state.resultPassage, input: state.history.length ? state.history[0].text : '' });
   else view.showFailure(state.failure, { keepResult: Boolean(state.result) });
   // L'analyse et la conversation sont gardées pour l'onglet : un rechargement ne les perd pas
   if (state.phase === 'resultat') store.saveConversation(snapshot(state));

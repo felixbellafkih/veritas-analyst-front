@@ -1,0 +1,107 @@
+/* Nouveau site Veritas — impression d'une analyse (feuille liée avec media="print").
+   Fond blanc, texte sombre, ni en-tête, ni formulaire, ni boutons : il reste l'analyse. */
+
+@page {
+  margin: 18mm 16mm;
+}
+
+:root,
+:root[data-theme="nuit"],
+:root[data-theme="jour"] {
+  color-scheme: light;
+  --fond: #FFFFFF;
+  --surface: #FFFFFF;
+  --surface-2: #FFFFFF;
+  --surface-3: #FFFFFF;
+  --bord: #B8C0C8;
+  --bord-fort: #8D97A1;
+  --bord-doux: #CDD3D9;
+  --fort: #000000;
+  --titre: #000000;
+  --texte: #14181C;
+  --secondaire: #333C45;
+  --discret: #47515B;
+  --accent: #0B5563;
+  --arabe: #000000;
+}
+
+body {
+  padding: 0;
+  background: #FFFFFF;
+  color: #14181C;
+  font-size: 11pt;
+}
+
+.evitement,
+.entete,
+.onglets,
+.pied,
+.page__tete,
+.interpreteur__passage,
+.analyse__retour,
+.analyse__etat,
+.analyse__actions,
+.analyse__jetons,
+.pastille--bouton,
+.sommaire,
+.suite,
+.echanges,
+dialog {
+  display: none !important;
+}
+
+.page {
+  max-width: none;
+  padding: 0;
+}
+
+.interpreteur {
+  display: block;
+  margin: 0;
+}
+
+.interpreteur__analyse {
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.analyse__corps > * {
+  max-width: none;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.analyse__corps h3 {
+  break-after: avoid;
+}
+
+.analyse__corps li,
+.note,
+.defile tr {
+  break-inside: avoid;
+}
+
+/* Le tableau tient dans la page : plus de défilement */
+.defile {
+  overflow: visible;
+  border: 0;
+}
+
+.defile table {
+  min-width: 0;
+  font-size: 9pt;
+}
+
+.defile th,
+.defile td {
+  padding: 6pt;
+  border: 1px solid #B8C0C8;
+}
+
+.defile td[lang="ar"] {
+  font-size: 15pt;
+}
