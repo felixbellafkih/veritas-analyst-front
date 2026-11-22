@@ -200,3 +200,32 @@ test('corpus : un refus du serveur garde son message', async () => {
   await fails(api.corpusUpdate('inconnue', { reference: '2:255', final_text: 'x', note: '', expected: {} }, DEV),
     { kind: 'http', status: 404, detail: 'Entrée inconnue introuvable dans le corpus.' });
 });
+
+// ------------------------------------------------------------------ Scanner (étape 2)
+
+test('scan : la réponse entière de l’API, pour une racine comme pour un mot complexe', async () => {
+  const root = await api.scan('S-M-W');
+  assert.equal(root.root_data.root, 'S-M-W');
+  assert.equal(root.is_decompiled, false);
+  const word = await api.scan('بِسْمِ');
+  assert.equal(word.is_decompiled, true);
+  assert.equal(word.decompilation_data.original_signal, 'بِسْمِ');
+  assert.equal((await api.scan('D.-R-B')).root_data.root, 'D.-R-B');
+});
+
+test('scan : une saisie inconnue est un échec 404, sans clé ni mot de passe dans la demande', async () => {
+  await fails(api.scan('zzz'), { kind: 'http', status: 404, detail: 'Signal does not match any known physical root.' });
+  const sent = [];
+  const spied = createApi({ base, fetch: (url, options) => {
+    sent.push({ url, headers: options.headers });
+    return fetch(url, options);
+  } });
+  await spied.scan('A-R-D.');
+  assert.deepEqual(sent, [{ url: `${base}/analyze/root/A-R-D.`, headers: {} }]);
+});
+
+test('scan : une demande abandonnée', async () => {
+  const controller = new AbortController();
+  controller.abort();
+  await fails(api.scan('S-M-W', { signal: controller.signal }), { kind: 'aborted' });
+});
