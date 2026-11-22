@@ -174,14 +174,25 @@ test('.gitattributes : aucun dossier entier forcé en texte', () => {
   for (const line of folders) assert.match(line, /\stext=auto(\s|$)/, line);
 });
 
-// Relecture du 22/11/2026, formulaire du mode Tarteel (module d'interface, sans autre test automatique) :
-// la touche Entrée sur la case d'un verset lançait l'analyse, donc une demande facturée, et « Analyser »
-// sans case cochée plaçait le curseur sur une case hors de vue.
+// Relecture du 22/11/2026, liste des versets du mode Tarteel (module d'interface, sans autre test
+// automatique) : la touche Entrée sur la case d'un verset lançait l'analyse, donc une demande facturée, et
+// « Analyser » sans case cochée plaçait le curseur sur une case hors de vue.
 test('Tarteel : Entrée sur une case ne lance pas l’analyse ; le curseur va sur un bouton visible', () => {
-  const source = read(scripts.find((path) => path.endsWith(join('ui', 'passage-form.js'))));
-  assert.match(source, /list\.addEventListener\('keydown'/, 'aucune écoute du clavier sur la liste des versets');
-  assert.match(source, /event\.key !== 'Enter'[\s\S]{0,200}event\.preventDefault\(\)/, 'Entrée n’est pas neutralisée');
-  assert.doesNotMatch(source, /first\.focus\(\{ preventScroll: true \}\)/, 'curseur placé sur une case sans la montrer');
+  const list = read(scripts.find((path) => path.endsWith(join('ui', 'cluster-list.js'))));
+  assert.match(list, /list\.addEventListener\('keydown'/, 'aucune écoute du clavier sur la liste des versets');
+  assert.match(list, /event\.key === 'Enter'[\s\S]{0,120}event\.preventDefault\(\)/, 'Entrée n’est pas neutralisée');
+  const form = read(scripts.find((path) => path.endsWith(join('ui', 'passage-form.js'))));
+  assert.doesNotMatch(form, /first\.focus\(\{ preventScroll: true \}\)/, 'curseur placé sur une case sans la montrer');
+  assert.match(form, /focusTools\(\)/, 'le curseur doit aller sur « Tout sélectionner »');
+});
+
+// Étape 2 : la liste des versets est un module partagé par l'Interpréteur et la page Tarteel. Deux copies
+// de cette liste finiraient par diverger sur ce qui part à l'analyse.
+test('la liste des versets d’un cluster n’est bâtie qu’à un endroit : ui/cluster-list.js', () => {
+  const builders = scripts.filter((path) => /cluster__case/.test(read(path))).map(rel);
+  assert.deepEqual(builders.map((path) => path.split('/').slice(-2).join('/')), ['ui/cluster-list.js']);
+  const form = read(scripts.find((path) => path.endsWith(join('ui', 'passage-form.js'))));
+  assert.match(form, /mountClusterList\(/);
 });
 
 // Une page sans cette ligne prendrait des fins de ligne Windows sur ce PC, à la différence des autres

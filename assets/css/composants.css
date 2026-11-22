@@ -168,6 +168,127 @@ textarea.saisie {
   font-family: var(--police-codes);
 }
 
+/* ------------------------------------------------------------------ liste des versets d'un cluster
+   Partagée par l'Interpréteur (mode Tarteel) et la page Tarteel : ui/cluster-list.js */
+
+/* La référence d'un verset (« 2:22 ») */
+.verset__ref {
+  color: var(--accent);
+  font-family: var(--police-codes);
+  font-size: var(--t-petit);
+}
+
+/* Les versets défilent dans leur cadre */
+.cluster {
+  align-self: stretch;
+  max-height: 340px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--bord-fort) transparent;
+  border: 1px solid var(--bord);
+  border-radius: var(--rayon-moyen);
+  background: var(--surface);
+}
+
+.cluster__liste {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Au-dessus du cadre : combien de versets sont cochés, et les deux raccourcis */
+.cluster__barre {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0 16px;
+  align-self: stretch;
+}
+
+.cluster__compte {
+  color: var(--secondaire);
+  font-size: var(--t-petit);
+}
+
+.cluster__outils {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 16px;
+}
+
+.cluster__outil {
+  font-size: var(--t-petit);
+}
+
+.cluster__outil:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+/* Une ligne par verset : toute la ligne est l'étiquette de sa case */
+.cluster__verset {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 16px 14px;
+  cursor: pointer;
+}
+
+/* Une ligne : le verset et sa case, puis, sur la page Tarteel, un lien */
+.cluster__ligne {
+  display: flex;
+  align-items: flex-start;
+}
+
+.cluster__ligne > .cluster__verset {
+  flex: 1;
+  min-width: 0;
+}
+
+/* La suite de la liste arrive d'elle-même quand on approche du bas ; ce bouton reste là en secours */
+.cluster__suite {
+  margin-inline: 16px;
+  font-size: var(--t-petit);
+}
+
+.cluster__liste li + li {
+  border-block-start: 1px solid var(--bord-doux);
+}
+
+.cluster__case {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  margin: 4px 0 0;
+  accent-color: var(--accent);
+}
+
+.cluster__case:disabled,
+.cluster__verset:has(.cluster__case:disabled) {
+  cursor: default;
+}
+
+.cluster__verset:has(.cluster__case:checked) {
+  background: var(--surface-2);
+}
+
+.cluster__contenu {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.cluster__texte {
+  display: block;
+  color: var(--arabe);
+  font-size: var(--t-titre);
+  line-height: 1.9;
+  text-align: start;
+}
+
 /* ------------------------------------------------------------------ messages */
 
 .message {
