@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { CEILING, SENT_LIMIT, clusterText, clusterVerse, tarteelState } from '../../assets/js/lib/tarteel.js';
+import { CEILING, SENT_LIMIT, clusterText, clusterVerse, tarteelState } from '../../assets/js/v1/lib/tarteel.js';
 
 test('seuils : plafond de 57 occurrences, 30 versets envoyés', () => {
   assert.equal(CEILING, 57);

@@ -1,6 +1,6 @@
 // Compare la table des sourates du site (assets/js/lib/verses.js) à celle de l'API (GET /verse/metadata).
 // Usage : node _dev/verifier-sourates.mjs
-import { SURAS } from '../assets/js/lib/verses.js';
+import { SURAS } from '../assets/js/v1/lib/verses.js';
 
 const response = await fetch('https://api.veritas-analyst.org/verse/metadata');
 if (!response.ok) {

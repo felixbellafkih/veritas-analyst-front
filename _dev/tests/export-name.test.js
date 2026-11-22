@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { exportFileName } from '../../assets/js/lib/export-name.js';
+import { exportFileName } from '../../assets/js/v1/lib/export-name.js';
 
 // En-tête technique qui cite une référence du corpus (1:1-7) : elle ne doit pas donner son nom au fichier
 const H = '**[TARGET: gemini-3.1-pro-preview]** | 📊 **Tokens:** Input=41,250 | Output=1,830 | Thinking=2,410 | Total=45,490 | Cost=$0.1234 | 📚 **Références :** 1:1-7, 18:96 (verset)';

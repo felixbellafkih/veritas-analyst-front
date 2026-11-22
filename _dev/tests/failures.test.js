@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { ApiFailure, describeFailure } from '../../assets/js/lib/failures.js';
+import { ApiFailure, describeFailure } from '../../assets/js/v1/lib/failures.js';
 
 const DETAIL = 'DETAIL-TECHNIQUE-42';
 const failure = (kind, status) => new ApiFailure(kind, { status, detail: DETAIL });

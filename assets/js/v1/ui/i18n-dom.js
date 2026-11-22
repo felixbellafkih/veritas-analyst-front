@@ -24,7 +24,7 @@ const markdownOf = (source, vars) => renderInline(parseInline(translate(catalog,
 
 // Numéro de version des fichiers, lu sur le lien du module de la page (?v=…)
 function assetVersion() {
-  const script = document.querySelector('script[type="module"][src*="/assets/js/pages/"]');
+  const script = document.querySelector('script[type="module"][src*="/assets/js/"]');
   const match = script ? /[?&]v=(\d+)/.exec(script.getAttribute('src') || '') : null;
   return match ? match[1] : '';
 }

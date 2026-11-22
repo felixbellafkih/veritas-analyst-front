@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { analysisRequest, credentialHeaders, followUpRequest } from '../../assets/js/lib/request.js';
-import { clusterText } from '../../assets/js/lib/tarteel.js';
+import { analysisRequest, credentialHeaders, followUpRequest } from '../../assets/js/v1/lib/request.js';
+import { clusterText } from '../../assets/js/v1/lib/tarteel.js';
 
 const O = { language: 'Français', model: null, defaultModel: 'gemini-3.1-pro-preview' };
 

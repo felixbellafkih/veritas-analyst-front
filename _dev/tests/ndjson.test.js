@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readOutcome } from '../../assets/js/lib/ndjson.js';
+import { readOutcome } from '../../assets/js/v1/lib/ndjson.js';
 
 async function* from(items) {
   for (const item of items) yield item;

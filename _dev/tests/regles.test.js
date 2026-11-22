@@ -2,7 +2,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
-import { join, relative } from 'node:path';
+import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const SITE = fileURLToPath(new URL('../..', import.meta.url));
@@ -22,6 +22,13 @@ const servedFiles = SERVED.flatMap((dir) => walk(join(SITE, dir)));
 const textFiles = servedFiles.filter((path) => /\.(js|css|html|json|svg|txt)$/.test(path));
 const scripts = walk(join(SITE, 'assets', 'js')).filter((path) => path.endsWith('.js'));
 const read = (path) => readFileSync(path, 'utf8');
+
+// Les modules vivent sous assets/js/v<N>/ : leur adresse change à chaque version, pour qu'un navigateur ne
+// mélange jamais d'anciens modules avec de nouveaux (voir _dev/version.mjs).
+const JS = join(SITE, 'assets', 'js');
+const versionDirs = existsSync(JS) ? readdirSync(JS).filter((name) => /^v\d+$/.test(name)) : [];
+const MODULES = join(JS, versionDirs[0] || 'v0');
+const moduleRel = (path) => relative(MODULES, path).replace(/\\/g, '/');
 
 test('la page de l’Interpréteur existe', () => {
   assert.ok(PAGES.includes('interpreteur/index.html'));
@@ -55,6 +62,14 @@ for (const page of PAGES) {
       assert.ok(existsSync(join(SITE, match[1])), `fichier absent : ${match[1]}`);
     }
     assert.equal(versions.size, 1, `plusieurs versions : ${[...versions]}`);
+  });
+
+  test(`${page} : son module est servi depuis le dossier de version, au même numéro que ?v=`, () => {
+    const match = /<script type="module" src="\/assets\/js\/v(\d+)\/pages\/[a-z-]+\.js\?v=(\d+)"><\/script>/.exec(html);
+    assert.ok(match, 'module de la page');
+    assert.equal(match[1], match[2]);
+    assert.equal(`v${match[1]}`, versionDirs[0]);
+    assert.doesNotMatch(html, /\/assets\/js\/(?:lib|ui|pages)\//, 'adresse de module sans version');
   });
 
   test(`${page} : le thème est posé avant le premier affichage`, () => {
@@ -106,7 +121,7 @@ test('theme-init.js est un script classique', () => {
 });
 
 test('les modules sans interface ne touchent ni au document ni à la fenêtre', () => {
-  const pure = [...walk(join(SITE, 'assets', 'js', 'lib')), join(SITE, 'assets', 'js', 'api.js')].filter((path) => existsSync(path));
+  const pure = [...walk(join(MODULES, 'lib')), join(MODULES, 'api.js')].filter((path) => existsSync(path));
   assert.ok(pure.length >= 10);
   for (const path of pure) assert.doesNotMatch(read(path), /\b(document|window|localStorage|sessionStorage|navigator)\./, rel(path));
 });
@@ -115,7 +130,26 @@ test('les modules sans interface ne touchent ni au document ni à la fenêtre', 
 // quand on lui passe une valeur absente. Les modules d'interface passent donc par add() et fill() de dom.js,
 // qui ignorent ces valeurs.
 test('interface : aucune insertion native hors de dom.js', () => {
-  const dom = scripts.filter((path) => /^assets\/js\/(ui|pages)\//.test(rel(path)) && rel(path) !== 'assets/js/ui/dom.js');
+  const dom = walk(MODULES).filter((path) => /^(ui|pages)\//.test(moduleRel(path)) && moduleRel(path) !== 'ui/dom.js');
   assert.ok(dom.length >= 8);
   for (const path of dom) assert.doesNotMatch(read(path), /\.(append|prepend|replaceChildren|before|after|replaceWith)\(/, rel(path));
+});
+
+test('les modules sont rangés sous un seul dossier de version', () => {
+  assert.equal(versionDirs.length, 1, `dossiers de version : ${versionDirs}`);
+  assert.deepEqual(readdirSync(JS).filter((name) => name !== versionDirs[0]), ['theme-init.js']);
+  assert.ok(existsSync(join(MODULES, 'pages', 'interpreteur.js')));
+});
+
+// Un import écrit autrement (adresse absolue, autre dossier) sortirait du dossier de version : il serait
+// gardé en cache par le navigateur sous une adresse qui ne change pas.
+test('les modules ne s’importent que par des chemins relatifs, à l’intérieur du dossier de version', () => {
+  const modules = walk(MODULES);
+  assert.ok(modules.length >= 30, `${modules.length} modules`);
+  for (const path of modules) {
+    for (const match of read(path).matchAll(/(?:\bfrom\s+|\bimport\s*\(\s*|^\s*import\s+)['"]([^'"]+)['"]/gm)) {
+      assert.match(match[1], /^\.\.?\//, `${rel(path)} importe ${match[1]}`);
+      assert.ok(!relative(MODULES, join(dirname(path), match[1])).startsWith('..'), `${rel(path)} sort du dossier de version : ${match[1]}`);
+    }
+  }
 });

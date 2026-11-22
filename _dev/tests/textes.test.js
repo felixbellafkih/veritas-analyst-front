@@ -116,3 +116,10 @@ test('places : pour chaque texte, le premier fichier où il figure', async () =>
     assert.deepEqual(places, { Commun: 'assets/js/ui/b.js', 'De la page': 'accueil/index.html', 'Du module': 'assets/js/ui/b.js' });
   });
 });
+
+// Le numéro de version est écrit par addition : le passage à la version suivante ne le réécrit pas
+test('places : le dossier de version des modules n’y figure pas', async () => {
+  await withSite({ [`assets/js/v${6 + 1}/ui/b.js`]: "t('Du module');" }, ({ places }) => {
+    assert.deepEqual(places, { 'Du module': 'assets/js/ui/b.js' });
+  });
+});

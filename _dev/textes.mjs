@@ -106,7 +106,8 @@ function pageTexts(source, name, texts, errors) {
 export async function collectTexts(rootDir) {
   const texts = [];
   const errors = [];
-  const name = (path) => relative(rootDir, path).replace(/\\/g, '/');
+  // Sans le dossier de version des modules (assets/js/v<N>/) : l'endroit d'un texte ne change pas d'une version à l'autre
+  const name = (path) => relative(rootDir, path).replace(/\\/g, '/').replace(/^assets\/js\/v\d+\//, 'assets/js/');
   // Pour chaque texte, le premier fichier où il figure : la liste soumise à l'auteur est rangée par endroit
   const places = {};
   const read = async (path, collect) => {

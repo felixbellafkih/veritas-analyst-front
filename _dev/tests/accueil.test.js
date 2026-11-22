@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { CLASSIC_URL } from '../../assets/js/lib/config.js';
+import { CLASSIC_URL } from '../../assets/js/v1/lib/config.js';
 
 const SITE = fileURLToPath(new URL('../..', import.meta.url));
 const path = join(SITE, 'accueil', 'index.html');

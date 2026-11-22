@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { rootTiles } from '../../assets/js/lib/root-card.js';
+import { rootTiles } from '../../assets/js/v1/lib/root-card.js';
 
 const EQUATION = "S (Signal/Flux) + M (Matrice) + W (Extension/Lien) = Extension du flux matriciel vers l'espace d'adressage global multi-dimensionnel.";
 
