@@ -1,0 +1,162 @@
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { createLatest, initialState, reduce, snapshot } from '../../assets/js/lib/interpreter-state.js';
+import { followUpRequest } from '../../assets/js/lib/request.js';
+
+const H = '**[TARGET: m]** | 📊 **Tokens:** Input=1 | Output=1 | Thinking=0 | Total=2\n\n';
+const R1 = H + 'Analyse 1';
+const R2 = H + 'Analyse 2';
+const P1 = { mode: 'verset', sura: 1, start: 1, end: 1, text: 'بِسْمِ ٱللَّهِ' };
+const P2 = { mode: 'verset', sura: 2, start: 255, end: 255, text: 'ٱللَّهُ' };
+const REQ1 = { verse_text: '  بِسْمِ ٱللَّهِ  ', language: 'Français', sura_num: 1, verse_start: 1, verse_end: 1 };
+const REQ2 = { verse_text: 'ٱللَّهُ', language: 'Français', sura_num: 2, verse_start: 255, verse_end: 255 };
+const O = { language: 'Français', model: null, defaultModel: 'm' };
+
+const launch = (passage = P1, request = REQ1) => ({ type: 'launch', passage, request });
+const success = (result) => ({ type: 'success', result });
+const afterFirst = () => reduce(reduce(initialState(), launch()), success(R1));
+
+test('état de départ', () => {
+  assert.deepEqual(initialState(), {
+    phase: 'vide', history: [], result: null, resultPassage: null, passage: null, request: null, requestKind: null, failure: null,
+  });
+});
+
+test('lancement : l’attente commence, la demande est gardée', () => {
+  const state = reduce(initialState(), launch());
+  assert.equal(state.phase, 'attente');
+  assert.equal(state.request, REQ1);
+  assert.equal(state.passage, P1);
+  assert.equal(state.requestKind, 'launch');
+});
+
+test('double clic : une seule demande part', () => {
+  const waiting = reduce(initialState(), launch());
+  assert.equal(reduce(waiting, launch()), waiting);
+  assert.equal(reduce(waiting, launch(P2, REQ2)), waiting);
+  assert.equal(reduce(waiting, { type: 'followup', request: { verse_text: 'x', language: 'Français' } }), waiting);
+});
+
+test('rien à envoyer : rien ne change', () => {
+  const start = initialState();
+  assert.equal(reduce(start, launch(P1, null)), start);
+  const shown = afterFirst();
+  assert.equal(reduce(shown, { type: 'followup', request: null }), shown);
+});
+
+test('réussite : l’analyse s’affiche et l’échange entre dans la conversation', () => {
+  const state = afterFirst();
+  assert.equal(state.phase, 'resultat');
+  assert.equal(state.result, R1);
+  assert.equal(state.resultPassage, P1);
+  assert.equal(state.failure, null);
+  assert.deepEqual(state.history, [{ role: 'user', text: 'بِسْمِ ٱللَّهِ' }, { role: 'model', text: R1 }]);
+});
+
+test('réponse sans en-tête : une erreur du moteur, hors de la conversation', () => {
+  const state = reduce(reduce(initialState(), launch()), success('⚠️ ERREUR RUNTIME : boom'));
+  assert.equal(state.phase, 'erreur');
+  assert.equal(state.failure.kind, 'engine');
+  assert.equal(state.failure.detail, '⚠️ ERREUR RUNTIME : boom');
+  assert.deepEqual(state.history, []);
+  assert.equal(state.result, null);
+});
+
+test('échec après une analyse : elle reste affichée, la conversation ne bouge pas', () => {
+  const shown = afterFirst();
+  const failure = { kind: 'cut', status: 0, detail: '' };
+  const waiting = reduce(shown, { type: 'followup', request: followUpRequest('Objection', shown.history, O) });
+  const state = reduce(waiting, { type: 'failure', failure });
+  assert.equal(state.phase, 'erreur');
+  assert.equal(state.failure, failure);
+  assert.equal(state.result, R1);
+  assert.equal(state.resultPassage, P1);
+  assert.deepEqual(state.history, shown.history);
+  assert.equal(state.requestKind, 'followup');
+});
+
+test('autre passage : nouvelle conversation, l’ancienne analyse reste jusqu’à l’arrivée de la suivante', () => {
+  const waiting = reduce(afterFirst(), launch(P2, REQ2));
+  assert.equal(waiting.phase, 'attente');
+  assert.deepEqual(waiting.history, []);
+  assert.equal(waiting.result, R1);
+  assert.equal(waiting.resultPassage, P1);
+  assert.equal(waiting.passage, P2);
+  const state = reduce(waiting, success(R2));
+  assert.equal(state.result, R2);
+  assert.equal(state.resultPassage, P2);
+  assert.deepEqual(state.history, [{ role: 'user', text: 'ٱللَّهُ' }, { role: 'model', text: R2 }]);
+});
+
+test('suite de conversation : la demande porte l’historique, et le premier échange survit au plafond', () => {
+  let state = afterFirst();
+  for (let i = 2; i <= 7; i++) {
+    const before = state.history;
+    const request = followUpRequest(`Objection ${i}`, state.history, O);
+    assert.deepEqual(request.history, before);
+    state = reduce(state, { type: 'followup', request });
+    assert.equal(state.phase, 'attente');
+    assert.equal(state.history, before); // rien n'entre dans la conversation avant la réponse
+    state = reduce(state, success(H + `Réponse ${i}`));
+    assert.equal(state.result, H + `Réponse ${i}`);
+    assert.equal(state.resultPassage, P1);
+  }
+  assert.equal(state.history.length, 10);
+  assert.deepEqual(state.history[0], { role: 'user', text: 'بِسْمِ ٱللَّهِ' });
+  assert.deepEqual(state.history.filter((turn) => turn.role === 'user').map((turn) => turn.text),
+    ['بِسْمِ ٱللَّهِ', 'Objection 4', 'Objection 5', 'Objection 6', 'Objection 7']);
+});
+
+test('nouvelle conversation : retour à l’état de départ, sauf pendant une attente', () => {
+  assert.deepEqual(reduce(afterFirst(), { type: 'new-conversation' }), initialState());
+  const waiting = reduce(initialState(), launch());
+  assert.equal(reduce(waiting, { type: 'new-conversation' }), waiting);
+});
+
+test('une réponse qui n’est pas attendue est ignorée', () => {
+  const start = initialState();
+  assert.equal(reduce(start, success(R1)), start);
+  assert.equal(reduce(start, { type: 'failure', failure: { kind: 'cut' } }), start);
+  const shown = afterFirst();
+  assert.equal(reduce(shown, success(R2)), shown);
+  assert.equal(reduce(shown, { type: 'inconnu' }), shown);
+});
+
+test('réessayer : la demande en échec repart telle quelle', () => {
+  const failed = reduce(reduce(initialState(), launch()), { type: 'failure', failure: { kind: 'network' } });
+  assert.equal(failed.requestKind, 'launch');
+  const again = reduce(failed, { type: failed.requestKind, passage: failed.passage, request: failed.request });
+  assert.equal(again.phase, 'attente');
+  assert.equal(again.request, REQ1);
+  assert.equal(again.failure, null);
+});
+
+test('snapshot et restore : l’analyse et la conversation reviennent après un rechargement', () => {
+  const shown = reduce(reduce(afterFirst(), { type: 'followup', request: followUpRequest('Objection', afterFirst().history, O) }), success(R2));
+  const saved = JSON.parse(JSON.stringify(snapshot(shown)));
+  assert.deepEqual(Object.keys(saved).sort(), ['history', 'passage', 'result', 'resultPassage']);
+  const restored = reduce(initialState(), { type: 'restore', saved });
+  assert.equal(restored.phase, 'resultat');
+  assert.equal(restored.result, R2);
+  assert.deepEqual(restored.history, shown.history);
+  assert.deepEqual(restored.resultPassage, P1);
+  assert.equal(restored.request, null);
+});
+
+test('restore : un contenu douteux est ignoré', () => {
+  for (const saved of [null, undefined, 'x', {}, { history: 'x', result: R1 }, { history: [], result: 'sans en-tête' },
+    { history: [{ role: 'user' }], result: R1 }, { history: [{ role: 'x', text: 'a' }, { role: 'model', text: 'b' }], result: R1 }]) {
+    assert.deepEqual(reduce(initialState(), { type: 'restore', saved }), initialState(), JSON.stringify(saved));
+  }
+  const shown = afterFirst();
+  assert.equal(reduce(shown, { type: 'restore', saved: snapshot(shown) }), shown);
+});
+
+test('createLatest : seule la dernière demande compte', () => {
+  const latest = createLatest();
+  const a = latest.next();
+  const b = latest.next();
+  assert.equal(latest.isCurrent(a), false);
+  assert.equal(latest.isCurrent(b), true);
+  assert.notEqual(a, b);
+});
