@@ -104,3 +104,15 @@ test('aucun dossier de version, ou plusieurs : erreur, rien n’est modifié', a
     assert.ok(existsSync(join(root, dir(OLD))));
   });
 });
+
+test('une page ajoutée plus tard (Scanner) passe elle aussi à la version suivante', async () => {
+  const files = site(OLD);
+  files['scanner/index.html'] = `<link rel="stylesheet" href="/assets/css/scanner.css?v=${OLD}">\n<script type="module" src="/${dir(OLD)}/pages/a.js?v=${OLD}"></script>\n`;
+  await withSite(files, async (root, read) => {
+    const { changed } = await bumpVersion(root);
+    assert.ok(changed.includes('scanner/index.html'));
+    const page = await read('scanner/index.html');
+    assert.ok(page.includes(`/assets/css/scanner.css?v=${NEW}"`));
+    assert.ok(page.includes(`/${dir(NEW)}/pages/a.js?v=${NEW}"`));
+  });
+});

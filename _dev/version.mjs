@@ -15,7 +15,7 @@ import { readdir, readFile, rename, writeFile } from 'node:fs/promises';
 import { join, relative } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
-const PAGES = ['accueil', 'interpreteur'];
+import { PAGES } from './pages.mjs';
 
 async function list(dir) {
   try {

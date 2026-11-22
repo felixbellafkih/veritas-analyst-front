@@ -18,7 +18,7 @@ export const DESTINATIONS = [
 ];
 
 const HOME = '/accueil/';
-const PAGE_TITLES = { accueil: tx('Accueil'), interpreteur: tx('Interpréteur') };
+const PAGE_TITLES = { accueil: tx('Accueil'), interpreteur: tx('Interpréteur'), scanner: tx('Scanner') };
 const THEME_EVENT = 'veritas:theme';
 
 // Le corpus a une page française et une page anglaise

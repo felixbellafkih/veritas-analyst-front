@@ -11,7 +11,7 @@ import { readdir, readFile, stat, writeFile } from 'node:fs/promises';
 import { join, relative } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
-const PAGES = ['accueil', 'interpreteur'];
+import { PAGES } from './pages.mjs';
 const REASON = 'le texte doit être écrit en toutes lettres';
 // Un appel, et non une définition (function t(…)) ni la méthode d'un objet (x.t(…))
 const CALL = /(?<![\w$.])(?<!function\s+)(t|tm|tx)\(\s*/g;

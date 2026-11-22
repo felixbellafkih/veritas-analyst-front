@@ -4,11 +4,12 @@ import assert from 'node:assert/strict';
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { PAGES as PAGE_DIRS } from '../pages.mjs';
 
 const SITE = fileURLToPath(new URL('../..', import.meta.url));
 const CSP = '<meta http-equiv="Content-Security-Policy" content="default-src \'none\'; script-src \'self\'; style-src \'self\'; img-src \'self\' data:; font-src \'self\'; connect-src \'self\' https://api.veritas-analyst.org; base-uri \'none\'; form-action \'none\'">';
-const SERVED = ['assets', 'accueil', 'interpreteur'];
-const PAGES = ['interpreteur/index.html', 'accueil/index.html'].filter((page) => existsSync(join(SITE, page)));
+const SERVED = ['assets', ...PAGE_DIRS];
+const PAGES = PAGE_DIRS.map((name) => `${name}/index.html`).filter((page) => existsSync(join(SITE, page)));
 
 function walk(dir) {
   if (!existsSync(dir)) return [];
@@ -30,8 +31,17 @@ const versionDirs = existsSync(JS) ? readdirSync(JS).filter((name) => /^v\d+$/.t
 const MODULES = join(JS, versionDirs[0] || 'v0');
 const moduleRel = (path) => relative(MODULES, path).replace(/\\/g, '/');
 
-test('la page de l’Interpréteur existe', () => {
-  assert.ok(PAGES.includes('interpreteur/index.html'));
+test('les pages du site existent : accueil, Interpréteur, Scanner', () => {
+  for (const name of ['accueil', 'interpreteur', 'scanner']) assert.ok(PAGES.includes(`${name}/index.html`), name);
+});
+
+// Une page oubliée dans _dev/pages.mjs garderait son ancien numéro de version à la mise en ligne suivante
+test('toute page qui charge un module du site est recensée dans _dev/pages.mjs', () => {
+  const found = readdirSync(SITE).filter((name) => {
+    const page = join(SITE, name, 'index.html');
+    return !name.startsWith('.') && !name.startsWith('_') && existsSync(page) && /<script type="module" src="\/assets\/js\/v\d+\//.test(read(page));
+  });
+  assert.deepEqual(found.sort(), [...PAGE_DIRS].sort());
 });
 
 for (const page of PAGES) {

@@ -79,3 +79,13 @@ test('coupure et délai dépassé : la demande est peut-être déjà facturée',
   assert.equal(typeof BILLED_NOTICE, 'string');
   assert.ok(BILLED_NOTICE.length > 20);
 });
+
+// Lectures publiques du Scanner et de la page Tarteel : ni analyse, ni clé
+test('describeReadFailure : le réseau, un blocage, ou une erreur du serveur', async () => {
+  const { describeReadFailure } = await import('../../assets/js/v1/lib/failures.js');
+  assert.equal(describeReadFailure(new ApiFailure('network')), 'Connexion impossible. Vérifiez votre réseau, puis réessayez.');
+  assert.equal(describeReadFailure(new ApiFailure('http', { status: 403 })), 'Accès bloqué par le serveur après trop d’essais. Réessayez plus tard.');
+  for (const failure of [new ApiFailure('http', { status: 500 }), new ApiFailure('http', { status: 503 }), new ApiFailure('http', { status: 401 }), null, undefined, new ApiFailure('timeout')]) {
+    assert.equal(describeReadFailure(failure), 'Le serveur a rencontré une erreur.', JSON.stringify(failure));
+  }
+});
