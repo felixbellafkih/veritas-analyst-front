@@ -1,3 +1,352 @@
 [
- {"code": "fr", "label": "Français"}
+ {
+  "code": "fr",
+  "interface": true,
+  "label": "Français"
+ },
+ {
+  "code": "en",
+  "interface": false,
+  "label": "English"
+ },
+ {
+  "code": "ar",
+  "interface": false,
+  "label": "العربية"
+ },
+ {
+  "code": "es",
+  "interface": false,
+  "label": "Español"
+ },
+ {
+  "code": "de",
+  "interface": false,
+  "label": "Deutsch"
+ },
+ {
+  "code": "it",
+  "interface": false,
+  "label": "Italiano"
+ },
+ {
+  "code": "pt",
+  "interface": false,
+  "label": "Português"
+ },
+ {
+  "code": "ru",
+  "interface": false,
+  "label": "Русский"
+ },
+ {
+  "code": "zh-CN",
+  "interface": false,
+  "label": "中文 (Simplified)"
+ },
+ {
+  "code": "zh-TW",
+  "interface": false,
+  "label": "中文 (Traditional)"
+ },
+ {
+  "code": "ja",
+  "interface": false,
+  "label": "日本語"
+ },
+ {
+  "code": "ko",
+  "interface": false,
+  "label": "한국어"
+ },
+ {
+  "code": "hi",
+  "interface": false,
+  "label": "हिन्दी"
+ },
+ {
+  "code": "tr",
+  "interface": false,
+  "label": "Türkçe"
+ },
+ {
+  "code": "id",
+  "interface": false,
+  "label": "Bahasa Indonesia"
+ },
+ {
+  "code": "vi",
+  "interface": false,
+  "label": "Tiếng Việt"
+ },
+ {
+  "code": "pl",
+  "interface": false,
+  "label": "Polski"
+ },
+ {
+  "code": "nl",
+  "interface": false,
+  "label": "Nederlands"
+ },
+ {
+  "code": "sv",
+  "interface": false,
+  "label": "Svenska"
+ },
+ {
+  "code": "fi",
+  "interface": false,
+  "label": "Suomi"
+ },
+ {
+  "code": "da",
+  "interface": false,
+  "label": "Dansk"
+ },
+ {
+  "code": "no",
+  "interface": false,
+  "label": "Norsk"
+ },
+ {
+  "code": "cs",
+  "interface": false,
+  "label": "Čeština"
+ },
+ {
+  "code": "hu",
+  "interface": false,
+  "label": "Magyar"
+ },
+ {
+  "code": "el",
+  "interface": false,
+  "label": "Ελληνικά"
+ },
+ {
+  "code": "ro",
+  "interface": false,
+  "label": "Română"
+ },
+ {
+  "code": "bg",
+  "interface": false,
+  "label": "Български"
+ },
+ {
+  "code": "uk",
+  "interface": false,
+  "label": "Українська"
+ },
+ {
+  "code": "iw",
+  "interface": false,
+  "label": "עברית"
+ },
+ {
+  "code": "fa",
+  "interface": false,
+  "label": "فارسی"
+ },
+ {
+  "code": "ur",
+  "interface": false,
+  "label": "اردو"
+ },
+ {
+  "code": "sw",
+  "interface": false,
+  "label": "Swahili"
+ },
+ {
+  "code": "am",
+  "interface": false,
+  "label": "Amharic"
+ },
+ {
+  "code": "ha",
+  "interface": false,
+  "label": "Hausa"
+ },
+ {
+  "code": "yo",
+  "interface": false,
+  "label": "Yoruba"
+ },
+ {
+  "code": "zu",
+  "interface": false,
+  "label": "Zulu"
+ },
+ {
+  "code": "af",
+  "interface": false,
+  "label": "Afrikaans"
+ },
+ {
+  "code": "ta",
+  "interface": false,
+  "label": "Tamil"
+ },
+ {
+  "code": "te",
+  "interface": false,
+  "label": "Telugu"
+ },
+ {
+  "code": "ml",
+  "interface": false,
+  "label": "Malayalam"
+ },
+ {
+  "code": "kn",
+  "interface": false,
+  "label": "Kannada"
+ },
+ {
+  "code": "mr",
+  "interface": false,
+  "label": "Marathi"
+ },
+ {
+  "code": "bn",
+  "interface": false,
+  "label": "Bengali"
+ },
+ {
+  "code": "gu",
+  "interface": false,
+  "label": "Gujarati"
+ },
+ {
+  "code": "pa",
+  "interface": false,
+  "label": "Punjabi"
+ },
+ {
+  "code": "th",
+  "interface": false,
+  "label": "Thai"
+ },
+ {
+  "code": "my",
+  "interface": false,
+  "label": "Burmese"
+ },
+ {
+  "code": "km",
+  "interface": false,
+  "label": "Khmer"
+ },
+ {
+  "code": "tl",
+  "interface": false,
+  "label": "Tagalog"
+ },
+ {
+  "code": "lo",
+  "interface": false,
+  "label": "Lao"
+ },
+ {
+  "code": "ms",
+  "interface": false,
+  "label": "Malay"
+ },
+ {
+  "code": "jv",
+  "interface": false,
+  "label": "Javanese"
+ },
+ {
+  "code": "ceb",
+  "interface": false,
+  "label": "Cebuano"
+ },
+ {
+  "code": "so",
+  "interface": false,
+  "label": "Somali"
+ },
+ {
+  "code": "ku",
+  "interface": false,
+  "label": "Kurdish"
+ },
+ {
+  "code": "ps",
+  "interface": false,
+  "label": "Pashto"
+ },
+ {
+  "code": "uz",
+  "interface": false,
+  "label": "Uzbek"
+ },
+ {
+  "code": "kk",
+  "interface": false,
+  "label": "Kazakh"
+ },
+ {
+  "code": "az",
+  "interface": false,
+  "label": "Azerbaijani"
+ },
+ {
+  "code": "bs",
+  "interface": false,
+  "label": "Bosnian"
+ },
+ {
+  "code": "hr",
+  "interface": false,
+  "label": "Croatian"
+ },
+ {
+  "code": "sr",
+  "interface": false,
+  "label": "Serbian"
+ },
+ {
+  "code": "sq",
+  "interface": false,
+  "label": "Albanian"
+ },
+ {
+  "code": "sk",
+  "interface": false,
+  "label": "Slovak"
+ },
+ {
+  "code": "sl",
+  "interface": false,
+  "label": "Slovenian"
+ },
+ {
+  "code": "et",
+  "interface": false,
+  "label": "Estonian"
+ },
+ {
+  "code": "lv",
+  "interface": false,
+  "label": "Latvian"
+ },
+ {
+  "code": "lt",
+  "interface": false,
+  "label": "Lithuanian"
+ },
+ {
+  "code": "eo",
+  "interface": false,
+  "label": "Esperanto"
+ },
+ {
+  "code": "la",
+  "interface": false,
+  "label": "Latin"
+ }
 ]

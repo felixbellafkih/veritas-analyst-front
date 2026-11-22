@@ -51,7 +51,7 @@ export function openKeyDialog({ store, api, onChange }) {
 
     const form = el('form', { class: 'cle__formulaire', attrs: { novalidate: true } },
       el('div', { class: 'champ' },
-        el('label', { class: 'champ__etiquette', text: t('Clé API Google Gemini'), attrs: { for: 'cle-saisie' } }),
+        el('label', { class: 'champ__etiquette', text: t('Votre clé API Google Gemini'), attrs: { for: 'cle-saisie' } }),
         el('div', { class: 'cle__saisie' }, input, reveal)),
       el('label', { class: 'case', attrs: { for: 'cle-garder' } }, remember, el('span', { text: t('Garder la clé sur cet appareil') })),
       el('p', { class: 'champ__aide', text: t('Sans cette case, la clé est oubliée à la fermeture de l’onglet.') }),

@@ -99,9 +99,20 @@ test('un élément marqué qui contient une balise est une erreur', async () => 
 });
 
 test('la liste du site est à jour (sinon : node _dev/textes.mjs)', async () => {
-  const { texts, errors } = await collectTexts(SITE);
+  const { texts, errors, places } = await collectTexts(SITE);
   assert.deepEqual(errors, []);
   const saved = JSON.parse(await readFile(join(SITE, '_dev', 'textes.json'), 'utf8'));
-  assert.deepEqual(saved, { texts });
+  assert.deepEqual(saved, { texts, places });
   assert.ok(texts.length > 10);
+});
+
+test('places : pour chaque texte, le premier fichier où il figure', async () => {
+  await withSite({
+    'assets/js/ui/b.js': "t('Commun'); t('Du module');",
+    'accueil/index.html': '<p data-i18n>Commun</p><p data-i18n>De la page</p>',
+    'interpreteur/index.html': '<p data-i18n>De la page</p>',
+  }, ({ texts, places }) => {
+    assert.deepEqual(texts, ['Commun', 'De la page', 'Du module']);
+    assert.deepEqual(places, { Commun: 'assets/js/ui/b.js', 'De la page': 'accueil/index.html', 'Du module': 'assets/js/ui/b.js' });
+  });
 });

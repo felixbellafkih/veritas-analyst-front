@@ -9,7 +9,7 @@ import { rootTiles } from '../lib/root-card.js';
 import { MAX_VERSES, SURAS, clampRange, passageQuery } from '../lib/verses.js';
 import { add, browserStore, el, fill } from '../ui/dom.js';
 import { icon } from '../ui/icons.js';
-import { currentLang, initI18n, languages, t, td, tm } from '../ui/i18n-dom.js';
+import { currentLang, initI18n, interfaceLanguages, t, td, tm } from '../ui/i18n-dom.js';
 import { openKeyDialog } from '../ui/key-dialog.js';
 import { mountShell } from '../ui/shell.js';
 
@@ -151,7 +151,7 @@ async function showMarkers(strip) {
   fill(strip,
     roots !== null ? marker(t('{n} racines indexées'), format.format(roots)) : null,
     marker(t('{n} versets'), format.format(VERSES)),
-    languages().length > 1 ? marker(t('Interface en {n} langues'), format.format(languages().length)) : null,
+    interfaceLanguages().length > 1 ? marker(t('Interface en {n} langues'), format.format(interfaceLanguages().length)) : null,
     version ? el('span', { class: 'repere', text: t('Version {version}', { version }) }) : null);
 }
 

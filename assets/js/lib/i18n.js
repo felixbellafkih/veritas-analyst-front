@@ -65,3 +65,26 @@ export function responseLanguage(list, chosen, uiCode) {
   const found = find(chosen) || find(uiCode) || find('fr');
   return found ? { code: found.code, label: found.label } : { code: 'fr', label: 'Français' };
 }
+
+const LANG_CODE = /^[A-Za-z]{2,3}(-[A-Za-z]{2,4})?$/;
+
+// Liste des langues, telle que le Kernel l'écrit dans assets/i18n/langues.json :
+// [{code, label, interface}, …], dans l'ordre de la liste des langues de l'app actuelle.
+//   all : toutes les langues — celles que le visiteur peut demander pour la réponse du moteur ;
+//   ui  : les codes des langues dans lesquelles l'interface elle-même est traduite (le français en est toujours).
+// Une liste absente, illisible ou sans le français se réduit au français.
+export function languageList(loaded) {
+  const seen = new Set();
+  const entries = [];
+  for (const entry of Array.isArray(loaded) ? loaded : []) {
+    if (!entry || typeof entry.code !== 'string' || !LANG_CODE.test(entry.code) || seen.has(entry.code)) continue;
+    if (typeof entry.label !== 'string' || !entry.label.trim()) continue;
+    seen.add(entry.code);
+    entries.push(entry);
+  }
+  if (!seen.has('fr')) return { all: [{ code: 'fr', label: 'Français' }], ui: ['fr'] };
+  return {
+    all: entries.map((entry) => ({ code: entry.code, label: entry.label })),
+    ui: entries.filter((entry) => entry.code === 'fr' || entry.interface === true).map((entry) => entry.code),
+  };
+}

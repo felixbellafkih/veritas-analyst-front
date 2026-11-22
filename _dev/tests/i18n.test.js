@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { htmlLang, isRtl, pickLanguage, responseLanguage, translate, tx, validLang } from '../../assets/js/lib/i18n.js';
+import { htmlLang, isRtl, languageList, pickLanguage, responseLanguage, translate, tx, validLang } from '../../assets/js/lib/i18n.js';
 
 // Les codes de engine/translator.py (LANGUAGE_NAMES), plus le français
 const codes = ['fr', 'en', 'ar', 'es', 'de', 'it', 'pt', 'ru', 'zh-CN', 'zh-TW', 'ja', 'ko', 'hi', 'tr', 'id', 'vi', 'pl', 'nl', 'sv',
@@ -109,4 +109,35 @@ test('langue de la réponse : à défaut, « Français », le libellé qui ne de
   assert.deepEqual(responseLanguage([], 'en', 'en'), { code: 'fr', label: 'Français' });
   assert.deepEqual(responseLanguage(null, null, null), { code: 'fr', label: 'Français' });
   assert.deepEqual(responseLanguage([{ code: 'en' }, null, { code: 'ar', label: '' }], 'en', 'ar'), { code: 'fr', label: 'Français' });
+});
+
+// assets/i18n/langues.json est écrit par le Kernel (build_site_translations.py) : toutes les langues de la
+// réponse, et « interface » pour celles dans lesquelles le site lui-même est traduit.
+test('liste des langues : toutes pour la réponse, celles qui ont un fichier pour l’interface', () => {
+  const lists = languageList([
+    { code: 'fr', label: 'Français', interface: true },
+    { code: 'en', label: 'English', interface: true },
+    { code: 'ar', label: 'العربية', interface: false },
+    { code: 'zh-CN', label: '中文 (Simplified)' },
+  ]);
+  assert.deepEqual(lists.all, [{ code: 'fr', label: 'Français' }, { code: 'en', label: 'English' }, { code: 'ar', label: 'العربية' }, { code: 'zh-CN', label: '中文 (Simplified)' }]);
+  assert.deepEqual(lists.ui, ['fr', 'en']);
+});
+
+test('liste des langues : le français est toujours une langue de l’interface', () => {
+  assert.deepEqual(languageList([{ code: 'fr', label: 'Français' }, { code: 'en', label: 'English' }]).ui, ['fr']);
+  assert.deepEqual(languageList([{ code: 'fr', label: 'Français', interface: false }]).ui, ['fr']);
+});
+
+test('liste des langues : entrées mal formées et doublons écartés', () => {
+  const lists = languageList([{ code: 'fr', label: 'Français' }, null, 'en', { code: 'en' }, { code: 'de', label: '' }, { code: 'x y', label: 'Faux' },
+    { code: 'es', label: 'Español', interface: 'oui' }, { code: 'es', label: 'Doublon', interface: true }]);
+  assert.deepEqual(lists.all, [{ code: 'fr', label: 'Français' }, { code: 'es', label: 'Español' }]);
+  assert.deepEqual(lists.ui, ['fr']);
+});
+
+test('liste des langues : absente, illisible ou sans le français → le français seul', () => {
+  for (const loaded of [null, undefined, 'texte', {}, [], [{ code: 'en', label: 'English', interface: true }]]) {
+    assert.deepEqual(languageList(loaded), { all: [{ code: 'fr', label: 'Français' }], ui: ['fr'] }, JSON.stringify(loaded));
+  }
 });

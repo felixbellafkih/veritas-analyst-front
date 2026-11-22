@@ -4,7 +4,7 @@ import { htmlLang, tx } from '../lib/i18n.js';
 import { add, clear, el, fill } from './dom.js';
 import { openDialog } from './dialog.js';
 import { icon, logo } from './icons.js';
-import { currentLang, languageLabel, languages, setLanguage, t, td } from './i18n-dom.js';
+import { currentLang, interfaceLanguages, languageLabel, setLanguage, t, td } from './i18n-dom.js';
 
 // Les destinations du site, dans l'ordre du menu. Une entrée n'apparaît que si sa page existe (ready).
 // Les noms sont ceux de l'app mobile.
@@ -45,7 +45,7 @@ function themeButton(store) {
 
 function openLanguageMenu() {
   const { body, close } = openDialog(t('Langue de l’interface'));
-  const all = languages();
+  const all = interfaceLanguages();
   const list = el('ul', { class: 'liste-choix' });
   const paint = (filter) => {
     clear(list);
@@ -100,10 +100,10 @@ function openMore(store) {
 export function mountShell({ page, store, onKeyClick }) {
   const ready = DESTINATIONS.filter((destination) => destination.ready);
 
-  // ---- en-tête
+  // ---- en-tête. Le bouton de la langue n'apparaît que si l'interface existe dans une autre langue que le français.
   const languageButton = el('button', {
     class: 'bouton-bord bouton-langue',
-    attrs: { type: 'button', 'aria-haspopup': 'dialog', 'aria-label': `${t('Langue de l’interface')} : ${languageLabel(currentLang())}` },
+    attrs: { type: 'button', 'aria-haspopup': 'dialog', 'aria-label': `${t('Langue de l’interface')} : ${languageLabel(currentLang())}`, hidden: interfaceLanguages().length < 2 },
     on: { click: openLanguageMenu },
   }, icon('globe'), el('span', { class: 'bouton-bord__texte', text: languageLabel(currentLang()) }));
 

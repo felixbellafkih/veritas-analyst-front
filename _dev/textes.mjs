@@ -1,4 +1,5 @@
-// Collecte les textes français de l'interface du nouveau site, et écrit leur liste dans _dev/textes.json.
+// Collecte les textes français de l'interface du nouveau site, et écrit leur liste dans _dev/textes.json :
+// {"texts": [...], "places": {"<texte>": "<premier fichier où il figure>"}}.
 // Cette liste est celle que l'auteur valide, puis que le Kernel traduit (build_site_translations.py).
 // Usage : node _dev/textes.mjs
 //
@@ -106,21 +107,31 @@ export async function collectTexts(rootDir) {
   const texts = [];
   const errors = [];
   const name = (path) => relative(rootDir, path).replace(/\\/g, '/');
-  for (const path of await scripts(join(rootDir, 'assets', 'js'))) scriptTexts(await readFile(path, 'utf8'), name(path), texts, errors);
+  // Pour chaque texte, le premier fichier où il figure : la liste soumise à l'auteur est rangée par endroit
+  const places = {};
+  const read = async (path, collect) => {
+    const from = texts.length;
+    collect(await readFile(path, 'utf8'), name(path), texts, errors);
+    for (const text of texts.slice(from)) {
+      if (text && !Object.hasOwn(places, text)) places[text] = name(path);
+    }
+  };
+  for (const path of await scripts(join(rootDir, 'assets', 'js'))) await read(path, scriptTexts);
   for (const page of PAGES) {
     const path = join(rootDir, page, 'index.html');
-    if (await exists(path)) pageTexts(await readFile(path, 'utf8'), name(path), texts, errors);
+    if (await exists(path)) await read(path, pageTexts);
   }
-  return { texts: [...new Set(texts.filter((text) => text))].sort(), errors };
+  const sorted = [...new Set(texts.filter((text) => text))].sort();
+  return { texts: sorted, errors, places: Object.fromEntries(sorted.map((text) => [text, places[text]])) };
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const root = join(fileURLToPath(new URL('.', import.meta.url)), '..');
-  const { texts, errors } = await collectTexts(root);
+  const { texts, errors, places } = await collectTexts(root);
   if (errors.length) {
     console.error(errors.join('\n'));
     process.exit(1);
   }
-  await writeFile(join(root, '_dev', 'textes.json'), JSON.stringify({ texts }, null, 1) + '\n', 'utf8');
+  await writeFile(join(root, '_dev', 'textes.json'), JSON.stringify({ texts, places }, null, 1) + '\n', 'utf8');
   console.log(`${texts.length} textes écrits dans _dev/textes.json`);
 }

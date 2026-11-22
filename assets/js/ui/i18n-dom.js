@@ -5,7 +5,7 @@
 // l'interface. Le texte s'écrit toujours en toutes lettres : c'est ainsi que _dev/textes.mjs le collecte.
 // Dans les pages : data-i18n (le texte de l'élément est la source), data-i18n-md (idem, avec gras et code),
 // data-i18n-placeholder, data-i18n-aria-label, data-i18n-title (la valeur de l'attribut est la source).
-import { htmlLang, isRtl, pickLanguage, translate, validLang } from '../lib/i18n.js';
+import { htmlLang, isRtl, languageList, pickLanguage, translate, validLang } from '../lib/i18n.js';
 import { parseInline } from '../lib/markdown.js';
 import { fill } from './dom.js';
 import { renderInline } from './markdown-view.js';
@@ -13,7 +13,8 @@ import { renderInline } from './markdown-view.js';
 const FRENCH = { code: 'fr', label: 'Français' };
 const ATTRIBUTES = [['data-i18n-placeholder', 'placeholder'], ['data-i18n-aria-label', 'aria-label'], ['data-i18n-title', 'title']];
 
-let list = [FRENCH];
+let list = [FRENCH];  // toutes les langues : celles que le visiteur peut demander pour la réponse du moteur
+let uiCodes = ['fr']; // celles dans lesquelles l'interface elle-même est traduite
 let current = 'fr';
 let catalog = null;
 let store = null;
@@ -38,20 +39,16 @@ async function fetchJson(path) {
   }
 }
 
-// Choix de la langue : ?lang= s'il est valable, sinon le choix gardé, sinon les langues du navigateur, sinon le français
+// Choix de la langue de l'interface, parmi celles où elle est traduite : ?lang= s'il est valable, sinon le
+// choix gardé, sinon les langues du navigateur, sinon le français
 export async function initI18n(options) {
   store = options.store;
-  const loaded = await fetchJson('/assets/i18n/langues.json');
-  if (Array.isArray(loaded)) {
-    const valid = loaded.filter((entry) => entry && typeof entry.code === 'string' && typeof entry.label === 'string');
-    if (valid.some((entry) => entry.code === 'fr')) list = valid;
-  }
-  const codes = list.map((entry) => entry.code);
+  ({ all: list, ui: uiCodes } = languageList(await fetchJson('/assets/i18n/langues.json')));
   const asked = new URLSearchParams(window.location.search).get('lang');
   const kept = store.getLang();
-  if (validLang(asked, codes)) current = asked;
-  else if (validLang(kept, codes)) current = kept;
-  else current = pickLanguage(window.navigator.languages || [window.navigator.language], codes);
+  if (validLang(asked, uiCodes)) current = asked;
+  else if (validLang(kept, uiCodes)) current = kept;
+  else current = pickLanguage(window.navigator.languages || [window.navigator.language], uiCodes);
 
   catalog = null;
   if (current !== 'fr') {
@@ -79,14 +76,18 @@ export const td = (text) => translate(catalog, String(text ?? ''));
 
 export const currentLang = () => current;
 
+// Langues de la réponse du moteur : toutes celles de l'app actuelle
 export const languages = () => list.slice();
+
+// Langues dans lesquelles l'interface peut s'afficher
+export const interfaceLanguages = () => list.filter((entry) => uiCodes.includes(entry.code));
 
 export const languageLabel = (code) => (list.find((entry) => entry.code === code) || FRENCH).label;
 
 // Le choix est gardé sur l'appareil, puis la page se recharge dans la langue choisie. Ce que le visiteur a
 // en cours (formulaire, conversation) est gardé pour l'onglet : rien n'est perdu.
 export function setLanguage(code) {
-  if (!validLang(code, list.map((entry) => entry.code))) return false;
+  if (!validLang(code, uiCodes)) return false;
   store.setLang(code);
   const url = new URL(window.location.href);
   url.searchParams.delete('lang');
