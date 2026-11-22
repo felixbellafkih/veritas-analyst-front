@@ -183,3 +183,9 @@ test('Tarteel : Entrée sur une case ne lance pas l’analyse ; le curseur va su
   assert.match(source, /event\.key !== 'Enter'[\s\S]{0,200}event\.preventDefault\(\)/, 'Entrée n’est pas neutralisée');
   assert.doesNotMatch(source, /first\.focus\(\{ preventScroll: true \}\)/, 'curseur placé sur une case sans la montrer');
 });
+
+// Une page sans cette ligne prendrait des fins de ligne Windows sur ce PC, à la différence des autres
+test('.gitattributes : chaque page du site garde ses fins de ligne LF', () => {
+  const lines = read(join(SITE, '.gitattributes')).split('\n').map((line) => line.trim());
+  for (const name of PAGE_DIRS) assert.ok(lines.includes(`/${name}/** text=auto eol=lf`), name);
+});
