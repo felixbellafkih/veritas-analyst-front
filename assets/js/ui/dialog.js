@@ -16,9 +16,16 @@ export function openDialog(title, { className = '', onClose = null } = {}) {
   dialog.append(el('div', { class: 'fenetre__dans' }, el('div', { class: 'fenetre__tete' }, heading, closeButton), body));
 
   let closed = false;
+  // Échap ferme la fenêtre, où que soit le focus (y compris hors de la fenêtre, sur la page)
+  function onKey(event) {
+    if (event.key !== 'Escape' || event.defaultPrevented) return;
+    event.preventDefault();
+    close();
+  }
   function close() {
     if (closed) return;
     closed = true;
+    document.removeEventListener('keydown', onKey, true);
     if (dialog.open) dialog.close();
     dialog.remove();
     if (opener && typeof opener.focus === 'function' && document.contains(opener)) opener.focus();
@@ -29,12 +36,7 @@ export function openDialog(title, { className = '', onClose = null } = {}) {
   dialog.addEventListener('click', (event) => {
     if (event.target === dialog) close(); // clic sur le voile, hors de la fenêtre
   });
-  dialog.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape') {
-      event.preventDefault();
-      close();
-    }
-  });
+  document.addEventListener('keydown', onKey, true);
   dialog.addEventListener('cancel', (event) => {
     event.preventDefault();
     close();

@@ -348,6 +348,63 @@
   color: var(--fort);
 }
 
+.fenetre__corps {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Fenêtre « Clé API » */
+.cle__formulaire {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cle__saisie {
+  display: flex;
+  gap: 8px;
+}
+
+.cle__saisie .saisie {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.cle__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.cle__liens {
+  display: flex;
+  flex-direction: column;
+}
+
+.cle__lien {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: var(--cible);
+  font-size: var(--t-petit);
+  font-weight: 500;
+}
+
+.cle__dev {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  padding-block-start: 10px;
+  border-block-start: 1px solid var(--bord-doux);
+  font-size: var(--t-petit);
+}
+
+.cle__dev .cle__formulaire {
+  width: 100%;
+}
+
 .liste-choix {
   display: flex;
   flex-direction: column;
