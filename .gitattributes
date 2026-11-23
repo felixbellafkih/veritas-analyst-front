@@ -10,4 +10,5 @@
 /scanner/** text=auto eol=lf
 /sequenceur/** text=auto eol=lf
 /tarteel/** text=auto eol=lf
+/thesis/** text=auto eol=lf
 /assets/fonts/*.woff2 binary
