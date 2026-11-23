@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { FREE_TEXT_MAX, ROOT_MAX, formState } from '../../assets/js/v5/lib/form-state.js';
+import { FREE_TEXT_MAX, ROOT_MAX, formState } from '../../assets/js/v6/lib/form-state.js';
 
 const DEPART = { mode: 'verset', sura: 1, start: 1, end: 1, primary: '', constraint: '', text: '', language: null };
 

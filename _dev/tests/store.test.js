@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { createStore } from '../../assets/js/v5/lib/store.js';
+import { createStore } from '../../assets/js/v6/lib/store.js';
 
 function fakeStorage(initial = {}) {
   const data = new Map(Object.entries(initial));

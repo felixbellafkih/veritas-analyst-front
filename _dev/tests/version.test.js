@@ -19,7 +19,7 @@ function site(version) {
     [`${dir(version)}/lib/b.js`]: 'export const b = 1;\n',
     'assets/js/theme-init.js': '// classique\n',
     'assets/css/base.css': 'body { margin: 0; }\n',
-    'accueil/index.html': [
+    'index.html': [
       `<link rel="stylesheet" href="/assets/css/base.css?v=${version}">`,
       `<script src="/assets/js/theme-init.js?v=${version}"></script>`,
       `<script type="module" src="/${dir(version)}/pages/a.js?v=${version}"></script>`,
@@ -61,7 +61,7 @@ test('version suivante : le dossier des modules change de nom, les pages et les 
     assert.ok(existsSync(join(root, dir(NEW), 'lib', 'b.js')));
     assert.equal(await currentVersion(root), NEW);
 
-    const home = await read('accueil/index.html');
+    const home = await read('index.html');
     assert.ok(home.includes(`href="/assets/css/base.css?v=${NEW}"`));
     assert.ok(home.includes(`src="/assets/js/theme-init.js?v=${NEW}"`));
     assert.ok(home.includes(`src="/${dir(NEW)}/pages/a.js?v=${NEW}"`));
@@ -70,14 +70,14 @@ test('version suivante : le dossier des modules change de nom, les pages et les 
 
     assert.ok((await read('_dev/tests/x.test.js')).includes(`'../../${dir(NEW)}/lib/b.js'`));
     assert.ok((await read('_dev/outil.mjs')).includes(`${dir(NEW)}/lib/b.js`));
-    assert.deepEqual(result.changed.sort(), ['_dev/outil.mjs', '_dev/tests/x.test.js', 'accueil/index.html', 'interpreteur/index.html']);
+    assert.deepEqual(result.changed.sort(), ['_dev/outil.mjs', '_dev/tests/x.test.js', 'index.html', 'interpreteur/index.html']);
   });
 });
 
 test('version suivante : un autre nombre qui commence pareil n’est pas touché, ni les données enregistrées', async () => {
   await withSite(site(OLD), async (root, read) => {
     await bumpVersion(root);
-    assert.ok((await read('accueil/index.html')).includes(`href="/corpus/?v=${OLD}0"`));
+    assert.ok((await read('index.html')).includes(`href="/corpus/?v=${OLD}0"`));
     assert.ok((await read('_dev/tests/x.test.js')).includes(`'${dir(OLD)}0/lib/b.js'`));
     assert.equal(await read('_dev/fixtures/donnee.txt'), `${dir(OLD)}/lib/b.js\n`);
   });
@@ -100,7 +100,7 @@ test('aucun dossier de version, ou plusieurs : erreur, rien n’est modifié', a
   });
   await withSite({ ...site(OLD), [`${dir(NEW)}/lib/b.js`]: 'export const b = 2;\n' }, async (root, read) => {
     await assert.rejects(() => bumpVersion(root), /dossier de version/);
-    assert.ok((await read('accueil/index.html')).includes(`?v=${OLD}"`));
+    assert.ok((await read('index.html')).includes(`?v=${OLD}"`));
     assert.ok(existsSync(join(root, dir(OLD))));
   });
 });
@@ -149,5 +149,16 @@ test('version suivante : les pages du corpus au gabarit du site suivent ; les au
     assert.equal(await read('lx-1242ba1a/a-b-b/index.html'), oldStyle);
     assert.equal(await read('corpus/data/veritas_corpus.jsonl'), files['corpus/data/veritas_corpus.jsonl']);
     assert.ok(!changed.some((name) => name.startsWith('lx-') || name.endsWith('.jsonl') || name === 'corpus/9/84/index.html'));
+  });
+});
+
+// Étape 6 : /classique/ n'a pas de module, mais sa feuille porte ?v= : la montée de version la suit
+test('version suivante : la page de l’app (/classique/) suit aussi', async () => {
+  const files = { ...site(OLD), 'classique/index.html': `<link rel="stylesheet" href="/assets/css/classique.css?v=${OLD}">
+` };
+  await withSite(files, async (root, read) => {
+    const { changed } = await bumpVersion(root);
+    assert.ok((await read('classique/index.html')).includes(`classique.css?v=${NEW}"`));
+    assert.ok(changed.includes('classique/index.html'));
   });
 });

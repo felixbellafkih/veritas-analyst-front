@@ -3,7 +3,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { parseSequence, sequenceCounts, transcriptCopy } from '../../assets/js/v5/lib/sequence.js';
+import { parseSequence, sequenceCounts, transcriptCopy } from '../../assets/js/v6/lib/sequence.js';
 
 const fixture = (name) => JSON.parse(readFileSync(fileURLToPath(new URL(`../fixtures/${name}`, import.meta.url)), 'utf8'));
 const SEQ = fixture('sequences.json');

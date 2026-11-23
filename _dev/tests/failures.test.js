@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { ApiFailure, BILLED_NOTICE, describeFailure, maybeBilled } from '../../assets/js/v5/lib/failures.js';
+import { ApiFailure, BILLED_NOTICE, describeFailure, maybeBilled } from '../../assets/js/v6/lib/failures.js';
 
 const DETAIL = 'DETAIL-TECHNIQUE-42';
 const failure = (kind, status) => new ApiFailure(kind, { status, detail: DETAIL });
@@ -82,7 +82,7 @@ test('coupure et délai dépassé : la demande est peut-être déjà facturée',
 
 // Lectures publiques du Scanner et de la page Tarteel : ni analyse, ni clé
 test('describeReadFailure : le réseau, un blocage, ou une erreur du serveur', async () => {
-  const { describeReadFailure } = await import('../../assets/js/v5/lib/failures.js');
+  const { describeReadFailure } = await import('../../assets/js/v6/lib/failures.js');
   assert.equal(describeReadFailure(new ApiFailure('network')), 'Connexion impossible. Vérifiez votre réseau, puis réessayez.');
   assert.equal(describeReadFailure(new ApiFailure('http', { status: 403 })), 'Accès bloqué par le serveur après trop d’essais. Réessayez plus tard.');
   for (const failure of [new ApiFailure('http', { status: 500 }), new ApiFailure('http', { status: 503 }), new ApiFailure('http', { status: 401 }), null, undefined, new ApiFailure('timeout')]) {

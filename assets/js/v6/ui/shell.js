@@ -7,7 +7,7 @@ import { openDialog } from './dialog.js';
 import { icon, logo } from './icons.js';
 import { currentLang, interfaceLanguages, languageLabel, setLanguage, t, td } from './i18n-dom.js';
 
-const HOME = '/accueil/';
+const HOME = '/';
 const PAGE_TITLES = { accueil: tx('Accueil'), interpreteur: tx('Interpréteur'), scanner: tx('Scanner'), sequenceur: tx('Séquenceur'), tarteel: tx('Tarteel'), bibliotheque: tx('Bibliothèque'), corpus: tx('Corpus'), legal: tx('Mentions légales') };
 const THEME_EVENT = 'veritas:theme';
 
@@ -64,8 +64,8 @@ function openLanguageMenu() {
 }
 
 function classicLink(className) {
-  return el('a', { class: className, attrs: { href: CLASSIC_URL, target: '_blank', rel: 'noopener' } },
-    el('span', { text: t('Version classique') }), icon('external', 16));
+  // L'app est servie par le site (/classique/) : même onglet, comme les autres pages
+  return el('a', { class: className, attrs: { href: CLASSIC_URL } }, el('span', { text: t('Version classique') }));
 }
 
 // « Plus », au téléphone : les destinations que la barre d'onglets ne porte pas, puis ce que la barre du

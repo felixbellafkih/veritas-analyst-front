@@ -2,7 +2,7 @@
 // Les champs sont ceux qu'envoie l'app mobile (veritas_mobile, api_service.dart) aux mêmes routes.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { draftRequest, saveRequest, updateRequest, validEntry } from '../../assets/js/v5/lib/corpus-panel.js';
+import { draftRequest, saveRequest, updateRequest, validEntry } from '../../assets/js/v6/lib/corpus-panel.js';
 
 const RESULT = '**[TARGET: m]** | 📊 **Tokens:** Input=1 | Output=1 | Thinking=0 | Total=2\n\nAnalyse';
 const VERSE = { mode: 'verset', sura: 2, start: 255, end: 255, text: 'ٱللَّهُ' };
@@ -58,8 +58,8 @@ test('validEntry : une entrée porte un identifiant et ses champs modifiables, t
 
 // ------------------------------------------------------------------ relecture du 22/11/2026
 
-import { CORPUS_CELL_LIMIT, entryContext, maybeSaved, tooLongForCorpus } from '../../assets/js/v5/lib/corpus-panel.js';
-import { ApiFailure } from '../../assets/js/v5/lib/failures.js';
+import { CORPUS_CELL_LIMIT, entryContext, maybeSaved, tooLongForCorpus } from '../../assets/js/v6/lib/corpus-panel.js';
+import { ApiFailure } from '../../assets/js/v6/lib/failures.js';
 
 test('limite du corpus : une saisie de plus de 50 000 caractères ne peut pas être enregistrée', () => {
   assert.equal(CORPUS_CELL_LIMIT, 50000);

@@ -8,9 +8,9 @@ import { fileURLToPath } from 'node:url';
 import { installFakeDom } from './aides/faux-dom.mjs';
 
 const dom = installFakeDom();
-const { mountSequenceChain } = await import('../../assets/js/v5/ui/sequence-chain.js');
-const { parseSequence } = await import('../../assets/js/v5/lib/sequence.js');
-const { scannerHref } = await import('../../assets/js/v5/lib/roots-index.js');
+const { mountSequenceChain } = await import('../../assets/js/v6/ui/sequence-chain.js');
+const { parseSequence } = await import('../../assets/js/v6/lib/sequence.js');
+const { scannerHref } = await import('../../assets/js/v6/lib/roots-index.js');
 
 const file = (path) => readFileSync(fileURLToPath(new URL(path, import.meta.url)), 'utf8');
 const SEQ = JSON.parse(file('../fixtures/sequences.json'));
@@ -152,7 +152,7 @@ test('chaîne courte ou vide : pas de bouton de suite', () => {
 
 // La couleur que l'API joint à chaque élément est faite pour le fond sombre de l'app actuelle
 test('la couleur envoyée par l’API n’est lue nulle part', () => {
-  for (const path of ['../../assets/js/v5/ui/sequence-chain.js', '../../assets/js/v5/lib/sequence.js']) {
+  for (const path of ['../../assets/js/v6/ui/sequence-chain.js', '../../assets/js/v6/lib/sequence.js']) {
     assert.doesNotMatch(file(path), /\.color\b|\[['"]color['"]\]/, path);
   }
 });

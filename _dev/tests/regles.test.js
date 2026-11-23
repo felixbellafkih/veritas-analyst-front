@@ -11,7 +11,7 @@ const CSP = '<meta http-equiv="Content-Security-Policy" content="default-src \'n
 const SERVED = ['assets', ...PAGE_DIRS];
 const PAGES = PAGE_FILES.filter((page) => existsSync(join(SITE, page)));
 // Pages indexables : les mentions légales (page de confidentialité de l'app sur l'App Store)
-const INDEXED = ['legal.html'];
+const INDEXED = PAGE_FILES; // étape 6 : toutes les pages du site sont indexables
 
 function walk(dir) {
   if (!existsSync(dir)) return [];
@@ -35,8 +35,25 @@ const moduleRel = (path) => relative(MODULES, path).replace(/\\/g, '/');
 // Dossiers écrits par la publication du corpus (export_corpus.py du Kernel), pas à la main
 const GENERATED = ['corpus', 'en', 'lx-1242ba1a'];
 
-test('les pages du site existent : accueil, Interpréteur, Scanner, Tarteel, Séquenceur, Bibliothèque', () => {
-  for (const name of ['accueil', 'interpreteur', 'scanner', 'tarteel', 'sequenceur', 'bibliotheque']) assert.ok(PAGES.includes(`${name}/index.html`), name);
+test('les pages du site existent : accueil (à la racine), Interpréteur, Scanner, Tarteel, Séquenceur, Bibliothèque', () => {
+  assert.ok(PAGES.includes('index.html'), 'index.html');
+  for (const name of ['interpreteur', 'scanner', 'tarteel', 'sequenceur', 'bibliotheque']) assert.ok(PAGES.includes(`${name}/index.html`), name);
+  assert.ok(!PAGE_FILES.includes('accueil/index.html'), 'accueil/index.html est une page de renvoi');
+});
+
+// Relecture de l'étape 6 : indexables, les pages d'outils sont aussi atteintes avec des paramètres
+// (/interpreteur/?s=…, /scanner/?q=…) ; leur adresse de référence évite que Google y voie des doublons
+test('chaque page indexable donne son adresse de référence', () => {
+  for (const name of PAGE_DIRS) {
+    const html = read(join(SITE, name, 'index.html'));
+    assert.ok(html.includes(`<link rel="canonical" href="https://veritas-analyst.org/${name}/">`), name);
+  }
+});
+
+// Étape 6 : plus aucun lien interne vers /accueil/ (page de renvoi), sauf ses propres tests
+test('aucun module ni outil ne vise encore /accueil/', () => {
+  const tools = walk(join(SITE, '_dev')).filter((path) => /\.m?js$/.test(path) && !path.endsWith('accueil.test.js') && !path.endsWith('regles.test.js'));
+  for (const path of [...scripts, ...tools]) assert.doesNotMatch(read(path), /['"`]\/accueil\//, rel(path));
 });
 
 // La Bibliothèque ne lit que des fichiers du site : elle ne contacte pas l'API, n'envoie ni clé ni mot de
@@ -62,7 +79,7 @@ test('Bibliothèque : le manifeste est dans la page, avec les emplacements que l
   const page = read(join(SITE, 'bibliotheque', 'index.html'));
   for (const id of ['bibliotheque', 'manifeste', 'schema-execution', 'nombre-racines']) assert.match(page, new RegExp(`id="${id}"`), id);
   assert.match(page, /VERITAS KERNEL : MANIFESTE &amp; PROTOCOLE/);
-  assert.match(page, /<meta name="robots" content="noindex">/);
+  assert.doesNotMatch(page, /noindex/); // étape 6 : indexable
   assert.match(page, /\/assets\/css\/bibliotheque\.css\?v=\d+/);
 });
 
@@ -91,6 +108,16 @@ test('pages du corpus : le module ne contacte pas l’API et ne touche ni au tit
 const corpusPages = ['corpus', join('en', 'corpus')]
   .flatMap((dir) => walk(join(SITE, dir)))
   .filter((path) => path.endsWith('index.html') && /\/assets\/js\/v\d+\/pages\/corpus\.js/.test(read(path)));
+
+// Relecture de l'étape 5 : les pages du corpus au gabarit du site ne sont écrites que sur main (par la publication).
+// Une copie de travail qui ne les a pas ferait passer la montée de version à côté d'elles : en ligne, elles
+// chargeraient un dossier de modules disparu. Avant toute montée de version, fusionner main dans la branche.
+test('pages du corpus : cette copie porte celles de main, au gabarit du site', () => {
+  const lists = ['corpus/index.html', 'en/corpus/index.html'].filter((page) => existsSync(join(SITE, page)));
+  if (!lists.length) return; // dépôt sans corpus
+  assert.ok(corpusPages.length > 0, 'aucune page du corpus au gabarit du site : fusionner main dans la branche avant de monter la version');
+  for (const page of lists) assert.ok(corpusPages.includes(join(SITE, page)), `${page} à l'ancien gabarit`);
+});
 
 test('pages du corpus au gabarit du site : politique de sécurité, version en place, indexables', () => {
   const sitePage = read(join(SITE, 'sequenceur', 'index.html'));

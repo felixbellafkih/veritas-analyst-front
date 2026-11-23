@@ -4,7 +4,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { corpusExcerpts } from '../../assets/js/v5/lib/corpus-list.js';
+import { corpusExcerpts } from '../../assets/js/v6/lib/corpus-list.js';
 
 const page = (path) => readFileSync(fileURLToPath(new URL(`../../${path}`, import.meta.url)), 'utf8');
 
@@ -15,6 +15,17 @@ test('une entrée de la liste : son adresse et son extrait, entités décodées'
   assert.equal(excerpts.size, 2);
   assert.equal(excerpts.get('/corpus/1/1/'), 'L\'amorce & la suite <x> "y" été…');
   assert.equal(excerpts.get('/corpus/2/255/'), 'Autre extrait');
+});
+
+// Relecture de l'étape 5 : la liste au gabarit du site a une autre forme ; l'accueil avait perdu ses extraits
+test('liste au gabarit du site : même lecture', () => {
+  const html = '<ul class="corpus__liste"><li class="corpus__entree"><a class="corpus__lien" href="/corpus/1/1/">Coran 1:1</a>'
+    + '<span class="corpus__extrait">L&#x27;amorce &amp; la suite</span></li>'
+    + '<li class="corpus__entree"><a class="corpus__lien" href="/en/corpus/2/255/">Quran 2:255</a><span class="corpus__extrait">Other</span></li></ul>';
+  const excerpts = corpusExcerpts(html);
+  assert.equal(excerpts.get('/corpus/1/1/'), "L'amorce & la suite");
+  assert.equal(excerpts.get('/en/corpus/2/255/'), 'Other');
+  assert.equal(corpusExcerpts('<a class="corpus__lien" href="https://ailleurs.example/corpus/1/1/">x</a><span class="corpus__extrait">y</span>').size, 0);
 });
 
 test('liste anglaise : les adresses commencent par /en/corpus/', () => {

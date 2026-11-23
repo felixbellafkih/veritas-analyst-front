@@ -77,7 +77,7 @@ test('guillemets, apostrophes échappées et accents graves', async () => {
 
 test('pages : attributs, texte des éléments, entités, espaces', async () => {
   await withSite({
-    'accueil/index.html': [
+    'index.html': [
       '<input data-i18n-placeholder="Rechercher &amp; trouver" data-i18n-title="Aide">',
       '<p data-i18n>',
       '  Une phrase   sur',
@@ -93,7 +93,7 @@ test('pages : attributs, texte des éléments, entités, espaces', async () => {
 });
 
 test('un élément marqué qui contient une balise est une erreur', async () => {
-  await withSite({ 'accueil/index.html': '<p data-i18n>Texte <strong>gras</strong></p>' }, ({ errors }) => {
+  await withSite({ 'index.html': '<p data-i18n>Texte <strong>gras</strong></p>' }, ({ errors }) => {
     assert.equal(errors.length, 1);
   });
 });
@@ -109,11 +109,11 @@ test('la liste du site est à jour (sinon : node _dev/textes.mjs)', async () => 
 test('places : pour chaque texte, le premier fichier où il figure', async () => {
   await withSite({
     'assets/js/ui/b.js': "t('Commun'); t('Du module');",
-    'accueil/index.html': '<p data-i18n>Commun</p><p data-i18n>De la page</p>',
+    'index.html': '<p data-i18n>Commun</p><p data-i18n>De la page</p>',
     'interpreteur/index.html': '<p data-i18n>De la page</p>',
   }, ({ texts, places }) => {
     assert.deepEqual(texts, ['Commun', 'De la page', 'Du module']);
-    assert.deepEqual(places, { Commun: 'assets/js/ui/b.js', 'De la page': 'accueil/index.html', 'Du module': 'assets/js/ui/b.js' });
+    assert.deepEqual(places, { Commun: 'assets/js/ui/b.js', 'De la page': 'index.html', 'Du module': 'assets/js/ui/b.js' });
   });
 });
 
