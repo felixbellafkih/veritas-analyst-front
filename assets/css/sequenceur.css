@@ -1,0 +1,177 @@
+/* Nouveau site Veritas — page du Séquenceur : la séquence d'un passage, en chaîne de cartes. */
+
+/* ------------------------------------------------------------------ chaîne de cartes */
+
+/* La chaîne suit le sens de la page (de gauche à droite en français, de droite à gauche en arabe) et
+   revient à la ligne au bord de l'écran : jamais de défilement de côté. */
+.chaine {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  row-gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.chaine__maillon {
+  display: flex;
+  flex: 0 1 auto;
+  align-items: center;
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* Le trait qui arrive à une carte, terminé par une pointe : plein vers une variable, pointillé vers un
+   opérateur, comme sur le graphe de l'app actuelle. En début de ligne, il dit que la chaîne continue. */
+.chaine__trait {
+  position: relative;
+  flex: none;
+  width: 30px;
+  height: 0;
+  border-block-start: 2px solid var(--discret);
+}
+
+.chaine__maillon--pointille .chaine__trait {
+  border-block-start-style: dashed;
+}
+
+.chaine__trait::after {
+  content: "";
+  position: absolute;
+  inset-block-start: -5px;
+  inset-inline-end: 1px;
+  width: 8px;
+  height: 8px;
+  border-block-start: 2px solid var(--discret);
+  border-inline-end: 2px solid var(--discret);
+  transform: rotate(45deg);
+}
+
+[dir="rtl"] .chaine__trait::after {
+  transform: rotate(-45deg);
+}
+
+.carte-mot {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  padding: 8px 12px 10px;
+  border: 1px solid var(--bord-fort);
+  border-radius: var(--rayon);
+  background: var(--surface);
+}
+
+.carte-mot__rang {
+  color: var(--discret);
+  font-family: var(--police-codes);
+  font-size: 0.75rem;
+  line-height: 1.2;
+}
+
+.carte-mot__mot {
+  color: var(--arabe);
+  font-family: var(--police-arabe);
+  font-size: 1.625rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.carte-mot__racine,
+.carte-mot__etat,
+.carte-mot__fonction,
+.carte-mot__etiquette,
+.carte-mot__ligne {
+  font-family: var(--police-codes);
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  /* Une étiquette ne se coupe qu'aux endroits prévus (après « _ » et « // ») ; un mot trop long pour
+     l'écran se coupe quand même plutôt que de déborder. */
+  overflow-wrap: break-word;
+}
+
+.carte-mot__racine {
+  align-self: flex-start;
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+.carte-mot__racine:hover {
+  color: var(--accent-survol);
+}
+
+.carte-mot__etat {
+  color: var(--secondaire);
+}
+
+.carte-mot__fonction {
+  color: var(--titre);
+  font-weight: 500;
+}
+
+/* Opérateur : un mot-outil, sans racine. Plus petit, d'une autre couleur. */
+.carte-mot--operateur,
+.carte-mot--autre {
+  padding: 6px 10px 8px;
+  border-style: dashed;
+  border-color: var(--attention);
+  background: transparent;
+}
+
+.carte-mot--operateur .carte-mot__mot,
+.carte-mot--autre .carte-mot__mot {
+  font-size: 1.375rem;
+}
+
+.carte-mot__etiquette {
+  color: var(--attention);
+  font-weight: 500;
+}
+
+/* Mot sans racine connue dans le LEXICON */
+.carte-mot--inconnu {
+  border-color: var(--erreur);
+}
+
+.carte-mot__alerte {
+  color: var(--erreur);
+  font-family: var(--police-codes);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+/* Connecteurs, pointeurs, quantificateurs : seulement quand l'API en rend */
+.carte-mot__plus {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-block-start: 4px;
+  padding-block-start: 6px;
+  border-block-start: 1px solid var(--bord-doux);
+}
+
+.carte-mot__groupe {
+  display: flex;
+  flex-direction: column;
+}
+
+.carte-mot__titre {
+  color: var(--discret);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.carte-mot__ligne {
+  color: var(--secondaire);
+}
+
+/* La suite de la chaîne arrive d'elle-même quand on approche du bas ; ce bouton reste là en secours */
+.chaine__suite {
+  margin-block-start: 12px;
+  font-size: var(--t-petit);
+}
