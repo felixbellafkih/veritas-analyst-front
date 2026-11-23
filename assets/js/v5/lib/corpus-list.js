@@ -3,8 +3,9 @@
 // quand une analyse est corrigée. Rien n'est lu comme du balisage : le texte de la page est parcouru tel
 // quel, et l'extrait rendu est un texte simple.
 //
-// Forme d'une entrée : <a href="/corpus/1/1/">Titre</a><br><span class="muted">Extrait…</span>
-const ENTRY = /<a href="(\/(?:en\/)?corpus\/[^"]+)">[^<]*<\/a>\s*<br>\s*<span class="muted">([^<]*)<\/span>/g;
+// Forme d'une entrée, à l'ancien gabarit : <a href="/corpus/1/1/">Titre</a><br><span class="muted">Extrait…</span>
+// et au gabarit du site (étape 5) : <a class="corpus__lien" href="/corpus/1/1/">Titre</a><span class="corpus__extrait">Extrait…</span>
+const ENTRY = /<a (?:class="corpus__lien" )?href="(\/(?:en\/)?corpus\/[^"]+)">[^<]*<\/a>\s*(?:<br>\s*<span class="muted">|<span class="corpus__extrait">)([^<]*)<\/span>/g;
 const ENTITY = /&(#x[0-9A-Fa-f]{1,6}|#\d{1,7}|amp|lt|gt|quot|apos);/g;
 const NAMED = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'" };
 const MAX_LENGTH = 2000000;

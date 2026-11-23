@@ -17,6 +17,17 @@ test('une entrée de la liste : son adresse et son extrait, entités décodées'
   assert.equal(excerpts.get('/corpus/2/255/'), 'Autre extrait');
 });
 
+// Relecture de l'étape 5 : la liste au gabarit du site a une autre forme ; l'accueil avait perdu ses extraits
+test('liste au gabarit du site : même lecture', () => {
+  const html = '<ul class="corpus__liste"><li class="corpus__entree"><a class="corpus__lien" href="/corpus/1/1/">Coran 1:1</a>'
+    + '<span class="corpus__extrait">L&#x27;amorce &amp; la suite</span></li>'
+    + '<li class="corpus__entree"><a class="corpus__lien" href="/en/corpus/2/255/">Quran 2:255</a><span class="corpus__extrait">Other</span></li></ul>';
+  const excerpts = corpusExcerpts(html);
+  assert.equal(excerpts.get('/corpus/1/1/'), "L'amorce & la suite");
+  assert.equal(excerpts.get('/en/corpus/2/255/'), 'Other');
+  assert.equal(corpusExcerpts('<a class="corpus__lien" href="https://ailleurs.example/corpus/1/1/">x</a><span class="corpus__extrait">y</span>').size, 0);
+});
+
 test('liste anglaise : les adresses commencent par /en/corpus/', () => {
   const excerpts = corpusExcerpts('<li><a href="/en/corpus/1/1/">Quran 1:1</a><br><span class="muted">The initiation…</span></li>');
   assert.equal(excerpts.get('/en/corpus/1/1/'), 'The initiation…');

@@ -92,6 +92,16 @@ const corpusPages = ['corpus', join('en', 'corpus')]
   .flatMap((dir) => walk(join(SITE, dir)))
   .filter((path) => path.endsWith('index.html') && /\/assets\/js\/v\d+\/pages\/corpus\.js/.test(read(path)));
 
+// Relecture de l'étape 5 : les pages du corpus au gabarit du site ne sont écrites que sur main (par la publication).
+// Une copie de travail qui ne les a pas ferait passer la montée de version à côté d'elles : en ligne, elles
+// chargeraient un dossier de modules disparu. Avant toute montée de version, fusionner main dans la branche.
+test('pages du corpus : cette copie porte celles de main, au gabarit du site', () => {
+  const lists = ['corpus/index.html', 'en/corpus/index.html'].filter((page) => existsSync(join(SITE, page)));
+  if (!lists.length) return; // dépôt sans corpus
+  assert.ok(corpusPages.length > 0, 'aucune page du corpus au gabarit du site : fusionner main dans la branche avant de monter la version');
+  for (const page of lists) assert.ok(corpusPages.includes(join(SITE, page)), `${page} à l'ancien gabarit`);
+});
+
 test('pages du corpus au gabarit du site : politique de sécurité, version en place, indexables', () => {
   const sitePage = read(join(SITE, 'sequenceur', 'index.html'));
   const siteVersion = /\?v=(\d+)"/.exec(sitePage)[1];
