@@ -1,8 +1,8 @@
 // Vérification d'une saisie du mode Tarteel (lib/tarteel-probe.js), avec une fausse API et une fausse minuterie.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { ApiFailure } from '../../assets/js/v4/lib/failures.js';
-import { createTarteelProbe } from '../../assets/js/v4/lib/tarteel-probe.js';
+import { ApiFailure } from '../../assets/js/v5/lib/failures.js';
+import { createTarteelProbe } from '../../assets/js/v5/lib/tarteel-probe.js';
 
 const tick = () => new Promise((resolve) => setImmediate(resolve));
 

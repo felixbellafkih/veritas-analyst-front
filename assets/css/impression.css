@@ -55,6 +55,7 @@ body {
 .onglets-doc,
 .biblio__suite,
 .biblio__etat,
+.corpus__fil,
 dialog {
   display: none !important;
 }

@@ -1,0 +1,144 @@
+/* Nouveau site Veritas — pages du corpus public (/corpus/…, /en/corpus/…), écrites par la publication du corpus.
+   Le corps de l'analyse reprend la mise en forme de l'Interpréteur (analyse.css, .analyse__corps). */
+
+.corpus {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  min-width: 0;
+}
+
+.corpus > * {
+  margin: 0;
+  min-width: 0;
+}
+
+/* Liens vers la liste du corpus et vers la page de l'autre langue */
+.corpus__fil {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  font-size: var(--t-petit);
+}
+
+.corpus__fil a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--cible);
+}
+
+.corpus .page__titre {
+  overflow-wrap: anywhere;
+}
+
+.corpus__note,
+.corpus__empreintes,
+.corpus__extrait {
+  color: var(--secondaire);
+  font-size: var(--t-petit);
+}
+
+.corpus__titre {
+  margin-block-start: 16px;
+  color: var(--accent);
+  font-size: var(--t-petit);
+  letter-spacing: 0.09em;
+  line-height: 1.5;
+  text-transform: uppercase;
+}
+
+/* Le texte coranique, dans la police et la couleur des versets du site */
+.corpus__verset {
+  padding: 14px 18px;
+  border: 1px solid var(--bord);
+  border-radius: var(--rayon-grand);
+  background: var(--surface);
+}
+
+.corpus__verset p {
+  margin: 6px 0;
+  color: var(--arabe);
+  font-family: var(--police-arabe);
+  font-size: var(--t-arabe);
+  line-height: 2;
+  text-align: start;
+}
+
+.corpus__verset .num {
+  color: var(--secondaire);
+  font-family: var(--police-texte);
+  font-size: var(--t-petit);
+}
+
+/* Tableau des racines : la racine reste d'un seul tenant, ses lettres arabes dessous */
+.corpus .roots td:first-child {
+  white-space: nowrap;
+}
+
+.corpus .roots .ar {
+  color: var(--arabe);
+  font-family: var(--police-arabe);
+  font-size: 1.25rem;
+}
+
+.corpus__analyse {
+  margin-block-start: 0;
+  overflow-wrap: break-word;
+}
+
+.corpus__analyse > :first-child {
+  margin-block-start: 0;
+}
+
+/* Encadré « À propos » : licence et empreintes */
+.corpus__apropos {
+  margin-block-start: 16px;
+  padding: 16px 18px;
+  border: 1px solid var(--bord);
+  border-inline-start: 3px solid var(--accent);
+  border-radius: var(--rayon);
+  background: var(--surface);
+  font-size: var(--t-petit);
+  overflow-wrap: anywhere;
+}
+
+.corpus__apropos p {
+  margin: 8px 0 0;
+}
+
+.corpus__apropos p:first-child {
+  margin-block-start: 0;
+}
+
+/* Liste du corpus : une carte par analyse */
+.corpus__donnees {
+  font-size: var(--t-petit);
+}
+
+.corpus__liste {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+  gap: 12px;
+  padding: 0;
+  list-style: none;
+}
+
+.corpus__entree {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 16px;
+  border: 1px solid var(--bord);
+  border-radius: var(--rayon);
+  background: var(--surface);
+  overflow-wrap: anywhere;
+}
+
+.corpus__entree:hover {
+  border-color: var(--accent);
+}
+
+.corpus__lien {
+  font-weight: 600;
+  text-decoration: none;
+}

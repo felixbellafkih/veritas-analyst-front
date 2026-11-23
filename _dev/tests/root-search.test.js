@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { installFakeDom } from './aides/faux-dom.mjs';
 
 const dom = installFakeDom();
-const { mountRootSearch } = await import('../../assets/js/v4/ui/root-search.js');
+const { mountRootSearch } = await import('../../assets/js/v5/ui/root-search.js');
 
 const INDEX = [
   { code: 'S-M-A.', arabic: 'س م ع', logic: 'AUDIO_INPUT' },

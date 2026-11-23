@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { createLatest, initialState, reduce, snapshot } from '../../assets/js/v4/lib/interpreter-state.js';
-import { followUpRequest } from '../../assets/js/v4/lib/request.js';
+import { createLatest, initialState, reduce, snapshot } from '../../assets/js/v5/lib/interpreter-state.js';
+import { followUpRequest } from '../../assets/js/v5/lib/request.js';
 
 const H = '**[TARGET: m]** | 📊 **Tokens:** Input=1 | Output=1 | Thinking=0 | Total=2\n\n';
 const R1 = H + 'Analyse 1';

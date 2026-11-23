@@ -4,12 +4,14 @@ import assert from 'node:assert/strict';
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { PAGES as PAGE_DIRS } from '../pages.mjs';
+import { PAGE_FILES, PAGES as PAGE_DIRS } from '../pages.mjs';
 
 const SITE = fileURLToPath(new URL('../..', import.meta.url));
 const CSP = '<meta http-equiv="Content-Security-Policy" content="default-src \'none\'; script-src \'self\'; style-src \'self\'; img-src \'self\' data:; font-src \'self\'; connect-src \'self\' https://api.veritas-analyst.org; base-uri \'none\'; form-action \'none\'">';
 const SERVED = ['assets', ...PAGE_DIRS];
-const PAGES = PAGE_DIRS.map((name) => `${name}/index.html`).filter((page) => existsSync(join(SITE, page)));
+const PAGES = PAGE_FILES.filter((page) => existsSync(join(SITE, page)));
+// Pages indexables : les mentions légales (page de confidentialité de l'app sur l'App Store)
+const INDEXED = ['legal.html'];
 
 function walk(dir) {
   if (!existsSync(dir)) return [];
@@ -30,6 +32,8 @@ const JS = join(SITE, 'assets', 'js');
 const versionDirs = existsSync(JS) ? readdirSync(JS).filter((name) => /^v\d+$/.test(name)) : [];
 const MODULES = join(JS, versionDirs[0] || 'v0');
 const moduleRel = (path) => relative(MODULES, path).replace(/\\/g, '/');
+// Dossiers écrits par la publication du corpus (export_corpus.py du Kernel), pas à la main
+const GENERATED = ['corpus', 'en', 'lx-1242ba1a'];
 
 test('les pages du site existent : accueil, Interpréteur, Scanner, Tarteel, Séquenceur, Bibliothèque', () => {
   for (const name of ['accueil', 'interpreteur', 'scanner', 'tarteel', 'sequenceur', 'bibliotheque']) assert.ok(PAGES.includes(`${name}/index.html`), name);
@@ -66,9 +70,42 @@ test('Bibliothèque : le manifeste est dans la page, avec les emplacements que l
 test('toute page qui charge un module du site est recensée dans _dev/pages.mjs', () => {
   const found = readdirSync(SITE).filter((name) => {
     const page = join(SITE, name, 'index.html');
-    return !name.startsWith('.') && !name.startsWith('_') && existsSync(page) && /<script type="module" src="\/assets\/js\/v\d+\//.test(read(page));
+    // corpus/ et en/ : pages écrites par la publication du corpus, vérifiées plus bas
+    return !name.startsWith('.') && !name.startsWith('_') && !GENERATED.includes(name) && existsSync(page) && /<script type="module" src="\/assets\/js\/v\d+\//.test(read(page));
   });
   assert.deepEqual(found.sort(), [...PAGE_DIRS].sort());
+});
+
+// Étape 5 : les pages du corpus sont écrites chaque nuit par export_corpus.py (Kernel), au gabarit du site
+// quand le dépôt le porte. Elles restent indexables ; tout le reste suit les règles des autres pages.
+test('pages du corpus : le module ne contacte pas l’API et ne touche ni au titre ni au contenu', () => {
+  const path = scripts.find((each) => each.endsWith(join('pages', 'corpus.js')));
+  assert.ok(path, 'pages/corpus.js');
+  const source = read(path);
+  assert.doesNotMatch(source, /from '[^']*\/api\.js'/);
+  assert.doesNotMatch(source, /fetch\(|onKeyClick|document\.title|key-dialog/);
+  assert.match(source, /initI18n\(\{[^}]*fallback/);
+  assert.match(source, /mountShell\(\{ page: 'corpus'/);
+});
+
+const corpusPages = ['corpus', join('en', 'corpus')]
+  .flatMap((dir) => walk(join(SITE, dir)))
+  .filter((path) => path.endsWith('index.html') && /\/assets\/js\/v\d+\/pages\/corpus\.js/.test(read(path)));
+
+test('pages du corpus au gabarit du site : politique de sécurité, version en place, indexables', () => {
+  const sitePage = read(join(SITE, 'sequenceur', 'index.html'));
+  const siteVersion = /\?v=(\d+)"/.exec(sitePage)[1];
+  for (const path of corpusPages) {
+    const html = read(path);
+    assert.ok(html.includes(CSP), `${rel(path)} : politique de sécurité`);
+    assert.doesNotMatch(html, /noindex/, rel(path));
+    assert.doesNotMatch(html, /lx-1242ba1a|llms\.txt/, rel(path));
+    assert.doesNotMatch(html, /<script(?![^>]*\s(?:src=|type="application\/ld\+json"))[^>]*>/i, `${rel(path)} : script écrit dans la page`);
+    assert.doesNotMatch(html, /\sstyle\s*=|<style\b|\son[a-z]+\s*=/i, rel(path));
+    const versions = new Set([...html.matchAll(/\?v=(\d+)"/g)].map((match) => match[1]));
+    assert.deepEqual([...versions], [siteVersion], rel(path));
+    assert.match(html, new RegExp(`/assets/js/v${siteVersion}/pages/corpus\\.js\\?v=${siteVersion}"`), rel(path));
+  }
 });
 
 for (const page of PAGES) {
@@ -76,7 +113,8 @@ for (const page of PAGES) {
 
   test(`${page} : politique de sécurité exacte, et hors des moteurs de recherche`, () => {
     assert.ok(html.includes(CSP), 'balise Content-Security-Policy');
-    assert.ok(html.includes('<meta name="robots" content="noindex">'), 'noindex');
+    if (INDEXED.includes(page)) assert.doesNotMatch(html, /noindex/, 'indexable');
+    else assert.ok(html.includes('<meta name="robots" content="noindex">'), 'noindex');
     assert.match(html, /^<!doctype html>\s*<html lang="fr" dir="ltr">/i);
   });
 
@@ -226,6 +264,7 @@ test('la liste des versets d’un cluster n’est bâtie qu’à un endroit : ui
 test('.gitattributes : chaque page du site garde ses fins de ligne LF', () => {
   const lines = read(join(SITE, '.gitattributes')).split('\n').map((line) => line.trim());
   for (const name of PAGE_DIRS) assert.ok(lines.includes(`/${name}/** text=auto eol=lf`), name);
+  assert.ok(lines.includes('/legal.html text=auto eol=lf'), 'legal.html');
 });
 
 // Les deux pages qui montrent un cluster disent la même chose du signal : un seul module les écrit

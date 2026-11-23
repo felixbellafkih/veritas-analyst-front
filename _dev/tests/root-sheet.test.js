@@ -4,7 +4,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { rootSheet } from '../../assets/js/v4/lib/root-sheet.js';
+import { rootSheet } from '../../assets/js/v5/lib/root-sheet.js';
 
 const FIX = JSON.parse(readFileSync(fileURLToPath(new URL('../fixtures/racines.json', import.meta.url)), 'utf8'));
 const answer = (root) => ({ root_data: { root: 'K-T-B', arabic: 'ك ت ب', logic_function: 'WRITE', ...root }, is_decompiled: false, decompilation_data: null });

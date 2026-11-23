@@ -15,7 +15,7 @@ import { readdir, readFile, rename, writeFile } from 'node:fs/promises';
 import { join, relative } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
-import { PAGES } from './pages.mjs';
+import { PAGE_FILES } from './pages.mjs';
 
 async function list(dir) {
   try {
@@ -48,6 +48,23 @@ async function tools(dir) {
   return found.sort();
 }
 
+// Pages du corpus écrites par la publication du corpus (export_corpus.py du Kernel) au gabarit du site : celles
+// qui chargent le module pages/corpus.js de cette version. Les pages de l'ancien gabarit ne sont pas retenues.
+async function corpusPages(rootDir, version) {
+  const marker = `/assets/js/v${version}/pages/corpus.js`;
+  const found = [];
+  async function walk(dir) {
+    for (const entry of await list(dir)) {
+      const path = join(dir, entry.name);
+      if (entry.isDirectory()) await walk(path);
+      else if (entry.name === 'index.html' && (await readFile(path, 'utf8')).includes(marker)) found.push(path);
+    }
+  }
+  await walk(join(rootDir, 'corpus'));
+  await walk(join(rootDir, 'en', 'corpus'));
+  return found.sort();
+}
+
 // Passe à la version suivante : renomme le dossier des modules, puis met à jour les pages (adresse du
 // module et ?v=) et les tests et outils qui nomment ce dossier. Rend {from, to, changed}.
 export async function bumpVersion(rootDir) {
@@ -55,8 +72,12 @@ export async function bumpVersion(rootDir) {
   const to = from + 1;
   const pageRules = [[new RegExp(`\\?v=${from}(?=")`, 'g'), `?v=${to}`], [new RegExp(`/assets/js/v${from}/`, 'g'), `/assets/js/v${to}/`]];
   const toolRules = [[new RegExp(`assets/js/v${from}/`, 'g'), `assets/js/v${to}/`]];
+  // Pages du corpus : seules les adresses (src="…", href="…") changent, jamais le texte d'une analyse
+  const inUrl = (url) => url.replace(new RegExp(`\\?v=${from}$`), `?v=${to}`).replace(`/assets/js/v${from}/`, `/assets/js/v${to}/`);
+  const corpusRules = [[/(\s(?:src|href)=")([^"]*)"/g, (whole, start, url) => `${start}${inUrl(url)}"`]];
   const targets = [
-    ...PAGES.map((page) => [join(rootDir, page, 'index.html'), pageRules]),
+    ...PAGE_FILES.map((page) => [join(rootDir, page), pageRules]),
+    ...(await corpusPages(rootDir, from)).map((path) => [path, corpusRules]),
     ...(await tools(join(rootDir, '_dev'))).map((path) => [path, toolRules]),
   ];
 
