@@ -1,5 +1,238 @@
 /* Nouveau site Veritas — page du Séquenceur : la séquence d'un passage, en chaîne de cartes. */
 
+.sequence {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ------------------------------------------------------------------ saisie */
+
+.sequence__saisie {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 560px;
+  padding: 20px;
+}
+
+/* Dans la carte, les champs prennent la couleur du fond de page */
+.sequence__saisie .saisie,
+.sequence__saisie .segments {
+  background: var(--fond);
+}
+
+.sequence__mode {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.sequence__mode[hidden] {
+  display: none;
+}
+
+/* Le texte à séquencer est de l'arabe : même police que les versets, de droite à gauche */
+textarea.sequence__texte {
+  font-family: var(--police-arabe);
+  font-size: 1.375rem;
+  line-height: 1.7;
+}
+
+.sequence__compteur {
+  margin-block-start: -8px;
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+}
+
+.sequence__lancer {
+  align-self: flex-start;
+}
+
+/* ------------------------------------------------------------------ résultat : en-tête */
+
+.sequence__resultat {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-width: 0;
+}
+
+.sequence__tete {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sequence__tete[hidden] {
+  display: none;
+}
+
+/* Un titre et, au bout de la ligne, son bouton */
+.sequence__ligne {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 16px;
+}
+
+.sequence__titre,
+.sequence__section {
+  color: var(--titre);
+  font-family: var(--police-titres);
+  font-size: var(--t-sous-titre);
+  line-height: 1.3;
+}
+
+.sequence__comptes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.sequence__comptes:empty {
+  display: none;
+}
+
+/* Légende et journal : repliés, à ouvrir d'un clic */
+.sequence__legende,
+.sequence__journal {
+  border: 1px solid var(--bord);
+  border-radius: var(--rayon);
+  background: var(--surface);
+  color: var(--secondaire);
+  font-size: var(--t-petit);
+}
+
+.sequence__legende > summary,
+.sequence__journal > summary {
+  display: flex;
+  align-items: center;
+  min-height: var(--cible);
+  padding-inline: 14px;
+  color: var(--titre);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.sequence__legende ul {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0 14px 14px;
+  padding-inline-start: 32px;
+}
+
+/* ------------------------------------------------------------------ résultat : un bloc par verset */
+
+.sequence__blocs {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.sequence__blocs[hidden],
+.sequence__panne[hidden] {
+  display: none;
+}
+
+.bloc {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.bloc__titre {
+  font-size: var(--t-petit);
+  font-weight: 500;
+}
+
+.bloc__texte {
+  color: var(--arabe);
+  font-family: var(--police-arabe);
+  font-size: var(--t-arabe);
+  line-height: 1.9;
+  overflow-wrap: anywhere;
+}
+
+.bloc__corps {
+  min-width: 0;
+}
+
+/* ------------------------------------------------------------------ transcription, journal */
+
+.sequence__transcription {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sequence__transcription[hidden],
+.sequence__journal[hidden] {
+  display: none;
+}
+
+.transcription {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 14px 16px;
+  border: 1px solid var(--bord);
+  border-radius: var(--rayon);
+  background: var(--surface);
+}
+
+.transcription__bloc {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.transcription__texte {
+  font-family: var(--police-codes);
+  font-size: var(--t-petit);
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+}
+
+.transcription__texte strong {
+  color: var(--titre);
+}
+
+.transcription__texte em {
+  color: var(--secondaire);
+}
+
+.journal {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0 14px 14px;
+  font-family: var(--police-codes);
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.journal__ref {
+  margin-block-start: 8px;
+}
+
+/* ------------------------------------------------------------------ vers l'Interpréteur */
+
+.sequence__envoi {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.sequence__vers[hidden],
+.sequence__adresse[hidden] {
+  display: none;
+}
+
 /* ------------------------------------------------------------------ chaîne de cartes */
 
 /* La chaîne suit le sens de la page (de gauche à droite en français, de droite à gauche en arabe) et
@@ -52,9 +285,12 @@
   transform: rotate(-45deg);
 }
 
+/* Tout s'aligne du côté où la carte commence (à gauche en français, à droite en arabe) ; les étiquettes
+   gardent leur sens d'écriture, de gauche à droite. */
 .carte-mot {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   gap: 3px;
   min-width: 0;
   padding: 8px 12px 10px;
@@ -92,7 +328,6 @@
 }
 
 .carte-mot__racine {
-  align-self: flex-start;
   color: var(--accent);
   font-weight: 600;
   text-decoration: underline;
@@ -148,6 +383,7 @@
 .carte-mot__plus {
   display: flex;
   flex-direction: column;
+  align-self: stretch;
   gap: 4px;
   margin-block-start: 4px;
   padding-block-start: 6px;
@@ -157,6 +393,7 @@
 .carte-mot__groupe {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
 }
 
 .carte-mot__titre {
@@ -174,4 +411,37 @@
 .chaine__suite {
   margin-block-start: 12px;
   font-size: var(--t-petit);
+}
+
+/* ------------------------------------------------------------------ écrans étroits */
+
+@media (max-width: 767.98px) {
+  .sequence__saisie {
+    max-width: none;
+    padding: 16px;
+  }
+
+  .sequence__lancer,
+  .sequence__vers {
+    width: 100%;
+  }
+
+  /* Un long verset ne doit pas remplir l'écran avant sa chaîne */
+  .bloc__texte {
+    font-size: 1.625rem;
+    line-height: 1.8;
+  }
+
+  .chaine__trait {
+    width: 22px;
+  }
+
+  /* Deux cartes par ligne sur un téléphone : une longue étiquette se coupe après « _ » */
+  .carte-mot {
+    max-width: 9.25rem;
+  }
+
+  .carte-mot__mot {
+    font-size: 1.5rem;
+  }
 }

@@ -398,7 +398,7 @@ export async function startServer({ port = 8787, pingMs = 300 } = {}) {
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   try {
     const { port } = await startServer();
-    console.log(`Nouveau site Veritas, serveur local : http://localhost:${port}/accueil/ et http://localhost:${port}/interpreteur/`);
+    console.log(`Nouveau site Veritas, serveur local : http://localhost:${port}/accueil/, http://localhost:${port}/interpreteur/ et http://localhost:${port}/sequenceur/`);
     console.log('Par défaut, un faux serveur d’API répond (clés factices : ok, anglais, lent, erreur, echec, coupure, entete, hostile, references ; mot de passe développeur : dev).');
     console.log(`Essai avec la vraie API : http://localhost:${port}/interpreteur/?api=reel`);
     console.log('Pour arrêter le serveur : Ctrl+C.');

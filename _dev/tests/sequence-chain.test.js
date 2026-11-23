@@ -156,3 +156,60 @@ test('la couleur envoyée par l’API n’est lue nulle part', () => {
     assert.doesNotMatch(file(path), /\.color\b|\[['"]color['"]\]/, path);
   }
 });
+
+// Chaque variable porte un lien : sans curseur unique, sept versets imposeraient des dizaines de tabulations
+// avant d'atteindre la transcription (même constat que pour la liste des versets du Tarteel, étape 2).
+test('clavier : un seul arrêt de tabulation par chaîne, les flèches passent d’une racine à l’autre', () => {
+  const { links } = mounted(elementsOf(V['1:1']));
+  const reach = () => links().map((link) => link.tabIndex);
+  assert.deepEqual(reach(), [0, -1, -1, -1]);
+  const right = links()[0].dispatch('keydown', { key: 'ArrowRight' });
+  assert.equal(right.prevented, true);
+  assert.equal(dom.focused(), links()[1]);
+  assert.deepEqual(reach(), [-1, 0, -1, -1]);
+  links()[1].dispatch('keydown', { key: 'ArrowDown' });
+  assert.equal(dom.focused(), links()[2]);
+  links()[2].dispatch('keydown', { key: 'ArrowLeft' });
+  assert.equal(dom.focused(), links()[1]);
+  links()[1].dispatch('keydown', { key: 'End' });
+  assert.equal(dom.focused(), links()[3]);
+  assert.deepEqual(reach(), [-1, -1, -1, 0]);
+  links()[3].dispatch('keydown', { key: 'ArrowRight' });
+  assert.equal(dom.focused(), links()[3]);
+  links()[3].dispatch('keydown', { key: 'Home' });
+  assert.equal(dom.focused(), links()[0]);
+  assert.deepEqual(reach(), [0, -1, -1, -1]);
+  // une autre touche garde son effet : Entrée ouvre le lien, Tab quitte la chaîne
+  assert.equal(links()[0].dispatch('keydown', { key: 'Enter' }).prevented, false);
+  assert.equal(links()[0].dispatch('keydown', { key: 'Tab' }).prevented, false);
+});
+
+test('clavier : dans une page de droite à gauche, la flèche gauche avance', () => {
+  document.documentElement.dir = 'rtl';
+  try {
+    const { links } = mounted(elementsOf(V['1:1']));
+    links()[0].dispatch('keydown', { key: 'ArrowLeft' });
+    assert.equal(dom.focused(), links()[1]);
+    links()[1].dispatch('keydown', { key: 'ArrowRight' });
+    assert.equal(dom.focused(), links()[0]);
+  } finally {
+    document.documentElement.dir = 'ltr';
+  }
+});
+
+test('clavier : le lien où l’on arrive par un clic devient le seul atteignable par Tab', () => {
+  const { links } = mounted(elementsOf(V['1:1']));
+  links()[2].focus();
+  assert.deepEqual(links().map((link) => link.tabIndex), [-1, -1, 0, -1]);
+});
+
+test('clavier : Fin bâtit la chaîne jusqu’au bout, et la suite arrive avec des liens hors du parcours de Tab', () => {
+  const many = Array.from({ length: 300 }, (_, index) => element({ arabic: `m${index + 1}`, link: index ? 'solid' : null }));
+  const { links, cards, more } = mounted(many, { slice: 120 });
+  more.click();
+  assert.equal(links().filter((link) => link.tabIndex === 0).length, 1);
+  links()[0].dispatch('keydown', { key: 'End' });
+  assert.equal(cards().length, 300);
+  assert.equal(dom.focused(), links()[299]);
+  assert.equal(links().filter((link) => link.tabIndex === 0).length, 1);
+});

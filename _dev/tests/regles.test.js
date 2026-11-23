@@ -31,8 +31,8 @@ const versionDirs = existsSync(JS) ? readdirSync(JS).filter((name) => /^v\d+$/.t
 const MODULES = join(JS, versionDirs[0] || 'v0');
 const moduleRel = (path) => relative(MODULES, path).replace(/\\/g, '/');
 
-test('les pages du site existent : accueil, Interpréteur, Scanner, Tarteel', () => {
-  for (const name of ['accueil', 'interpreteur', 'scanner', 'tarteel']) assert.ok(PAGES.includes(`${name}/index.html`), name);
+test('les pages du site existent : accueil, Interpréteur, Scanner, Tarteel, Séquenceur', () => {
+  for (const name of ['accueil', 'interpreteur', 'scanner', 'tarteel', 'sequenceur']) assert.ok(PAGES.includes(`${name}/index.html`), name);
 });
 
 // Une page oubliée dans _dev/pages.mjs garderait son ancien numéro de version à la mise en ligne suivante
@@ -207,9 +207,9 @@ test('Tarteel : les messages du signal ne sont écrits qu’à un endroit (ui/ta
   assert.deepEqual(writers, ['ui/tarteel-status.js']);
 });
 
-// Ni le Scanner ni la page Tarteel n'envoient de clé : elles ne font que des lectures publiques
+// Ni le Scanner, ni la page Tarteel, ni le Séquenceur n'envoient de clé : ils ne font que des lectures publiques
 test('pages de lecture : aucune analyse n’y est lancée, aucune clé n’y est envoyée', () => {
-  for (const name of ['scanner.js', 'tarteel.js']) {
+  for (const name of ['scanner.js', 'tarteel.js', 'sequenceur.js']) {
     const source = read(scripts.find((path) => path.endsWith(join('pages', name))));
     assert.doesNotMatch(source, /api\.(analyze|models|corpus[A-Z]\w*|devMode)\(/, name);
     assert.doesNotMatch(source, /credentials\(\)/, name);

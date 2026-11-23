@@ -6,7 +6,10 @@
 // - Les étiquettes techniques restent telles que l'API les rend, de gauche à droite, non traduites.
 // - Les couleurs sont celles des thèmes du site (assets/css/sequenceur.css).
 // - Une longue chaîne s'affiche par tranches, pour rester fluide sur téléphone.
+// - Au clavier, une chaîne n'offre qu'un arrêt à la touche Tab : les flèches, Début et Fin passent d'une
+//   racine à l'autre. Sans cela, chaque variable ajouterait une tabulation avant la suite de la page.
 import { scannerHref } from '../lib/roots-index.js';
+import { nextIndex } from '../lib/roving.js';
 import { add, el, fill } from './dom.js';
 import { t } from './i18n-dom.js';
 
@@ -40,15 +43,26 @@ function extras(element) {
   return groups.length ? el('div', { class: 'carte-mot__plus' }, groups) : null;
 }
 
+// Les flèches de côté suivent le sens de la chaîne, qui est celui de la page
+function rovingKey(key) {
+  const rtl = document.documentElement.dir === 'rtl';
+  if (key === 'ArrowRight') return rtl ? 'ArrowUp' : 'ArrowDown';
+  if (key === 'ArrowLeft') return rtl ? 'ArrowDown' : 'ArrowUp';
+  return key;
+}
+
+// Rend {node, link} : la carte, et le lien de sa racine s'il y en a un
 function card(element, rank) {
   const kind = KIND_CLASS[element.kind] || KIND_CLASS.other;
+  let rootLink = null;
   const body = [
     el('span', { class: 'carte-mot__rang', text: rank }),
     el('span', { class: 'carte-mot__mot', text: element.arabic, attrs: { lang: 'ar', dir: 'rtl' } }),
   ];
   if (element.kind === 'variable') {
+    rootLink = el('a', { class: 'carte-mot__racine', text: element.root, attrs: { href: scannerHref(element.root), dir: 'ltr' } });
     body.push(
-      el('a', { class: 'carte-mot__racine', text: element.root, attrs: { href: scannerHref(element.root), dir: 'ltr' } }),
+      rootLink,
       label('carte-mot__etat', element.state),
       label('carte-mot__fonction', element.func),
       extras(element));
@@ -59,24 +73,59 @@ function card(element, rank) {
     body.push(label('carte-mot__etiquette', element.label));
   }
   const link = LINK_CLASS[element.link];
-  return el('li', { class: `chaine__maillon chaine__maillon--${kind}${link ? ` chaine__maillon--${link}` : ''}` },
+  const node = el('li', { class: `chaine__maillon chaine__maillon--${kind}${link ? ` chaine__maillon--${link}` : ''}` },
     // Le trait qui arrive à la carte : plein vers une variable, pointillé vers un opérateur. Décoratif.
     link ? el('span', { class: 'chaine__trait', attrs: { 'aria-hidden': 'true' } }) : null,
     el('div', { class: `carte-mot carte-mot--${kind}` }, body));
+  return { node, link: rootLink };
 }
 
 // elements : les éléments de lib/sequence.js (parseSequence) ; slice : taille d'une tranche
 export function mountSequenceChain(container, { elements, slice = SLICE }) {
   let rendered = 0;
+  let cursor = 0;                 // rang, parmi les liens, de celui que la touche Tab atteint
+  const links = [];               // les liens des racines déjà bâtis, dans l'ordre
+  const linkCount = elements.filter((item) => item.kind === 'variable').length;
   const list = el('ol', { class: 'chaine' });
   const more = el('button', { class: 'bouton-lien chaine__suite', text: t('Afficher la suite'), attrs: { type: 'button', hidden: true } });
 
   function renderMore() {
     const end = Math.min(rendered + slice, elements.length);
-    for (let index = rendered; index < end; index += 1) add(list, card(elements[index], index + 1));
+    for (let index = rendered; index < end; index += 1) {
+      const built = card(elements[index], index + 1);
+      if (built.link) {
+        built.link.tabIndex = links.length === cursor ? 0 : -1;
+        built.link.dataset.position = String(links.length);
+        links.push(built.link);
+      }
+      add(list, built.node);
+    }
     rendered = end;
     more.hidden = rendered >= elements.length;
   }
+
+  function setCursor(position) {
+    if (links[cursor]) links[cursor].tabIndex = -1;
+    cursor = position;
+    if (links[cursor]) links[cursor].tabIndex = 0;
+  }
+
+  list.addEventListener('keydown', (event) => {
+    const link = event.target;
+    if (!link.classList || !link.classList.contains('carte-mot__racine')) return;
+    const next = nextIndex(Number(link.dataset.position), rovingKey(event.key), linkCount);
+    if (next === null) return;
+    event.preventDefault();
+    // La racine visée peut être dans une tranche pas encore bâtie
+    while (links.length <= next && rendered < elements.length) renderMore();
+    setCursor(Math.min(next, links.length - 1));
+    if (links[cursor]) links[cursor].focus();
+  });
+  // Un lien atteint par un clic devient celui que la touche Tab retrouve
+  list.addEventListener('focusin', (event) => {
+    const link = event.target;
+    if (link.classList && link.classList.contains('carte-mot__racine')) setCursor(Number(link.dataset.position));
+  });
 
   more.addEventListener('click', renderMore);
   // Les cartes suivantes arrivent quand le bas de la chaîne approche ; le bouton reste là en secours

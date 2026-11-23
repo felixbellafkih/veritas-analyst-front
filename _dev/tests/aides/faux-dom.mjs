@@ -55,6 +55,12 @@ export class FakeNode {
         this.textContent += item;
         continue;
       }
+      // Un fragment se vide dans le nœud qui le reçoit : son texte et ses enfants
+      if (item.tagName === '#FRAGMENT') {
+        this.textContent += item.textContent;
+        this.append(...item.children);
+        continue;
+      }
       item.parent = this;
       this.children.push(item);
     }
@@ -110,6 +116,9 @@ export function installFakeDom() {
   globalThis.document = {
     createElement: (tag) => new FakeNode(tag),
     createElementNS: (_, tag) => new FakeNode(tag),
+    // Un nœud de texte est son texte ; un fragment est un nœud qui se vide là où on le pose (ui/markdown-view.js)
+    createTextNode: (text) => String(text),
+    createDocumentFragment: () => new FakeNode('#fragment'),
     documentElement: new FakeNode('html'),
   };
   return { node: (tag = 'div') => new FakeNode(tag), focused: () => focused };
