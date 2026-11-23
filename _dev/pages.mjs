@@ -3,3 +3,7 @@
 // tests de règles. Un test vérifie qu'aucune page n'y manque : toute page qui charge un module de
 // assets/js/v<N>/ doit figurer ici.
 export const PAGES = ['accueil', 'bibliotheque', 'interpreteur', 'scanner', 'sequenceur', 'tarteel'];
+
+// Les fichiers de ces pages, plus les pages faites d'un seul fichier à la racine (les mentions légales : leur
+// adresse, /legal.html, sert l'app sur l'App Store et ne change pas). Chemins relatifs au dépôt.
+export const PAGE_FILES = [...PAGES.map((name) => `${name}/index.html`), 'legal.html'];

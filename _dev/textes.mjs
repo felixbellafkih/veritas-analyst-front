@@ -11,7 +11,7 @@ import { readdir, readFile, stat, writeFile } from 'node:fs/promises';
 import { join, relative } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
-import { PAGES } from './pages.mjs';
+import { PAGE_FILES } from './pages.mjs';
 const REASON = 'le texte doit être écrit en toutes lettres';
 // Un appel, et non une définition (function t(…)) ni la méthode d'un objet (x.t(…))
 const CALL = /(?<![\w$.])(?<!function\s+)(t|tm|tx)\(\s*/g;
@@ -118,8 +118,8 @@ export async function collectTexts(rootDir) {
     }
   };
   for (const path of await scripts(join(rootDir, 'assets', 'js'))) await read(path, scriptTexts);
-  for (const page of PAGES) {
-    const path = join(rootDir, page, 'index.html');
+  for (const page of PAGE_FILES) {
+    const path = join(rootDir, page);
     if (await exists(path)) await read(path, pageTexts);
   }
   const sorted = [...new Set(texts.filter((text) => text))].sort();

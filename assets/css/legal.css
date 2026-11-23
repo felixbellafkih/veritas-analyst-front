@@ -1,0 +1,71 @@
+/* Nouveau site Veritas — mentions légales (/legal.html), texte de l'auteur en anglais. */
+
+.legal {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 760px;
+}
+
+.legal > * {
+  margin: 0;
+}
+
+.legal__tete {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-block-end: 20px;
+  border-block-end: 1px solid var(--bord-doux);
+}
+
+.legal__accent {
+  color: var(--accent);
+}
+
+.legal__titre {
+  margin-block-start: 20px;
+  color: var(--accent);
+  font-size: var(--t-petit);
+  letter-spacing: 0.09em;
+  line-height: 1.5;
+  text-transform: uppercase;
+}
+
+.legal__bloc {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 18px 20px;
+  border: 1px solid var(--bord);
+  border-inline-start: 3px solid var(--accent);
+  border-radius: var(--rayon);
+  background: var(--surface);
+  color: var(--secondaire);
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
+.legal__bloc p,
+.legal__contact {
+  margin: 0;
+}
+
+.legal__bloc strong {
+  color: var(--titre);
+}
+
+.legal__contact {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0;
+  list-style: none;
+}
+
+.legal__droits {
+  margin-block-start: 28px;
+  color: var(--discret);
+  font-size: var(--t-petit);
+  text-align: center;
+}

@@ -15,7 +15,7 @@ import { readdir, readFile, rename, writeFile } from 'node:fs/promises';
 import { join, relative } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
-import { PAGES } from './pages.mjs';
+import { PAGE_FILES } from './pages.mjs';
 
 async function list(dir) {
   try {
@@ -76,7 +76,7 @@ export async function bumpVersion(rootDir) {
   const inUrl = (url) => url.replace(new RegExp(`\\?v=${from}$`), `?v=${to}`).replace(`/assets/js/v${from}/`, `/assets/js/v${to}/`);
   const corpusRules = [[/(\s(?:src|href)=")([^"]*)"/g, (whole, start, url) => `${start}${inUrl(url)}"`]];
   const targets = [
-    ...PAGES.map((page) => [join(rootDir, page, 'index.html'), pageRules]),
+    ...PAGE_FILES.map((page) => [join(rootDir, page), pageRules]),
     ...(await corpusPages(rootDir, from)).map((path) => [path, corpusRules]),
     ...(await tools(join(rootDir, '_dev'))).map((path) => [path, toolRules]),
   ];

@@ -4,12 +4,14 @@ import assert from 'node:assert/strict';
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { PAGES as PAGE_DIRS } from '../pages.mjs';
+import { PAGE_FILES, PAGES as PAGE_DIRS } from '../pages.mjs';
 
 const SITE = fileURLToPath(new URL('../..', import.meta.url));
 const CSP = '<meta http-equiv="Content-Security-Policy" content="default-src \'none\'; script-src \'self\'; style-src \'self\'; img-src \'self\' data:; font-src \'self\'; connect-src \'self\' https://api.veritas-analyst.org; base-uri \'none\'; form-action \'none\'">';
 const SERVED = ['assets', ...PAGE_DIRS];
-const PAGES = PAGE_DIRS.map((name) => `${name}/index.html`).filter((page) => existsSync(join(SITE, page)));
+const PAGES = PAGE_FILES.filter((page) => existsSync(join(SITE, page)));
+// Pages indexables : les mentions légales (page de confidentialité de l'app sur l'App Store)
+const INDEXED = ['legal.html'];
 
 function walk(dir) {
   if (!existsSync(dir)) return [];
@@ -111,7 +113,8 @@ for (const page of PAGES) {
 
   test(`${page} : politique de sécurité exacte, et hors des moteurs de recherche`, () => {
     assert.ok(html.includes(CSP), 'balise Content-Security-Policy');
-    assert.ok(html.includes('<meta name="robots" content="noindex">'), 'noindex');
+    if (INDEXED.includes(page)) assert.doesNotMatch(html, /noindex/, 'indexable');
+    else assert.ok(html.includes('<meta name="robots" content="noindex">'), 'noindex');
     assert.match(html, /^<!doctype html>\s*<html lang="fr" dir="ltr">/i);
   });
 
@@ -261,6 +264,7 @@ test('la liste des versets d’un cluster n’est bâtie qu’à un endroit : ui
 test('.gitattributes : chaque page du site garde ses fins de ligne LF', () => {
   const lines = read(join(SITE, '.gitattributes')).split('\n').map((line) => line.trim());
   for (const name of PAGE_DIRS) assert.ok(lines.includes(`/${name}/** text=auto eol=lf`), name);
+  assert.ok(lines.includes('/legal.html text=auto eol=lf'), 'legal.html');
 });
 
 // Les deux pages qui montrent un cluster disent la même chose du signal : un seul module les écrit
