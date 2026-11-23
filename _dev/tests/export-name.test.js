@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { EXPORT_LINK_LIFETIME_MS, exportFileName } from '../../assets/js/v5/lib/export-name.js';
+import { EXPORT_LINK_LIFETIME_MS, exportFileName } from '../../assets/js/v6/lib/export-name.js';
 
 // En-tête technique qui cite une référence du corpus (1:1-7) : elle ne doit pas donner son nom au fichier
 const H = '**[TARGET: gemini-3.1-pro-preview]** | 📊 **Tokens:** Input=41,250 | Output=1,830 | Thinking=2,410 | Total=45,490 | Cost=$0.1234 | 📚 **Références :** 1:1-7, 18:96 (verset)';

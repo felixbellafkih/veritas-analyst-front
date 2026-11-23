@@ -3,9 +3,9 @@
 // La fausse API ne répond que lorsque le test le décide : chaque appel reste en main.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { ApiFailure } from '../../assets/js/v5/lib/failures.js';
-import { SEQUENCE_TEXT_MAX } from '../../assets/js/v5/lib/sequence.js';
-import { createSequenceRun } from '../../assets/js/v5/lib/sequence-run.js';
+import { ApiFailure } from '../../assets/js/v6/lib/failures.js';
+import { SEQUENCE_TEXT_MAX } from '../../assets/js/v6/lib/sequence.js';
+import { createSequenceRun } from '../../assets/js/v6/lib/sequence-run.js';
 
 const tick = () => new Promise((resolve) => setImmediate(resolve));
 const ANSWER = { nodes: [{ id: 'node_0', type: 'OPERATOR', arabic: 'ب', tag: 'TOOL_WITH' }], edges: [], transcript: '*TOOL_WITH*', logs: ['[LEXER] Operator: ب -> TOOL_WITH'] };

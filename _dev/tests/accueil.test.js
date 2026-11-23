@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { CLASSIC_URL } from '../../assets/js/v5/lib/config.js';
+import { CLASSIC_URL } from '../../assets/js/v6/lib/config.js';
 
 const SITE = fileURLToPath(new URL('../..', import.meta.url));
 const path = join(SITE, 'index.html');
@@ -73,14 +73,14 @@ test('aucun extrait d’analyse écrit dans la page : il est lu sur la liste pub
 });
 
 test('la carte de racine mène à sa fiche dans le Scanner', () => {
-  const page = readFileSync(fileURLToPath(new URL('../../assets/js/v5/pages/accueil.js', import.meta.url)), 'utf8');
+  const page = readFileSync(fileURLToPath(new URL('../../assets/js/v6/pages/accueil.js', import.meta.url)), 'utf8');
   assert.match(page, /scannerHref\(/);
   assert.match(page, /Ouvrir cette racine dans le Scanner/);
 });
 
 // L'ordre du menu est vérifié sur lib/destinations.js (_dev/tests/destinations.test.js)
 test('le socle bâtit le menu, la barre d’onglets et « Plus » à partir de lib/destinations.js', () => {
-  const source = readFileSync(fileURLToPath(new URL('../../assets/js/v5/ui/shell.js', import.meta.url)), 'utf8');
+  const source = readFileSync(fileURLToPath(new URL('../../assets/js/v6/ui/shell.js', import.meta.url)), 'utf8');
   for (const name of ['menuDestinations', 'tabDestinations', 'moreDestinations']) assert.ok(source.includes(`${name}(`), name);
   assert.doesNotMatch(source, /ready: (true|false)/);
 });

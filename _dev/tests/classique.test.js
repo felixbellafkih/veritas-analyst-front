@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { CLASSIC_URL } from '../../assets/js/v5/lib/config.js';
+import { CLASSIC_URL } from '../../assets/js/v6/lib/config.js';
 import { STATIC_FILES } from '../pages.mjs';
 
 const SITE = fileURLToPath(new URL('../..', import.meta.url));
@@ -34,7 +34,8 @@ test('la barre basse : le nouvel accueil, puis le corpus', () => {
 
 test('« Version classique » mène à /classique/, dans le même onglet', () => {
   assert.equal(CLASSIC_URL, '/classique/');
-  const shell = readFileSync(join(SITE, 'assets', 'js', 'v5', 'ui', 'shell.js'), 'utf8');
+  // chemin écrit d'un seul tenant : la montée de version le réécrit (assets/js/v<N>/)
+  const shell = readFileSync(fileURLToPath(new URL('../../assets/js/v6/ui/shell.js', import.meta.url)), 'utf8');
   const link = shell.slice(shell.indexOf('function classicLink'), shell.indexOf('}', shell.indexOf('function classicLink')));
   assert.doesNotMatch(link, /_blank|icon\('external'/);
 });

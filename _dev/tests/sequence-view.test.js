@@ -7,10 +7,10 @@ import { fileURLToPath } from 'node:url';
 import { installFakeDom } from './aides/faux-dom.mjs';
 
 const dom = installFakeDom();
-const { mountSequenceView } = await import('../../assets/js/v5/ui/sequence-view.js');
-const { parseSequence } = await import('../../assets/js/v5/lib/sequence.js');
-const { ApiFailure } = await import('../../assets/js/v5/lib/failures.js');
-const { interpreterHref } = await import('../../assets/js/v5/lib/verses.js');
+const { mountSequenceView } = await import('../../assets/js/v6/ui/sequence-view.js');
+const { parseSequence } = await import('../../assets/js/v6/lib/sequence.js');
+const { ApiFailure } = await import('../../assets/js/v6/lib/failures.js');
+const { interpreterHref } = await import('../../assets/js/v6/lib/verses.js');
 
 const file = (path) => readFileSync(fileURLToPath(new URL(path, import.meta.url)), 'utf8');
 const SEQ = JSON.parse(file('../fixtures/sequences.json'));

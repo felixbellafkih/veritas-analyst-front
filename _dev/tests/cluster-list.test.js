@@ -8,10 +8,10 @@ import { fileURLToPath } from 'node:url';
 import { installFakeDom } from './aides/faux-dom.mjs';
 
 const dom = installFakeDom();
-const { mountClusterList } = await import('../../assets/js/v5/ui/cluster-list.js');
-const { createTarteelProbe } = await import('../../assets/js/v5/lib/tarteel-probe.js');
-const { indexesOfSura } = await import('../../assets/js/v5/lib/tarteel-stats.js');
-const { clusterVerse } = await import('../../assets/js/v5/lib/tarteel.js');
+const { mountClusterList } = await import('../../assets/js/v6/ui/cluster-list.js');
+const { createTarteelProbe } = await import('../../assets/js/v6/lib/tarteel-probe.js');
+const { indexesOfSura } = await import('../../assets/js/v6/lib/tarteel-stats.js');
+const { clusterVerse } = await import('../../assets/js/v6/lib/tarteel.js');
 
 const fixture = fileURLToPath(new URL('../fixtures/tarteel.json', import.meta.url));
 const VERSES = JSON.parse(readFileSync(fixture, 'utf8')).clusters['S-M-W|'];

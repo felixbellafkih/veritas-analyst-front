@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { modelMenu } from '../../assets/js/v5/lib/models.js';
+import { modelMenu } from '../../assets/js/v6/lib/models.js';
 
 const REPONSE = { default: 'gemini-3.1-pro-preview', models: ['gemini-3.1-pro-preview', 'gemini-2.5-flash', 'gemini-2.5-pro'] };
 
