@@ -8,7 +8,7 @@ import { icon, logo } from './icons.js';
 import { currentLang, interfaceLanguages, languageLabel, setLanguage, t, td } from './i18n-dom.js';
 
 const HOME = '/accueil/';
-const PAGE_TITLES = { accueil: tx('Accueil'), interpreteur: tx('Interpréteur'), scanner: tx('Scanner'), sequenceur: tx('Séquenceur'), tarteel: tx('Tarteel') };
+const PAGE_TITLES = { accueil: tx('Accueil'), interpreteur: tx('Interpréteur'), scanner: tx('Scanner'), sequenceur: tx('Séquenceur'), tarteel: tx('Tarteel'), bibliotheque: tx('Bibliothèque') };
 const THEME_EVENT = 'veritas:theme';
 
 // Le corpus a une page française et une page anglaise

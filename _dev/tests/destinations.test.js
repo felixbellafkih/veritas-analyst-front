@@ -6,19 +6,24 @@ import { DESTINATIONS, menuDestinations, moreDestinations, tabDestinations } fro
 
 const ids = (list) => list.map((destination) => destination.id);
 
-test('menu : Interpréteur, Tarteel, Séquenceur, Scanner, Corpus, dans cet ordre', () => {
-  assert.deepEqual(ids(menuDestinations()), ['interpreteur', 'tarteel', 'sequenceur', 'scanner', 'corpus']);
+test('menu : Interpréteur, Tarteel, Séquenceur, Scanner, Corpus, Bibliothèque, dans cet ordre', () => {
+  assert.deepEqual(ids(menuDestinations()), ['interpreteur', 'tarteel', 'sequenceur', 'scanner', 'corpus', 'bibliotheque']);
 });
 
-test('barre d’onglets du téléphone : les quatre outils ; « Corpus » passe sous « Plus »', () => {
+test('barre d’onglets du téléphone : les quatre outils ; « Corpus » et « Bibliothèque » sont sous « Plus »', () => {
   assert.deepEqual(ids(tabDestinations()), ['interpreteur', 'tarteel', 'sequenceur', 'scanner']);
-  assert.deepEqual(ids(moreDestinations()), ['corpus']);
+  assert.deepEqual(ids(moreDestinations()), ['corpus', 'bibliotheque']);
 });
 
-test('une destination sans page n’apparaît nulle part', () => {
-  const waiting = DESTINATIONS.filter((destination) => !destination.ready).map((destination) => destination.id);
-  assert.deepEqual(waiting, ['bibliotheque']);
-  for (const list of [menuDestinations(), tabDestinations(), moreDestinations()]) assert.ok(!ids(list).includes('bibliotheque'));
+test('plus aucune destination en attente : chacune a sa page', () => {
+  assert.deepEqual(DESTINATIONS.filter((destination) => !destination.ready), []);
+  assert.equal(DESTINATIONS.find((destination) => destination.id === 'bibliotheque').href, '/bibliotheque/');
+});
+
+test('une destination sans page n’apparaîtrait nulle part', () => {
+  const ready = (destination) => destination.ready;
+  assert.deepEqual(ids(menuDestinations()), ids(DESTINATIONS.filter(ready)));
+  assert.deepEqual([...ids(tabDestinations()), ...ids(moreDestinations())].sort(), ids(menuDestinations()).sort());
 });
 
 test('chaque destination a son adresse, son icône et son nom', () => {
