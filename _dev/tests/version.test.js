@@ -116,3 +116,38 @@ test('une page ajoutée plus tard (Scanner) passe elle aussi à la version suiva
     assert.ok(page.includes(`/${dir(NEW)}/pages/a.js?v=${NEW}"`));
   });
 });
+
+// Étape 5 : les pages du corpus sont écrites par la publication du corpus avec le numéro en place ; la montée de
+// version les fait suivre, sans toucher à celles de l'ancien gabarit ni aux pages du LEXICON.
+test('version suivante : les pages du corpus au gabarit du site suivent ; les autres restent telles quelles', async () => {
+  const corpusPage = (version, extra = '') => [
+    `<link rel="stylesheet" href="/assets/css/corpus.css?v=${version}">`,
+    `<script type="module" src="/${dir(version)}/pages/corpus.js?v=${version}"></script>`,
+    `<p>Une analyse qui cite ?v=${version} et /${dir(version)}/ dans son texte.</p>${extra}`,
+  ].join('\n');
+  const oldStyle = `<link rel="stylesheet" href="/corpus/style.css">\n<p>?v=${OLD}" et /${dir(OLD)}/</p>\n`;
+  const files = {
+    ...site(OLD),
+    'corpus/index.html': corpusPage(OLD),
+    'corpus/2/255/index.html': corpusPage(OLD),
+    'en/corpus/1/1/index.html': corpusPage(OLD),
+    'corpus/9/84/index.html': oldStyle,
+    'lx-1242ba1a/a-b-b/index.html': oldStyle,
+    'corpus/data/veritas_corpus.jsonl': `{"x": "/${dir(OLD)}/pages/corpus.js?v=${OLD}\\""}\n`,
+  };
+  await withSite(files, async (root, read) => {
+    const { changed } = await bumpVersion(root);
+    for (const name of ['corpus/index.html', 'corpus/2/255/index.html', 'en/corpus/1/1/index.html']) {
+      const html = await read(name);
+      assert.ok(html.includes(`/assets/css/corpus.css?v=${NEW}"`), name);
+      assert.ok(html.includes(`<script type="module" src="/${dir(NEW)}/pages/corpus.js?v=${NEW}"></script>`), name);
+      // le texte d'une analyse n'est pas réécrit : ?v= hors d'un attribut, chemin hors d'une adresse
+      assert.ok(html.includes(`cite ?v=${OLD} et /${dir(OLD)}/ dans son texte`), name);
+      assert.ok(changed.includes(name), name);
+    }
+    assert.equal(await read('corpus/9/84/index.html'), oldStyle);
+    assert.equal(await read('lx-1242ba1a/a-b-b/index.html'), oldStyle);
+    assert.equal(await read('corpus/data/veritas_corpus.jsonl'), files['corpus/data/veritas_corpus.jsonl']);
+    assert.ok(!changed.some((name) => name.startsWith('lx-') || name.endsWith('.jsonl') || name === 'corpus/9/84/index.html'));
+  });
+});
