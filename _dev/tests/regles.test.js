@@ -41,6 +41,15 @@ test('les pages du site existent : accueil (à la racine), Interpréteur, Scanne
   assert.ok(!PAGE_FILES.includes('accueil/index.html'), 'accueil/index.html est une page de renvoi');
 });
 
+// Relecture de l'étape 6 : indexables, les pages d'outils sont aussi atteintes avec des paramètres
+// (/interpreteur/?s=…, /scanner/?q=…) ; leur adresse de référence évite que Google y voie des doublons
+test('chaque page indexable donne son adresse de référence', () => {
+  for (const name of PAGE_DIRS) {
+    const html = read(join(SITE, name, 'index.html'));
+    assert.ok(html.includes(`<link rel="canonical" href="https://veritas-analyst.org/${name}/">`), name);
+  }
+});
+
 // Étape 6 : plus aucun lien interne vers /accueil/ (page de renvoi), sauf ses propres tests
 test('aucun module ni outil ne vise encore /accueil/', () => {
   const tools = walk(join(SITE, '_dev')).filter((path) => /\.m?js$/.test(path) && !path.endsWith('accueil.test.js') && !path.endsWith('regles.test.js'));
