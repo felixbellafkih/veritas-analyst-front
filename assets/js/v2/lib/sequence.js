@@ -4,8 +4,10 @@
 // vide ou une liste vide, et chaque élément reçu garde sa carte (aucun mot ne disparaît).
 // La couleur que l'API joint à chaque élément n'est pas lue : les thèmes du site décident des couleurs.
 
+export const SEQUENCE_TEXT_MAX = 5000; // caractères d'un texte libre à séquencer
+
 const text = (value) => (typeof value === 'string' ? value : '');
-const texts = (value) => (Array.isArray(value) ? value.filter((item) => typeof item === 'string') : []);
+const texts =(value) => (Array.isArray(value) ? value.filter((item) => typeof item === 'string') : []);
 const LINKS = ['solid', 'dashed'];
 
 // 'operator' : mot-outil, sans racine ; 'variable' : mot porteur d'une racine du LEXICON ; 'unknown' : mot
