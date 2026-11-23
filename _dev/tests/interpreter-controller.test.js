@@ -2,8 +2,8 @@
 // Le formulaire, la vue, l'API et le stockage sont remplacés par des faux : aucune page, aucun réseau.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { ApiFailure } from '../../assets/js/v2/lib/failures.js';
-import { createInterpreter } from '../../assets/js/v2/lib/interpreter-controller.js';
+import { ApiFailure } from '../../assets/js/v3/lib/failures.js';
+import { createInterpreter } from '../../assets/js/v3/lib/interpreter-controller.js';
 
 const H = '**[TARGET: m]** | 📊 **Tokens:** Input=1 | Output=1 | Thinking=0 | Total=2\n\n';
 const R1 = H + 'Analyse 1';

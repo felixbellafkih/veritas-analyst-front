@@ -1,8 +1,8 @@
 // Appels à l'API (assets/js/api.js), éprouvés contre le faux serveur local.
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
-import { createApi } from '../../assets/js/v2/api.js';
-import { ApiFailure } from '../../assets/js/v2/lib/failures.js';
+import { createApi } from '../../assets/js/v3/api.js';
+import { ApiFailure } from '../../assets/js/v3/lib/failures.js';
 import { startServer } from '../serveur.mjs';
 
 const BODY = { verse_text: 'texte envoyé', language: 'Français' };

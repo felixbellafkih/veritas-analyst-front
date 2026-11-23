@@ -2,7 +2,7 @@
 // du téléphone n'a que quatre places pour les outils, le reste va sous « Plus ».
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { DESTINATIONS, menuDestinations, moreDestinations, tabDestinations } from '../../assets/js/v2/lib/destinations.js';
+import { DESTINATIONS, menuDestinations, moreDestinations, tabDestinations } from '../../assets/js/v3/lib/destinations.js';
 
 const ids = (list) => list.map((destination) => destination.id);
 

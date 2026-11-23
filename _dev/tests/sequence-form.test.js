@@ -1,9 +1,9 @@
 // Formulaire du Séquenceur gardé pour l'onglet (lib/sequence-form.js), et adresses d'un passage (lib/verses.js).
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { SEQUENCE_TEXT_MAX } from '../../assets/js/v2/lib/sequence.js';
-import { sequenceFormState } from '../../assets/js/v2/lib/sequence-form.js';
-import { interpreterHref, parsePassageQuery, sequencerHref } from '../../assets/js/v2/lib/verses.js';
+import { SEQUENCE_TEXT_MAX } from '../../assets/js/v3/lib/sequence.js';
+import { sequenceFormState } from '../../assets/js/v3/lib/sequence-form.js';
+import { interpreterHref, parsePassageQuery, sequencerHref } from '../../assets/js/v3/lib/verses.js';
 
 const FIRST = { mode: 'verset', sura: 1, start: 1, end: 1, text: '' };
 
