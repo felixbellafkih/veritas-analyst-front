@@ -237,3 +237,9 @@ test('les adresses d’un passage, vers le Séquenceur ou l’Interpréteur, son
   const byHand = scripts.filter((path) => /\/(sequenceur|interpreteur)\/(\?|\$\{)/.test(read(path))).map((path) => rel(path).split('/').slice(-2).join('/'));
   assert.deepEqual(byHand, ['lib/verses.js']);
 });
+
+// Les champs « sourate, du verset, au verset » servent à l'Interpréteur et au Séquenceur : un seul module les bâtit
+test('les champs de verset ne sont bâtis qu’à un endroit : ui/verse-fields.js', () => {
+  const builders = scripts.filter((path) => /verset-debut/.test(read(path))).map((path) => rel(path).split('/').slice(-2).join('/'));
+  assert.deepEqual(builders, ['ui/verse-fields.js']);
+});

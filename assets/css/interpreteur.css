@@ -99,12 +99,6 @@
   opacity: 0.55;
 }
 
-.passage__versets {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-}
-
 .passage .champ__aide {
   margin-block-start: -10px;
 }

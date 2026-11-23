@@ -10,12 +10,13 @@ import { handoffSlot } from '../lib/tarteel-handoff.js';
 import { tarteelQuery } from '../lib/tarteel-stats.js';
 import { modelMenu } from '../lib/models.js';
 import { createTarteelProbe } from '../lib/tarteel-probe.js';
-import { MAX_VERSES, SURAS, clampRange, cleanVerseText, referenceLabel } from '../lib/verses.js';
+import { cleanVerseText, referenceLabel } from '../lib/verses.js';
 import { mountClusterList } from './cluster-list.js';
 import { add, clear, el, fill } from './dom.js';
 import { icon } from './icons.js';
 import { currentLang, languages, t, td } from './i18n-dom.js';
 import { clusterNodes, signalNodes, tarteelHelp } from './tarteel-status.js';
+import { mountVerseFields } from './verse-fields.js';
 
 // Champ étiqueté : l'étiquette est liée au champ par son identifiant
 function field(id, label, control) {
@@ -37,11 +38,6 @@ export function mountPassageForm(container, { api, store, asked, onLaunch, onMan
   let verseText = '';
   let versePending = null;
 
-  const sura = el('select', { class: 'saisie', attrs: { id: 'sourate' } });
-  for (const entry of SURAS) add(sura, el('option', { text: `${entry.n} · ${entry.name}`, attrs: { value: entry.n } }));
-  const start = el('input', { class: 'saisie', attrs: { id: 'verset-debut', type: 'number', inputmode: 'numeric', min: 1 } });
-  const end = el('input', { class: 'saisie', attrs: { id: 'verset-fin', type: 'number', inputmode: 'numeric', min: 1 } });
-  const hint = el('p', { class: 'champ__aide' });
   const reference = el('span', { class: 'verset__ref' });
   const verseBody = el('div', { class: 'verset__corps' });
   const verse = el('div', { class: 'verset', attrs: { 'aria-live': 'polite' } }, reference, verseBody);
@@ -81,35 +77,18 @@ export function mountPassageForm(container, { api, store, asked, onLaunch, onMan
     }
   }
 
-  function paintVerseFields() {
-    const limit = SURAS[state.sura - 1].verses;
-    sura.value = String(state.sura);
-    start.value = String(state.start);
-    start.max = String(limit);
-    end.value = String(state.end);
-    end.min = String(state.start);
-    end.max = String(Math.min(limit, state.start + MAX_VERSES - 1));
-    hint.textContent = t('Sourate de {n} versets · 10 versets au plus par analyse', { n: limit });
-  }
+  // Sourate, du verset, au verset : les champs partagés avec le Séquenceur (ui/verse-fields.js). À chaque
+  // changement, le formulaire est gardé pour l'onglet et le texte du passage est relu.
+  const verseFields = mountVerseFields({
+    state,
+    hint: (count) => t('Sourate de {n} versets · 10 versets au plus par analyse', { n: count }),
+    onChange: () => {
+      save();
+      loadVerse();
+    },
+  });
 
-  function changePassage(next) {
-    const range = clampRange(next.sura, next.start, next.end);
-    if (!range) return;
-    Object.assign(state, { sura: Number(next.sura), ...range });
-    paintVerseFields();
-    save();
-    loadVerse();
-  }
-
-  sura.addEventListener('change', () => changePassage({ sura: Number(sura.value), start: 1, end: 1 }));
-  start.addEventListener('change', () => changePassage({ sura: state.sura, start: start.value, end: Math.max(Number(end.value) || 0, Number(start.value) || 0) }));
-  end.addEventListener('change', () => changePassage({ sura: state.sura, start: state.start, end: end.value }));
-
-  const versePanel = el('div', { class: 'passage__mode' },
-    field('sourate', t('Sourate'), el('div', { class: 'choix' }, sura, icon('chevron'))),
-    el('div', { class: 'passage__versets' }, field('verset-debut', t('Du verset'), start), field('verset-fin', t('au verset'), end)),
-    hint,
-    verse);
+  const versePanel = el('div', { class: 'passage__mode' }, verseFields.nodes, verse);
 
   // ------------------------------------------------------------------ mode Tarteel
 
@@ -340,7 +319,6 @@ export function mountPassageForm(container, { api, store, asked, onLaunch, onMan
     submit();
   });
 
-  paintVerseFields();
   primary.value = state.primary;
   constraint.value = state.constraint;
   paintExplore();
