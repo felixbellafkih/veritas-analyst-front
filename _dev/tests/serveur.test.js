@@ -407,3 +407,63 @@ test('racines : la fiche de S-M-W reste celle de l’accueil', async () => {
   const card = JSON.parse(await readFile(new URL('../fixtures/racine-S-M-W.json', import.meta.url), 'utf8'));
   assert.deepEqual(await (await api('/analyze/root/S-M-W')).json(), card);
 });
+
+// ---- Séquenceur : lecture publique, sans clé (étape 3)
+
+const sequence = (body) => api('/analyze/sequencer', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+
+test('Séquenceur : le texte d’un verset rend sa séquence capturée, sans clé', async () => {
+  const response = await sequence({ input_seq: stripAscii(verses['1:1']) });
+  assert.equal(response.status, 200);
+  const data = await response.json();
+  assert.equal(data.nodes.length, 5);
+  assert.equal(data.nodes[0].type, 'OPERATOR');
+  assert.equal(data.nodes[0].tag, 'TOOL_WITH');
+  assert.equal(data.nodes[1].type, 'VARIABLE');
+  assert.equal(data.nodes[1].root, 'S-M-W');
+  assert.equal(data.edges.length, 4);
+  assert.equal(typeof data.transcript, 'string');
+  assert.equal(data.logs.length, 5);
+});
+
+test('Séquenceur : saisie vide refusée, corps invalide refusé', async () => {
+  const empty = await sequence({ input_seq: '  \n ' });
+  assert.equal(empty.status, 400);
+  assert.deepEqual(await empty.json(), { detail: 'Sequence empty' });
+  const missing = await sequence({});
+  assert.equal(missing.status, 422);
+  assert.equal((await sequence({ input_seq: 12 })).status, 422);
+});
+
+test('Séquenceur : un texte jamais capturé rend un élément inconnu par mot, comme la vraie API', async () => {
+  const data = await (await sequence({ input_seq: 'mot1  mot2' })).json();
+  assert.deepEqual(data.nodes, [
+    { id: 'node_0', type: 'UNMAPPED', arabic: 'mot1', logic_mod: '[BASE_VARIABLE]', color: '#ff0000' },
+    { id: 'node_1', type: 'UNMAPPED', arabic: 'mot2', logic_mod: '[BASE_VARIABLE]', color: '#ff0000' },
+  ]);
+  assert.deepEqual(data.edges, [{ from: 'node_0', to: 'node_1', type: 'solid' }]);
+  assert.equal(data.transcript, '*[UNMAPPED_mot1]* ⛓️ *[UNMAPPED_mot2]*');
+  assert.deepEqual(data.logs, ['[WARNING] Unmapped Variable: mot1', '[WARNING] Unmapped Variable: mot2']);
+});
+
+test('Séquenceur : les saisies libres capturées gardent la réponse de la vraie API', async () => {
+  const latin = await (await sequence({ input_seq: 'hello world' })).json();
+  assert.deepEqual(latin.nodes.map((node) => node.type), ['UNMAPPED', 'UNMAPPED']);
+  const tagged = await (await sequence({ input_seq: '<b>بِسْمِ</b>' })).json();
+  assert.equal(tagged.nodes[0].arabic, '<b>بسم</b>');
+});
+
+test('Séquenceur : en panne, 503 comme les autres routes', async () => {
+  await api('/__panne?on=1');
+  try {
+    assert.equal((await sequence({ input_seq: 'x' })).status, 503);
+  } finally {
+    await api('/__panne?on=0');
+  }
+});
+
+test('verset 2:255 : son texte est là, pour une longue chaîne', async () => {
+  const response = await api('/verse/range?sura=2&start=255&end=255');
+  assert.equal(response.status, 200);
+  assert.ok((await response.json()).verse_text.split(' ').length > 40);
+});

@@ -1,5 +1,6 @@
 // Capture, une fois, des réponses réelles de l'API pour le faux serveur local (_dev/serveur.mjs).
 // Lectures publiques seulement : aucune clé, aucune analyse. Usage : node _dev/capturer.mjs
+// Avec --sequences : seules les données du Séquenceur sont (re)capturées, les autres fichiers restent tels quels.
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -43,6 +44,48 @@ async function writeJson(name, data) {
 
 await mkdir(OUT, { recursive: true });
 
+// ---- Séquenceur : la séquence de chaque verset d'essai, de deux passages envoyés d'un bloc (pour vérifier
+// que séquencer verset par verset donne le même résultat), et de quatre saisies libres.
+const SEQUENCE_PASSAGES = [[1, 1, 7], [112, 1, 4]];
+const SEQUENCE_TEXTS = ['hello world', 'كمبيوتر', '<b>بِسْمِ</b>', '123'];
+const EXTRA_VERSES = [[2, 255]]; // un verset long : 70 éléments
+// Le texte tel que /verse/range le rend pour un verset seul (et tel que le faux serveur le rend)
+const stripAscii = (text) => text.replace(/^[ \t\r\n]+|[ \t\r\n]+$/g, '');
+
+async function post(path, body) {
+  const response = await fetch(API + path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  if (!response.ok) throw new Error(`${path} → ${response.status}`);
+  return response.json();
+}
+
+async function addExtraVerses(verses) {
+  for (const [sura, verse] of EXTRA_VERSES) {
+    if (verses[`${sura}:${verse}`] === undefined) {
+      verses[`${sura}:${verse}`] = (await get('/verse/range?' + query({ sura, start: verse, end: verse }))).verse_text;
+    }
+  }
+}
+
+async function captureSequences(verses) {
+  const texts = Object.values(verses).map(stripAscii);
+  for (const [sura, start, end] of SEQUENCE_PASSAGES) {
+    const parts = [];
+    for (let verse = start; verse <= end; verse++) parts.push(stripAscii(verses[`${sura}:${verse}`]));
+    texts.push(parts.join(' '));
+  }
+  const sequences = {};
+  for (const text of [...texts, ...SEQUENCE_TEXTS]) sequences[text] = await post('/analyze/sequencer', { input_seq: text });
+  await writeJson('sequences.json', sequences);
+}
+
+if (process.argv.includes('--sequences')) {
+  const kept = JSON.parse(await readFile(join(OUT, 'versets.json'), 'utf8'));
+  await addExtraVerses(kept);
+  await writeJson('versets.json', kept);
+  await captureSequences(kept);
+  process.exit(0);
+}
+
 await writeJson('stats.json', await get('/content/manifesto/stats'));
 await writeJson('metadata.json', await get('/verse/metadata'));
 await writeJson('racine-S-M-W.json', await get('/analyze/root/S-M-W'));
@@ -61,7 +104,9 @@ for (const [sura, count] of [[1, 7], [112, 4]]) {
     verses[`${sura}:${verse}`] = (await get('/verse/range?' + query({ sura, start: verse, end: verse }))).verse_text;
   }
 }
+await addExtraVerses(verses);
 await writeJson('versets.json', verses);
+await captureSequences(verses);
 
 const frequencies = {};
 const clusters = {};

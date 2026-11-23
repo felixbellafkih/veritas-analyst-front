@@ -37,6 +37,7 @@ async function loadFixtures() {
     stats: await json('stats.json'), metadata: await json('metadata.json'), root: await json('racine-S-M-W.json'),
     roots: await json('racines.json'), // fiches du Scanner : { saisie: réponse entière de l'API }
     verses: await json('versets.json'), tarteel: await json('tarteel.json'),
+    sequences: await json('sequences.json'), // Séquenceur : { texte envoyé: réponse entière de l'API }
     analysis: await text('analyse-1-1.txt'), analysisEn: await text('analyse-1-1-en.txt'),
   };
 }
@@ -118,6 +119,25 @@ function verseRange(query, fixtures) {
   }
   if (!texts.length) return { status: 404, data: { detail: 'No verses found for the given range.' } };
   return { status: 200, data: { verse_text: texts.join(' ') } };
+}
+
+// Séquenceur : la réponse capturée si le texte l'a été ; sinon un élément inconnu par mot, ce que rend la
+// vraie API pour des mots qu'aucune racine du LEXICON ne couvre. Lecture publique : aucune clé n'est demandée.
+function sequence(text, fixtures) {
+  if (!stripAscii(text)) return { status: 400, data: { detail: 'Sequence empty' } };
+  for (const sent of [text, stripAscii(text)]) {
+    if (Object.hasOwn(fixtures.sequences, sent)) return { status: 200, data: fixtures.sequences[sent] };
+  }
+  const words = text.split(/\s+/).filter(Boolean);
+  return {
+    status: 200,
+    data: {
+      nodes: words.map((word, index) => ({ id: `node_${index}`, type: 'UNMAPPED', arabic: word, logic_mod: '[BASE_VARIABLE]', color: '#ff0000' })),
+      edges: words.slice(1).map((_, index) => ({ from: `node_${index}`, to: `node_${index + 1}`, type: 'solid' })),
+      transcript: words.map((word) => `*[UNMAPPED_${word}]*`).join(' ⛓️ '),
+      logs: words.map((word) => `[WARNING] Unmapped Variable: ${word}`),
+    },
+  };
 }
 
 function frequencies(query, fixtures) {
@@ -324,6 +344,12 @@ export async function startServer({ port = 8787, pingMs = 300 } = {}) {
       }
     }
     if (req.method === 'POST') {
+      if (path === '/analyze/sequencer') {
+        const body = await readBody(req);
+        if (!body || typeof body.input_seq !== 'string') return sendJson(res, 422, { detail: 'Corps de demande invalide.' });
+        const { status, data } = sequence(body.input_seq, fixtures);
+        return sendJson(res, status, data);
+      }
       if (path === '/auth/dev-mode') {
         const body = await readBody(req);
         if (body && body.password === DEV_PASSWORD) {
