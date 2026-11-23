@@ -62,49 +62,6 @@
   gap: 18px;
 }
 
-.segments {
-  display: grid;
-  grid-auto-columns: minmax(0, 1fr);
-  grid-auto-flow: column;
-  gap: 4px;
-  padding: 4px;
-  border: 1px solid var(--bord);
-  border-radius: var(--rayon-moyen);
-  background: var(--surface);
-}
-
-.segments__bouton {
-  min-height: var(--cible);
-  padding-inline: 6px;
-  border: 0;
-  border-radius: var(--rayon-petit);
-  background: transparent;
-  color: var(--secondaire);
-  font-size: var(--t-petit);
-  font-weight: 500;
-}
-
-.segments__bouton:hover:not(:disabled):not([aria-pressed="true"]) {
-  color: var(--fort);
-}
-
-.segments__bouton[aria-pressed="true"] {
-  background: var(--surface-3);
-  color: var(--fort);
-  font-weight: 600;
-}
-
-.segments__bouton:disabled:not([aria-pressed="true"]) {
-  cursor: default;
-  opacity: 0.55;
-}
-
-.passage__versets {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-}
-
 .passage .champ__aide {
   margin-block-start: -10px;
 }

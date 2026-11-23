@@ -1,8 +1,8 @@
 // Appels à l'API (assets/js/api.js), éprouvés contre le faux serveur local.
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
-import { createApi } from '../../assets/js/v2/api.js';
-import { ApiFailure } from '../../assets/js/v2/lib/failures.js';
+import { createApi } from '../../assets/js/v3/api.js';
+import { ApiFailure } from '../../assets/js/v3/lib/failures.js';
 import { startServer } from '../serveur.mjs';
 
 const BODY = { verse_text: 'texte envoyé', language: 'Français' };
@@ -228,4 +228,29 @@ test('scan : une demande abandonnée', async () => {
   const controller = new AbortController();
   controller.abort();
   await fails(api.scan('S-M-W', { signal: controller.signal }), { kind: 'aborted' });
+});
+
+test('sequence : la réponse entière de l’API, pour le texte d’un verset', async () => {
+  const text = await api.verseRange(1, 1, 1);
+  const data = await api.sequence(text);
+  assert.equal(data.nodes.length, 5);
+  assert.equal(data.nodes[1].root, 'S-M-W');
+  assert.equal(typeof data.transcript, 'string');
+});
+
+test('sequence : le texte part dans le corps, sans clé ni mot de passe', async () => {
+  const sent = [];
+  const spied = createApi({ base, fetch: (url, options) => {
+    sent.push({ url, method: options.method, headers: options.headers, body: options.body });
+    return fetch(url, options);
+  } });
+  await spied.sequence('نص');
+  assert.deepEqual(sent, [{ url: `${base}/analyze/sequencer`, method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{"input_seq":"نص"}' }]);
+});
+
+test('sequence : saisie vide refusée par le serveur, demande abandonnée', async () => {
+  await fails(api.sequence('   '), { kind: 'http', status: 400, detail: 'Sequence empty' });
+  const controller = new AbortController();
+  controller.abort();
+  await fails(api.sequence('نص', { signal: controller.signal }), { kind: 'aborted' });
 });

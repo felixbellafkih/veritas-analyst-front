@@ -6,5 +6,6 @@
 /accueil/** text=auto eol=lf
 /interpreteur/** text=auto eol=lf
 /scanner/** text=auto eol=lf
+/sequenceur/** text=auto eol=lf
 /tarteel/** text=auto eol=lf
 /assets/fonts/*.woff2 binary

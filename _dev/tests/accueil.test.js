@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { CLASSIC_URL } from '../../assets/js/v2/lib/config.js';
+import { CLASSIC_URL } from '../../assets/js/v3/lib/config.js';
 
 const SITE = fileURLToPath(new URL('../..', import.meta.url));
 const path = join(SITE, 'accueil', 'index.html');
@@ -30,18 +30,16 @@ test('les trois analyses du corpus : un lien chacune, vers une page publiée en 
   }
 });
 
-// Étape 2 : le Tarteel et le Scanner ont leur page ; le Séquenceur reste dans la version classique
-test('outils : Interpréteur, Tarteel et Scanner mènent au nouveau site ; le Séquenceur à la version classique', () => {
+// Étape 3 : chaque outil a sa page sur le nouveau site ; plus aucune carte ne renvoie à la version classique
+test('outils : Interpréteur, Tarteel, Séquenceur et Scanner mènent au nouveau site', () => {
   const cards = [...html.matchAll(/<a class="outil carte"[^>]*>[\s\S]*?<\/a>/g)].map((match) => match[0]);
   assert.equal(cards.length, 4);
   const card = (name) => cards.find((text) => text.includes(`data-i18n>${name}</span>`));
-  for (const [name, href] of [['Interpréteur', '/interpreteur/'], ['Tarteel', '/tarteel/'], ['Scanner', '/scanner/']]) {
+  for (const [name, href] of [['Interpréteur', '/interpreteur/'], ['Tarteel', '/tarteel/'], ['Séquenceur', '/sequenceur/'], ['Scanner', '/scanner/']]) {
     assert.ok(card(name).startsWith(`<a class="outil carte" href="${href}">`), name);
     assert.ok(!card(name).includes('dans la version classique'), name);
+    assert.ok(!card(name).includes(CLASSIC_URL), name);
   }
-  const classic = card('Séquenceur');
-  assert.ok(classic.includes(`href="${CLASSIC_URL}"`) && classic.includes('target="_blank"') && classic.includes('rel="noopener"'));
-  assert.ok(classic.includes('dans la version classique'));
 });
 
 // Ce qui vient du LEXICON ou de l'API n'est jamais recopié dans la page : une correction du LEXICON se
@@ -59,13 +57,14 @@ test('aucun extrait d’analyse écrit dans la page : il est lu sur la liste pub
 });
 
 test('la carte de racine mène à sa fiche dans le Scanner', () => {
-  const page = readFileSync(fileURLToPath(new URL('../../assets/js/v2/pages/accueil.js', import.meta.url)), 'utf8');
+  const page = readFileSync(fileURLToPath(new URL('../../assets/js/v3/pages/accueil.js', import.meta.url)), 'utf8');
   assert.match(page, /scannerHref\(/);
   assert.match(page, /Ouvrir cette racine dans le Scanner/);
 });
 
-test('menu : Interpréteur, Tarteel, Scanner, Corpus, dans cet ordre', () => {
-  const source = readFileSync(fileURLToPath(new URL('../../assets/js/v2/ui/shell.js', import.meta.url)), 'utf8');
-  const ready = [...source.matchAll(/\{ id: '([a-z]+)',[^}]*ready: (true|false) \}/g)].filter((match) => match[2] === 'true').map((match) => match[1]);
-  assert.deepEqual(ready, ['interpreteur', 'tarteel', 'scanner', 'corpus']);
+// L'ordre du menu est vérifié sur lib/destinations.js (_dev/tests/destinations.test.js)
+test('le socle bâtit le menu, la barre d’onglets et « Plus » à partir de lib/destinations.js', () => {
+  const source = readFileSync(fileURLToPath(new URL('../../assets/js/v3/ui/shell.js', import.meta.url)), 'utf8');
+  for (const name of ['menuDestinations', 'tabDestinations', 'moreDestinations']) assert.ok(source.includes(`${name}(`), name);
+  assert.doesNotMatch(source, /ready: (true|false)/);
 });

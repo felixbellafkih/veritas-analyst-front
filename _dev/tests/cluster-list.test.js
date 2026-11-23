@@ -8,10 +8,10 @@ import { fileURLToPath } from 'node:url';
 import { installFakeDom } from './aides/faux-dom.mjs';
 
 const dom = installFakeDom();
-const { mountClusterList } = await import('../../assets/js/v2/ui/cluster-list.js');
-const { createTarteelProbe } = await import('../../assets/js/v2/lib/tarteel-probe.js');
-const { indexesOfSura } = await import('../../assets/js/v2/lib/tarteel-stats.js');
-const { clusterVerse } = await import('../../assets/js/v2/lib/tarteel.js');
+const { mountClusterList } = await import('../../assets/js/v3/ui/cluster-list.js');
+const { createTarteelProbe } = await import('../../assets/js/v3/lib/tarteel-probe.js');
+const { indexesOfSura } = await import('../../assets/js/v3/lib/tarteel-stats.js');
+const { clusterVerse } = await import('../../assets/js/v3/lib/tarteel.js');
 
 const fixture = fileURLToPath(new URL('../fixtures/tarteel.json', import.meta.url));
 const VERSES = JSON.parse(readFileSync(fixture, 'utf8')).clusters['S-M-W|'];
@@ -140,4 +140,20 @@ test('page Tarteel : une ligne bâtie plus tard arrive avec un lien hors du parc
   more.click();
   assert.equal(links().length, 120);
   assert.equal(links().filter((link) => link.tabIndex === 0).length, 1);
+});
+
+// Relecture de l'étape 3 : le défaut trouvé dans la chaîne du Séquenceur existait ici, sur une page en ligne
+test('au clavier : une flèche tenue avec Alt, Ctrl, Cmd ou Maj reste au navigateur ; Entrée coche toujours', async () => {
+  const { boxes, probe } = await mounted();
+  boxes()[2].focus();
+  for (const [key, modifier] of [['ArrowDown', 'altKey'], ['ArrowUp', 'metaKey'], ['End', 'ctrlKey'], ['ArrowDown', 'shiftKey']]) {
+    const event = boxes()[2].dispatch('keydown', { key, [modifier]: true });
+    assert.equal(event.prevented, false, `${modifier}+${key}`);
+    assert.equal(dom.focused(), boxes()[2], `${modifier}+${key}`);
+  }
+  assert.equal(boxes().length, 60);
+  // Entrée ne lance jamais l'analyse depuis une case, même tenue avec Ctrl
+  const enter = boxes()[2].dispatch('keydown', { key: 'Enter', ctrlKey: true });
+  assert.equal(enter.prevented, true);
+  assert.equal(probe.selection().chosen, 1);
 });

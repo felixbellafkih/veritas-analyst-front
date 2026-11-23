@@ -7,7 +7,7 @@ import { corpusExcerpts } from '../lib/corpus-list.js';
 import { htmlLang } from '../lib/i18n.js';
 import { rootTiles } from '../lib/root-card.js';
 import { scannerHref } from '../lib/roots-index.js';
-import { MAX_VERSES, SURAS, clampRange, passageQuery } from '../lib/verses.js';
+import { MAX_VERSES, SURAS, clampRange, interpreterHref } from '../lib/verses.js';
 import { add, browserStore, el, fill } from '../ui/dom.js';
 import { icon } from '../ui/icons.js';
 import { currentLang, initI18n, interfaceLanguages, t, td, tm } from '../ui/i18n-dom.js';
@@ -81,7 +81,7 @@ function mountPicker(form) {
   form.addEventListener('submit', (event) => {
     event.preventDefault();
     change({ sura: range.sura, start: start.value, end: end.value }); // une valeur tout juste saisie est prise en compte
-    window.location.assign(`/interpreteur/${passageQuery(range)}`);
+    window.location.assign(interpreterHref(range));
   });
 
   fill(form,

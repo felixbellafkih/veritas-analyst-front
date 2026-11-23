@@ -83,6 +83,15 @@ export function createApi({ base, fetch: fetchImpl = globalThis.fetch }) {
     // (code latin ou lettres arabes) ou un mot complexe, que l'API ramène à sa racine. Inconnue : échec 404.
     scan: (query, { signal } = {}) => json(`/analyze/root/${encodeURIComponent(query)}`, { signal }),
 
+    // Séquenceur : la réponse entière, {nodes, edges, transcript, logs} (lib/sequence.js la lit). Lecture
+    // publique : le texte part dans le corps de la demande, sans clé ni mot de passe. Saisie vide : échec 400.
+    sequence: (text, { signal } = {}) => json('/analyze/sequencer', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ input_seq: text }),
+      signal,
+    }),
+
     async verseRange(sura, start, end, { signal } = {}) {
       return (await json(`/verse/range?${query({ sura, start, end })}`, { signal })).verse_text;
     },

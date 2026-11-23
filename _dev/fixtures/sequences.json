@@ -1,0 +1,3114 @@
+{
+ "123": {
+  "nodes": [],
+  "edges": [],
+  "transcript": "",
+  "logs": []
+ },
+ "﻿بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ": {
+  "nodes": [
+   {
+    "id": "node_0",
+    "type": "OPERATOR",
+    "arabic": "ب",
+    "tag": "TOOL_WITH",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_1",
+    "type": "VARIABLE",
+    "arabic": "سم",
+    "root": "S-M-W",
+    "logic_mod": "[SYSTEM_POINTER]",
+    "base_func": "GLOBAL_ADDRESS_SPACE",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_2",
+    "type": "VARIABLE",
+    "arabic": "الله",
+    "root": "A-L-H",
+    "logic_mod": "[ABSOLUTE_CONSTANT]",
+    "base_func": "ROOT_AUTHORITY",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_3",
+    "type": "VARIABLE",
+    "arabic": "الرحمن",
+    "root": "R-H.-M-N",
+    "logic_mod": "[ABSOLUTE_SATURATION]",
+    "base_func": "UNIVERSAL_MATRIX_EXPANSION",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_4",
+    "type": "VARIABLE",
+    "arabic": "الرحيم",
+    "root": "R-H.-Y-M",
+    "logic_mod": "[ACTIVE_FLOW_PERSISTENT]",
+    "base_func": "ACTIVE_MATRIX_LINK",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   }
+  ],
+  "edges": [
+   {
+    "from": "node_0",
+    "to": "node_1",
+    "type": "solid"
+   },
+   {
+    "from": "node_1",
+    "to": "node_2",
+    "type": "solid"
+   },
+   {
+    "from": "node_2",
+    "to": "node_3",
+    "type": "solid"
+   },
+   {
+    "from": "node_3",
+    "to": "node_4",
+    "type": "solid"
+   }
+  ],
+  "transcript": "*TOOL_WITH* ⛓️ *[SYSTEM_POINTER]* (**GLOBAL_ADDRESS_SPACE**) ⛓️ *[ABSOLUTE_CONSTANT]* (**ROOT_AUTHORITY**) ⛓️ *[ABSOLUTE_SATURATION]* (**UNIVERSAL_MATRIX_EXPANSION**) ⛓️ *[ACTIVE_FLOW_PERSISTENT]* (**ACTIVE_MATRIX_LINK**)",
+  "logs": [
+   "[LEXER] Operator: ب -> TOOL_WITH",
+   "[SYSTEM] Variable: سم -> Root [S-M-W] | State: [SYSTEM_POINTER]",
+   "[SYSTEM] Variable: الله -> Root [A-L-H] | State: [ABSOLUTE_CONSTANT]",
+   "[SYSTEM] Variable: الرحمن -> Root [R-H.-M-N] | State: [ABSOLUTE_SATURATION]",
+   "[SYSTEM] Variable: الرحيم -> Root [R-H.-Y-M] | State: [ACTIVE_FLOW_PERSISTENT]"
+  ]
+ },
+ "ٱلْحَمْدُ لِلَّهِ رَبِّ ٱلْعَٰلَمِينَ": {
+  "nodes": [
+   {
+    "id": "node_0",
+    "type": "VARIABLE",
+    "arabic": "الحمد",
+    "root": "H.-M-D",
+    "logic_mod": "[BASE_VARIABLE]",
+    "base_func": "POSITIVE_ACK",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_1",
+    "type": "OPERATOR",
+    "arabic": "ل",
+    "tag": "ALLOC_TO",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_2",
+    "type": "VARIABLE",
+    "arabic": "له",
+    "root": "A-L-H",
+    "logic_mod": "[ABSOLUTE_CONSTANT]",
+    "base_func": "ROOT_AUTHORITY",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_3",
+    "type": "VARIABLE",
+    "arabic": "رب",
+    "root": "R-B-B",
+    "logic_mod": "[BASE_VARIABLE]",
+    "base_func": "MASTER_CONTROLLER",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_4",
+    "type": "VARIABLE",
+    "arabic": "العلمين",
+    "root": "A.-L-M",
+    "logic_mod": "[ACTIVE_FLOW_PERSISTENT]",
+    "base_func": "DATA_COMPREHENSION",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": [
+     "[DUAL_STATE]"
+    ]
+   }
+  ],
+  "edges": [
+   {
+    "from": "node_0",
+    "to": "node_1",
+    "type": "dashed"
+   },
+   {
+    "from": "node_1",
+    "to": "node_2",
+    "type": "solid"
+   },
+   {
+    "from": "node_2",
+    "to": "node_3",
+    "type": "solid"
+   },
+   {
+    "from": "node_3",
+    "to": "node_4",
+    "type": "solid"
+   }
+  ],
+  "transcript": "**POSITIVE_ACK** ⛓️ *ALLOC_TO* ⛓️ *[ABSOLUTE_CONSTANT]* (**ROOT_AUTHORITY**) ⛓️ **MASTER_CONTROLLER** ⛓️ *[ACTIVE_FLOW_PERSISTENT]* (**DATA_COMPREHENSION**)",
+  "logs": [
+   "[SYSTEM] Variable: الحمد -> Root [H.-M-D] | State: [BASE_VARIABLE]",
+   "[LEXER] Operator: ل -> ALLOC_TO",
+   "[SYSTEM] Variable: له -> Root [A-L-H] | State: [ABSOLUTE_CONSTANT]",
+   "[SYSTEM] Variable: رب -> Root [R-B-B] | State: [BASE_VARIABLE]",
+   "[SYSTEM] Variable: العلمين -> Root [A.-L-M] | State: [ACTIVE_FLOW_PERSISTENT]"
+  ]
+ },
+ "ٱلرَّحْمَٰنِ ٱلرَّحِيمِ": {
+  "nodes": [
+   {
+    "id": "node_0",
+    "type": "VARIABLE",
+    "arabic": "الرحمن",
+    "root": "R-H.-M-N",
+    "logic_mod": "[ABSOLUTE_SATURATION]",
+    "base_func": "UNIVERSAL_MATRIX_EXPANSION",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_1",
+    "type": "VARIABLE",
+    "arabic": "الرحيم",
+    "root": "R-H.-Y-M",
+    "logic_mod": "[ACTIVE_FLOW_PERSISTENT]",
+    "base_func": "ACTIVE_MATRIX_LINK",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   }
+  ],
+  "edges": [
+   {
+    "from": "node_0",
+    "to": "node_1",
+    "type": "solid"
+   }
+  ],
+  "transcript": "*[ABSOLUTE_SATURATION]* (**UNIVERSAL_MATRIX_EXPANSION**) ⛓️ *[ACTIVE_FLOW_PERSISTENT]* (**ACTIVE_MATRIX_LINK**)",
+  "logs": [
+   "[SYSTEM] Variable: الرحمن -> Root [R-H.-M-N] | State: [ABSOLUTE_SATURATION]",
+   "[SYSTEM] Variable: الرحيم -> Root [R-H.-Y-M] | State: [ACTIVE_FLOW_PERSISTENT]"
+  ]
+ },
+ "مَٰلِكِ يَوْمِ ٱلدِّينِ": {
+  "nodes": [
+   {
+    "id": "node_0",
+    "type": "VARIABLE",
+    "arabic": "ملك",
+    "root": "M-L-K",
+    "logic_mod": "[BASE_VARIABLE]",
+    "base_func": "RESOURCE_OWNERSHIP",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [
+     "[USER_NODE]"
+    ],
+    "quantifiers": []
+   },
+   {
+    "id": "node_1",
+    "type": "VARIABLE",
+    "arabic": "يوم",
+    "root": "Y-W-M",
+    "logic_mod": "[BASE_VARIABLE]",
+    "base_func": "SYSTEM_CYCLE",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_2",
+    "type": "VARIABLE",
+    "arabic": "الدين",
+    "root": "D-Y-N",
+    "logic_mod": "[BASE_VARIABLE]",
+    "base_func": "SLA_DEPENDENCY",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   }
+  ],
+  "edges": [
+   {
+    "from": "node_0",
+    "to": "node_1",
+    "type": "solid"
+   },
+   {
+    "from": "node_1",
+    "to": "node_2",
+    "type": "solid"
+   }
+  ],
+  "transcript": "**RESOURCE_OWNERSHIP** ➔ [[USER_NODE]] ⛓️ **SYSTEM_CYCLE** ⛓️ **SLA_DEPENDENCY**",
+  "logs": [
+   "[SYSTEM] Variable: ملك -> Root [M-L-K] | State: [BASE_VARIABLE]",
+   "[SYSTEM] Variable: يوم -> Root [Y-W-M] | State: [BASE_VARIABLE]",
+   "[SYSTEM] Variable: الدين -> Root [D-Y-N] | State: [BASE_VARIABLE]"
+  ]
+ },
+ "إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ": {
+  "nodes": [
+   {
+    "id": "node_0",
+    "type": "OPERATOR",
+    "arabic": "اياك",
+    "tag": "PTR_EXCL",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_1",
+    "type": "VARIABLE",
+    "arabic": "نعبد",
+    "root": "A.-B-D",
+    "logic_mod": "[DYNAMIC_EXECUTION]",
+    "base_func": "DEDICATED_SERVICE_NODE",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_2",
+    "type": "OPERATOR",
+    "arabic": "و",
+    "tag": "OP_AND",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_3",
+    "type": "OPERATOR",
+    "arabic": "اياك",
+    "tag": "PTR_EXCL",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_4",
+    "type": "VARIABLE",
+    "arabic": "نستعين",
+    "root": "A.-W-N",
+    "logic_mod": "[REQUEST_PROTOCOL]",
+    "base_func": "INTERMEDIATE_NODE",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": [
+     "[DUAL_STATE]"
+    ]
+   }
+  ],
+  "edges": [
+   {
+    "from": "node_0",
+    "to": "node_1",
+    "type": "solid"
+   },
+   {
+    "from": "node_1",
+    "to": "node_2",
+    "type": "dashed"
+   },
+   {
+    "from": "node_2",
+    "to": "node_3",
+    "type": "dashed"
+   },
+   {
+    "from": "node_3",
+    "to": "node_4",
+    "type": "solid"
+   }
+  ],
+  "transcript": "*PTR_EXCL* ⛓️ *[DYNAMIC_EXECUTION]* (**DEDICATED_SERVICE_NODE**) ⛓️ *OP_AND* ⛓️ *PTR_EXCL* ⛓️ *[REQUEST_PROTOCOL]* (**INTERMEDIATE_NODE**)",
+  "logs": [
+   "[LEXER] Operator: اياك -> PTR_EXCL",
+   "[SYSTEM] Variable: نعبد -> Root [A.-B-D] | State: [DYNAMIC_EXECUTION]",
+   "[LEXER] Operator: و -> OP_AND",
+   "[LEXER] Operator: اياك -> PTR_EXCL",
+   "[SYSTEM] Variable: نستعين -> Root [A.-W-N] | State: [REQUEST_PROTOCOL]"
+  ]
+ },
+ "ٱهْدِنَا ٱلصِّرَٰطَ ٱلْمُسْتَقِيمَ": {
+  "nodes": [
+   {
+    "id": "node_0",
+    "type": "VARIABLE",
+    "arabic": "اهد",
+    "root": "H-D-Y",
+    "logic_mod": "[BASE_VARIABLE]",
+    "base_func": "ROUTING_VECTOR",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_1",
+    "type": "OPERATOR",
+    "arabic": "نا",
+    "tag": "PRON_US",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_2",
+    "type": "VARIABLE",
+    "arabic": "الصرط",
+    "root": "S.-R-T.",
+    "logic_mod": "[BASE_VARIABLE]",
+    "base_func": "DATA_BACKBONE",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_3",
+    "type": "VARIABLE",
+    "arabic": "المستقيم",
+    "root": "Q-W-M",
+    "logic_mod": "[ACTIVE_FLOW_PERSISTENT]",
+    "base_func": "UPTIME_MAINTENANCE",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   }
+  ],
+  "edges": [
+   {
+    "from": "node_0",
+    "to": "node_1",
+    "type": "dashed"
+   },
+   {
+    "from": "node_1",
+    "to": "node_2",
+    "type": "solid"
+   },
+   {
+    "from": "node_2",
+    "to": "node_3",
+    "type": "solid"
+   }
+  ],
+  "transcript": "**ROUTING_VECTOR** ⛓️ *PRON_US* ⛓️ **DATA_BACKBONE** ⛓️ *[ACTIVE_FLOW_PERSISTENT]* (**UPTIME_MAINTENANCE**)",
+  "logs": [
+   "[SYSTEM] Variable: اهد -> Root [H-D-Y] | State: [BASE_VARIABLE]",
+   "[LEXER] Operator: نا -> PRON_US",
+   "[SYSTEM] Variable: الصرط -> Root [S.-R-T.] | State: [BASE_VARIABLE]",
+   "[SYSTEM] Variable: المستقيم -> Root [Q-W-M] | State: [ACTIVE_FLOW_PERSISTENT]"
+  ]
+ },
+ "صِرَٰطَ ٱلَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ ٱلْمَغْضُوبِ عَلَيْهِمْ وَلَا ٱلضَّآلِّينَ": {
+  "nodes": [
+   {
+    "id": "node_0",
+    "type": "VARIABLE",
+    "arabic": "صرط",
+    "root": "S.-R-T.",
+    "logic_mod": "[BASE_VARIABLE]",
+    "base_func": "DATA_BACKBONE",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_1",
+    "type": "OPERATOR",
+    "arabic": "الذين",
+    "tag": "PTR_REL_PLUR",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_2",
+    "type": "VARIABLE",
+    "arabic": "انعمت",
+    "root": "N-A.-M",
+    "logic_mod": "[BASE_VARIABLE]",
+    "base_func": "OPTIMIZED_STATE",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_3",
+    "type": "OPERATOR",
+    "arabic": "علي",
+    "tag": "VEC_OVER",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_4",
+    "type": "OPERATOR",
+    "arabic": "هم",
+    "tag": "PRON_THEM_M",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_5",
+    "type": "VARIABLE",
+    "arabic": "غير",
+    "root": "GH-Y-R",
+    "logic_mod": "[BASE_VARIABLE]",
+    "base_func": "STATE_MUTATION",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_6",
+    "type": "VARIABLE",
+    "arabic": "المغضوب",
+    "root": "GH-D.-B",
+    "logic_mod": "[PASSIVE_RECEPTACLE]",
+    "base_func": "SYSTEM_SATURATION",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_7",
+    "type": "OPERATOR",
+    "arabic": "علي",
+    "tag": "VEC_OVER",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_8",
+    "type": "OPERATOR",
+    "arabic": "هم",
+    "tag": "PRON_THEM_M",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_9",
+    "type": "OPERATOR",
+    "arabic": "و",
+    "tag": "OP_AND",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_10",
+    "type": "OPERATOR",
+    "arabic": "لا",
+    "tag": "OP_NOT",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_11",
+    "type": "VARIABLE",
+    "arabic": "الضالين",
+    "root": "D.-L-L",
+    "logic_mod": "[ACTIVE_EXECUTOR]",
+    "base_func": "DANGLING_POINTER",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": [
+     "[DUAL_STATE]"
+    ]
+   }
+  ],
+  "edges": [
+   {
+    "from": "node_0",
+    "to": "node_1",
+    "type": "dashed"
+   },
+   {
+    "from": "node_1",
+    "to": "node_2",
+    "type": "solid"
+   },
+   {
+    "from": "node_2",
+    "to": "node_3",
+    "type": "dashed"
+   },
+   {
+    "from": "node_3",
+    "to": "node_4",
+    "type": "dashed"
+   },
+   {
+    "from": "node_4",
+    "to": "node_5",
+    "type": "solid"
+   },
+   {
+    "from": "node_5",
+    "to": "node_6",
+    "type": "solid"
+   },
+   {
+    "from": "node_6",
+    "to": "node_7",
+    "type": "dashed"
+   },
+   {
+    "from": "node_7",
+    "to": "node_8",
+    "type": "dashed"
+   },
+   {
+    "from": "node_8",
+    "to": "node_9",
+    "type": "dashed"
+   },
+   {
+    "from": "node_9",
+    "to": "node_10",
+    "type": "dashed"
+   },
+   {
+    "from": "node_10",
+    "to": "node_11",
+    "type": "solid"
+   }
+  ],
+  "transcript": "**DATA_BACKBONE** ⛓️ *PTR_REL_PLUR* ⛓️ **OPTIMIZED_STATE** ⛓️ *VEC_OVER* ⛓️ *PRON_THEM_M* ⛓️ **STATE_MUTATION** ⛓️ *[PASSIVE_RECEPTACLE]* (**SYSTEM_SATURATION**) ⛓️ *VEC_OVER* ⛓️ *PRON_THEM_M* ⛓️ *OP_AND* ⛓️ *OP_NOT* ⛓️ *[ACTIVE_EXECUTOR]* (**DANGLING_POINTER**)",
+  "logs": [
+   "[SYSTEM] Variable: صرط -> Root [S.-R-T.] | State: [BASE_VARIABLE]",
+   "[LEXER] Operator: الذين -> PTR_REL_PLUR",
+   "[SYSTEM] Variable: انعمت -> Root [N-A.-M] | State: [BASE_VARIABLE]",
+   "[LEXER] Operator: علي -> VEC_OVER",
+   "[LEXER] Operator: هم -> PRON_THEM_M",
+   "[SYSTEM] Variable: غير -> Root [GH-Y-R] | State: [BASE_VARIABLE]",
+   "[SYSTEM] Variable: المغضوب -> Root [GH-D.-B] | State: [PASSIVE_RECEPTACLE]",
+   "[LEXER] Operator: علي -> VEC_OVER",
+   "[LEXER] Operator: هم -> PRON_THEM_M",
+   "[LEXER] Operator: و -> OP_AND",
+   "[LEXER] Operator: لا -> OP_NOT",
+   "[SYSTEM] Variable: الضالين -> Root [D.-L-L] | State: [ACTIVE_EXECUTOR]"
+  ]
+ },
+ "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ قُلْ هُوَ ٱللَّهُ أَحَدٌ": {
+  "nodes": [
+   {
+    "id": "node_0",
+    "type": "OPERATOR",
+    "arabic": "ب",
+    "tag": "TOOL_WITH",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_1",
+    "type": "VARIABLE",
+    "arabic": "سم",
+    "root": "S-M-W",
+    "logic_mod": "[SYSTEM_POINTER]",
+    "base_func": "GLOBAL_ADDRESS_SPACE",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_2",
+    "type": "VARIABLE",
+    "arabic": "الله",
+    "root": "A-L-H",
+    "logic_mod": "[ABSOLUTE_CONSTANT]",
+    "base_func": "ROOT_AUTHORITY",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_3",
+    "type": "VARIABLE",
+    "arabic": "الرحمن",
+    "root": "R-H.-M-N",
+    "logic_mod": "[ABSOLUTE_SATURATION]",
+    "base_func": "UNIVERSAL_MATRIX_EXPANSION",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_4",
+    "type": "VARIABLE",
+    "arabic": "الرحيم",
+    "root": "R-H.-Y-M",
+    "logic_mod": "[ACTIVE_FLOW_PERSISTENT]",
+    "base_func": "ACTIVE_MATRIX_LINK",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_5",
+    "type": "VARIABLE",
+    "arabic": "قل",
+    "root": "Q-W-L",
+    "logic_mod": "[BASE_VARIABLE]",
+    "base_func": "DATA_STREAM_OUTPUT",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_6",
+    "type": "OPERATOR",
+    "arabic": "هو",
+    "tag": "PRON_HE",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_7",
+    "type": "VARIABLE",
+    "arabic": "الله",
+    "root": "A-L-H",
+    "logic_mod": "[ABSOLUTE_CONSTANT]",
+    "base_func": "ROOT_AUTHORITY",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_8",
+    "type": "VARIABLE",
+    "arabic": "احد",
+    "root": "A-H.-D",
+    "logic_mod": "[BASE_VARIABLE]",
+    "base_func": "ATOMIC_UNIT",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   }
+  ],
+  "edges": [
+   {
+    "from": "node_0",
+    "to": "node_1",
+    "type": "solid"
+   },
+   {
+    "from": "node_1",
+    "to": "node_2",
+    "type": "solid"
+   },
+   {
+    "from": "node_2",
+    "to": "node_3",
+    "type": "solid"
+   },
+   {
+    "from": "node_3",
+    "to": "node_4",
+    "type": "solid"
+   },
+   {
+    "from": "node_4",
+    "to": "node_5",
+    "type": "solid"
+   },
+   {
+    "from": "node_5",
+    "to": "node_6",
+    "type": "dashed"
+   },
+   {
+    "from": "node_6",
+    "to": "node_7",
+    "type": "solid"
+   },
+   {
+    "from": "node_7",
+    "to": "node_8",
+    "type": "solid"
+   }
+  ],
+  "transcript": "*TOOL_WITH* ⛓️ *[SYSTEM_POINTER]* (**GLOBAL_ADDRESS_SPACE**) ⛓️ *[ABSOLUTE_CONSTANT]* (**ROOT_AUTHORITY**) ⛓️ *[ABSOLUTE_SATURATION]* (**UNIVERSAL_MATRIX_EXPANSION**) ⛓️ *[ACTIVE_FLOW_PERSISTENT]* (**ACTIVE_MATRIX_LINK**) ⛓️ **DATA_STREAM_OUTPUT** ⛓️ *PRON_HE* ⛓️ *[ABSOLUTE_CONSTANT]* (**ROOT_AUTHORITY**) ⛓️ **ATOMIC_UNIT**",
+  "logs": [
+   "[LEXER] Operator: ب -> TOOL_WITH",
+   "[SYSTEM] Variable: سم -> Root [S-M-W] | State: [SYSTEM_POINTER]",
+   "[SYSTEM] Variable: الله -> Root [A-L-H] | State: [ABSOLUTE_CONSTANT]",
+   "[SYSTEM] Variable: الرحمن -> Root [R-H.-M-N] | State: [ABSOLUTE_SATURATION]",
+   "[SYSTEM] Variable: الرحيم -> Root [R-H.-Y-M] | State: [ACTIVE_FLOW_PERSISTENT]",
+   "[SYSTEM] Variable: قل -> Root [Q-W-L] | State: [BASE_VARIABLE]",
+   "[LEXER] Operator: هو -> PRON_HE",
+   "[SYSTEM] Variable: الله -> Root [A-L-H] | State: [ABSOLUTE_CONSTANT]",
+   "[SYSTEM] Variable: احد -> Root [A-H.-D] | State: [BASE_VARIABLE]"
+  ]
+ },
+ "ٱللَّهُ ٱلصَّمَدُ": {
+  "nodes": [
+   {
+    "id": "node_0",
+    "type": "VARIABLE",
+    "arabic": "الله",
+    "root": "A-L-H",
+    "logic_mod": "[ABSOLUTE_CONSTANT]",
+    "base_func": "ROOT_AUTHORITY",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_1",
+    "type": "VARIABLE",
+    "arabic": "الصمد",
+    "root": "S.-M-D",
+    "logic_mod": "[BASE_VARIABLE]",
+    "base_func": "IMMUTABLE_CONSTANT",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   }
+  ],
+  "edges": [
+   {
+    "from": "node_0",
+    "to": "node_1",
+    "type": "solid"
+   }
+  ],
+  "transcript": "*[ABSOLUTE_CONSTANT]* (**ROOT_AUTHORITY**) ⛓️ **IMMUTABLE_CONSTANT**",
+  "logs": [
+   "[SYSTEM] Variable: الله -> Root [A-L-H] | State: [ABSOLUTE_CONSTANT]",
+   "[SYSTEM] Variable: الصمد -> Root [S.-M-D] | State: [BASE_VARIABLE]"
+  ]
+ },
+ "لَمْ يَلِدْ وَلَمْ يُولَدْ": {
+  "nodes": [
+   {
+    "id": "node_0",
+    "type": "OPERATOR",
+    "arabic": "لم",
+    "tag": "OP_NOT_PAST",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_1",
+    "type": "VARIABLE",
+    "arabic": "يلد",
+    "root": "W-L-D",
+    "logic_mod": "[DYNAMIC_EXECUTION]",
+    "base_func": "PROCESS_SPAWN",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_2",
+    "type": "OPERATOR",
+    "arabic": "و",
+    "tag": "OP_AND",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_3",
+    "type": "OPERATOR",
+    "arabic": "لم",
+    "tag": "OP_NOT_PAST",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_4",
+    "type": "VARIABLE",
+    "arabic": "يولد",
+    "root": "W-L-D",
+    "logic_mod": "[DYNAMIC_EXECUTION]",
+    "base_func": "PROCESS_SPAWN",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   }
+  ],
+  "edges": [
+   {
+    "from": "node_0",
+    "to": "node_1",
+    "type": "solid"
+   },
+   {
+    "from": "node_1",
+    "to": "node_2",
+    "type": "dashed"
+   },
+   {
+    "from": "node_2",
+    "to": "node_3",
+    "type": "dashed"
+   },
+   {
+    "from": "node_3",
+    "to": "node_4",
+    "type": "solid"
+   }
+  ],
+  "transcript": "*OP_NOT_PAST* ⛓️ *[DYNAMIC_EXECUTION]* (**PROCESS_SPAWN**) ⛓️ *OP_AND* ⛓️ *OP_NOT_PAST* ⛓️ *[DYNAMIC_EXECUTION]* (**PROCESS_SPAWN**)",
+  "logs": [
+   "[LEXER] Operator: لم -> OP_NOT_PAST",
+   "[SYSTEM] Variable: يلد -> Root [W-L-D] | State: [DYNAMIC_EXECUTION]",
+   "[LEXER] Operator: و -> OP_AND",
+   "[LEXER] Operator: لم -> OP_NOT_PAST",
+   "[SYSTEM] Variable: يولد -> Root [W-L-D] | State: [DYNAMIC_EXECUTION]"
+  ]
+ },
+ "وَلَمْ يَكُن لَّهُۥ كُفُوًا أَحَدٌۢ": {
+  "nodes": [
+   {
+    "id": "node_0",
+    "type": "OPERATOR",
+    "arabic": "و",
+    "tag": "OP_AND",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_1",
+    "type": "OPERATOR",
+    "arabic": "لم",
+    "tag": "OP_NOT_PAST",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_2",
+    "type": "VARIABLE",
+    "arabic": "يكن",
+    "root": "K-W-N",
+    "logic_mod": "[DYNAMIC_EXECUTION]",
+    "base_func": "INSTANCE_SPAWN",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_3",
+    "type": "OPERATOR",
+    "arabic": "ل",
+    "tag": "ALLOC_TO",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_4",
+    "type": "OPERATOR",
+    "arabic": "ه",
+    "tag": "PRON_HIM",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_5",
+    "type": "VARIABLE",
+    "arabic": "كفوا",
+    "root": "K-F-A",
+    "logic_mod": "[BASE_VARIABLE]",
+    "base_func": "PARITY_MATCH",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_6",
+    "type": "VARIABLE",
+    "arabic": "احد",
+    "root": "A-H.-D",
+    "logic_mod": "[BASE_VARIABLE]",
+    "base_func": "ATOMIC_UNIT",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   }
+  ],
+  "edges": [
+   {
+    "from": "node_0",
+    "to": "node_1",
+    "type": "dashed"
+   },
+   {
+    "from": "node_1",
+    "to": "node_2",
+    "type": "solid"
+   },
+   {
+    "from": "node_2",
+    "to": "node_3",
+    "type": "dashed"
+   },
+   {
+    "from": "node_3",
+    "to": "node_4",
+    "type": "dashed"
+   },
+   {
+    "from": "node_4",
+    "to": "node_5",
+    "type": "solid"
+   },
+   {
+    "from": "node_5",
+    "to": "node_6",
+    "type": "solid"
+   }
+  ],
+  "transcript": "*OP_AND* ⛓️ *OP_NOT_PAST* ⛓️ *[DYNAMIC_EXECUTION]* (**INSTANCE_SPAWN**) ⛓️ *ALLOC_TO* ⛓️ *PRON_HIM* ⛓️ **PARITY_MATCH** ⛓️ **ATOMIC_UNIT**",
+  "logs": [
+   "[LEXER] Operator: و -> OP_AND",
+   "[LEXER] Operator: لم -> OP_NOT_PAST",
+   "[SYSTEM] Variable: يكن -> Root [K-W-N] | State: [DYNAMIC_EXECUTION]",
+   "[LEXER] Operator: ل -> ALLOC_TO",
+   "[LEXER] Operator: ه -> PRON_HIM",
+   "[SYSTEM] Variable: كفوا -> Root [K-F-A] | State: [BASE_VARIABLE]",
+   "[SYSTEM] Variable: احد -> Root [A-H.-D] | State: [BASE_VARIABLE]"
+  ]
+ },
+ "ٱللَّهُ لَآ إِلَٰهَ إِلَّا هُوَ ٱلْحَىُّ ٱلْقَيُّومُ ۚ لَا تَأْخُذُهُۥ سِنَةٌۭ وَلَا نَوْمٌۭ ۚ لَّهُۥ مَا فِى ٱلسَّمَٰوَٰتِ وَمَا فِى ٱلْأَرْضِ ۗ مَن ذَا ٱلَّذِى يَشْفَعُ عِندَهُۥٓ إِلَّا بِإِذْنِهِۦ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۖ وَلَا يُحِيطُونَ بِشَىْءٍۢ مِّنْ عِلْمِهِۦٓ إِلَّا بِمَا شَآءَ ۚ وَسِعَ كُرْسِيُّهُ ٱلسَّمَٰوَٰتِ وَٱلْأَرْضَ ۖ وَلَا يَـُٔودُهُۥ حِفْظُهُمَا ۚ وَهُوَ ٱلْعَلِىُّ ٱلْعَظِيمُ": {
+  "nodes": [
+   {
+    "id": "node_0",
+    "type": "VARIABLE",
+    "arabic": "الله",
+    "root": "A-L-H",
+    "logic_mod": "[ABSOLUTE_CONSTANT]",
+    "base_func": "ROOT_AUTHORITY",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_1",
+    "type": "OPERATOR",
+    "arabic": "لا",
+    "tag": "OP_NOT",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_2",
+    "type": "VARIABLE",
+    "arabic": "اله",
+    "root": "A-L-H",
+    "logic_mod": "[BASE_VARIABLE]",
+    "base_func": "ROOT_AUTHORITY",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [
+     "[SINGLE_NODE]"
+    ],
+    "quantifiers": []
+   },
+   {
+    "id": "node_3",
+    "type": "OPERATOR",
+    "arabic": "الا",
+    "tag": "SYS_ALERT / OP_EXCEPT",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_4",
+    "type": "OPERATOR",
+    "arabic": "هو",
+    "tag": "PRON_HE",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_5",
+    "type": "VARIABLE",
+    "arabic": "الحي",
+    "root": "H.-Y-Y",
+    "logic_mod": "[BASE_VARIABLE]",
+    "base_func": "POWER_STATE_ON",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_6",
+    "type": "VARIABLE",
+    "arabic": "القيوم",
+    "root": "Q-W-M",
+    "logic_mod": "[BASE_VARIABLE]",
+    "base_func": "UPTIME_MAINTENANCE",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_7",
+    "type": "OPERATOR",
+    "arabic": "لا",
+    "tag": "OP_NOT",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_8",
+    "type": "VARIABLE",
+    "arabic": "تاخذ",
+    "root": "A-KH-DH",
+    "logic_mod": "[ACTIVE_EXECUTOR]",
+    "base_func": "DATA_FETCH",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_9",
+    "type": "OPERATOR",
+    "arabic": "ه",
+    "tag": "PRON_HIM",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_10",
+    "type": "VARIABLE",
+    "arabic": "سنة",
+    "root": "W-S-N",
+    "logic_mod": "[BASE_VARIABLE]",
+    "base_func": "STABILIZED_FUNCTION",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_11",
+    "type": "OPERATOR",
+    "arabic": "و",
+    "tag": "OP_AND",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_12",
+    "type": "OPERATOR",
+    "arabic": "لا",
+    "tag": "OP_NOT",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_13",
+    "type": "VARIABLE",
+    "arabic": "نوم",
+    "root": "N-W-M",
+    "logic_mod": "[BASE_VARIABLE]",
+    "base_func": "SLEEP_MODE",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_14",
+    "type": "OPERATOR",
+    "arabic": "ل",
+    "tag": "ALLOC_TO",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_15",
+    "type": "OPERATOR",
+    "arabic": "ه",
+    "tag": "PRON_HIM",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_16",
+    "type": "OPERATOR",
+    "arabic": "ما",
+    "tag": "PTR_WHAT / OP_NULL",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_17",
+    "type": "OPERATOR",
+    "arabic": "في",
+    "tag": "ENV_IN",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_18",
+    "type": "VARIABLE",
+    "arabic": "السموت",
+    "root": "S-M-W",
+    "logic_mod": "[BASE_VARIABLE]",
+    "base_func": "GLOBAL_ADDRESS_SPACE",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_19",
+    "type": "OPERATOR",
+    "arabic": "و",
+    "tag": "OP_AND",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_20",
+    "type": "OPERATOR",
+    "arabic": "ما",
+    "tag": "PTR_WHAT / OP_NULL",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_21",
+    "type": "OPERATOR",
+    "arabic": "في",
+    "tag": "ENV_IN",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_22",
+    "type": "VARIABLE",
+    "arabic": "الارض",
+    "root": "A-R-D.",
+    "logic_mod": "[BASE_VARIABLE]",
+    "base_func": "LOWER_PLATFORM",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_23",
+    "type": "OPERATOR",
+    "arabic": "من",
+    "tag": "VEC_FROM",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_24",
+    "type": "OPERATOR",
+    "arabic": "ذا",
+    "tag": "PTR_POSSESSOR",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_25",
+    "type": "OPERATOR",
+    "arabic": "الذي",
+    "tag": "PTR_REL_SING",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_26",
+    "type": "VARIABLE",
+    "arabic": "يشفع",
+    "root": "SH-F-A.",
+    "logic_mod": "[DYNAMIC_EXECUTION]",
+    "base_func": "SIGNAL_COUPLING",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_27",
+    "type": "OPERATOR",
+    "arabic": "عند",
+    "tag": "PTR_PROXIMITY",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_28",
+    "type": "OPERATOR",
+    "arabic": "ه",
+    "tag": "PRON_HIM",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_29",
+    "type": "OPERATOR",
+    "arabic": "الا",
+    "tag": "SYS_ALERT / OP_EXCEPT",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_30",
+    "type": "OPERATOR",
+    "arabic": "ب",
+    "tag": "TOOL_WITH",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_31",
+    "type": "VARIABLE",
+    "arabic": "اذن",
+    "root": "A-DH-N",
+    "logic_mod": "[BASE_VARIABLE]",
+    "base_func": "ACCESS_TOKEN",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_32",
+    "type": "OPERATOR",
+    "arabic": "ه",
+    "tag": "PRON_HIM",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_33",
+    "type": "VARIABLE",
+    "arabic": "يعلم",
+    "root": "A.-L-M",
+    "logic_mod": "[DYNAMIC_EXECUTION]",
+    "base_func": "DATA_COMPREHENSION",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_34",
+    "type": "OPERATOR",
+    "arabic": "ما",
+    "tag": "PTR_WHAT / OP_NULL",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_35",
+    "type": "VARIABLE",
+    "arabic": "بين",
+    "root": "B-Y-N",
+    "logic_mod": "[BASE_VARIABLE]",
+    "base_func": "BIT_RESOLUTION",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_36",
+    "type": "VARIABLE",
+    "arabic": "ايدي",
+    "root": "Y-D-Y",
+    "logic_mod": "[BASE_VARIABLE]",
+    "base_func": "EXECUTION_HANDLE",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_37",
+    "type": "OPERATOR",
+    "arabic": "هم",
+    "tag": "PRON_THEM_M",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_38",
+    "type": "OPERATOR",
+    "arabic": "و",
+    "tag": "OP_AND",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_39",
+    "type": "OPERATOR",
+    "arabic": "ما",
+    "tag": "PTR_WHAT / OP_NULL",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_40",
+    "type": "VARIABLE",
+    "arabic": "خلف",
+    "root": "KH-L-F",
+    "logic_mod": "[BASE_VARIABLE]",
+    "base_func": "BACKGROUND_PROCESS",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_41",
+    "type": "OPERATOR",
+    "arabic": "هم",
+    "tag": "PRON_THEM_M",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_42",
+    "type": "OPERATOR",
+    "arabic": "و",
+    "tag": "OP_AND",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_43",
+    "type": "OPERATOR",
+    "arabic": "لا",
+    "tag": "OP_NOT",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_44",
+    "type": "VARIABLE",
+    "arabic": "يحيطون",
+    "root": "H.-W-T.",
+    "logic_mod": "[DYNAMIC_EXECUTION]",
+    "base_func": "PERIMETER_ENCLOSURE",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": [
+     "[PLURAL_STATE]"
+    ]
+   },
+   {
+    "id": "node_45",
+    "type": "OPERATOR",
+    "arabic": "ب",
+    "tag": "TOOL_WITH",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_46",
+    "type": "VARIABLE",
+    "arabic": "شيء",
+    "root": "SH-Y-A",
+    "logic_mod": "[BASE_VARIABLE]",
+    "base_func": "VOLITIONAL_ALLOCATION",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_47",
+    "type": "OPERATOR",
+    "arabic": "من",
+    "tag": "VEC_FROM",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_48",
+    "type": "VARIABLE",
+    "arabic": "علم",
+    "root": "A.-L-M",
+    "logic_mod": "[BASE_VARIABLE]",
+    "base_func": "DATA_COMPREHENSION",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_49",
+    "type": "OPERATOR",
+    "arabic": "ه",
+    "tag": "PRON_HIM",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_50",
+    "type": "OPERATOR",
+    "arabic": "الا",
+    "tag": "SYS_ALERT / OP_EXCEPT",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_51",
+    "type": "OPERATOR",
+    "arabic": "ب",
+    "tag": "TOOL_WITH",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_52",
+    "type": "OPERATOR",
+    "arabic": "ما",
+    "tag": "PTR_WHAT / OP_NULL",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_53",
+    "type": "VARIABLE",
+    "arabic": "شاء",
+    "root": "SH-Y-A",
+    "logic_mod": "[BASE_VARIABLE]",
+    "base_func": "VOLITIONAL_ALLOCATION",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_54",
+    "type": "VARIABLE",
+    "arabic": "وسع",
+    "root": "W-S-A.",
+    "logic_mod": "[BASE_VARIABLE]",
+    "base_func": "DYNAMIC_SCALING",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_55",
+    "type": "VARIABLE",
+    "arabic": "كرسي",
+    "root": "K-R-S",
+    "logic_mod": "[BASE_VARIABLE]",
+    "base_func": "CONTROL_NODE",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_56",
+    "type": "OPERATOR",
+    "arabic": "ه",
+    "tag": "PRON_HIM",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_57",
+    "type": "VARIABLE",
+    "arabic": "السموت",
+    "root": "S-M-W",
+    "logic_mod": "[BASE_VARIABLE]",
+    "base_func": "GLOBAL_ADDRESS_SPACE",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_58",
+    "type": "OPERATOR",
+    "arabic": "و",
+    "tag": "OP_AND",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_59",
+    "type": "VARIABLE",
+    "arabic": "الارض",
+    "root": "A-R-D.",
+    "logic_mod": "[BASE_VARIABLE]",
+    "base_func": "LOWER_PLATFORM",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_60",
+    "type": "OPERATOR",
+    "arabic": "و",
+    "tag": "OP_AND",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_61",
+    "type": "OPERATOR",
+    "arabic": "لا",
+    "tag": "OP_NOT",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_62",
+    "type": "VARIABLE",
+    "arabic": "يود",
+    "root": "A-W-D",
+    "logic_mod": "[DYNAMIC_EXECUTION]",
+    "base_func": "STRUCTURAL_STRESS",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_63",
+    "type": "OPERATOR",
+    "arabic": "ه",
+    "tag": "PRON_HIM",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_64",
+    "type": "VARIABLE",
+    "arabic": "حفظ",
+    "root": "H.-F-Z.",
+    "logic_mod": "[BASE_VARIABLE]",
+    "base_func": "MEMORY_RETENTION",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_65",
+    "type": "OPERATOR",
+    "arabic": "هما",
+    "tag": "PRON_THEM_DUAL",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_66",
+    "type": "OPERATOR",
+    "arabic": "و",
+    "tag": "OP_AND",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_67",
+    "type": "OPERATOR",
+    "arabic": "هو",
+    "tag": "PRON_HE",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_68",
+    "type": "VARIABLE",
+    "arabic": "العلي",
+    "root": "A.-L-W",
+    "logic_mod": "[BASE_VARIABLE]",
+    "base_func": "ELEVATION_VECTOR",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_69",
+    "type": "VARIABLE",
+    "arabic": "العظيم",
+    "root": "A.-Z.-M",
+    "logic_mod": "[ACTIVE_FLOW_PERSISTENT]",
+    "base_func": "MACRO_STRUCTURE",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   }
+  ],
+  "edges": [
+   {
+    "from": "node_0",
+    "to": "node_1",
+    "type": "dashed"
+   },
+   {
+    "from": "node_1",
+    "to": "node_2",
+    "type": "solid"
+   },
+   {
+    "from": "node_2",
+    "to": "node_3",
+    "type": "dashed"
+   },
+   {
+    "from": "node_3",
+    "to": "node_4",
+    "type": "dashed"
+   },
+   {
+    "from": "node_4",
+    "to": "node_5",
+    "type": "solid"
+   },
+   {
+    "from": "node_5",
+    "to": "node_6",
+    "type": "solid"
+   },
+   {
+    "from": "node_6",
+    "to": "node_7",
+    "type": "dashed"
+   },
+   {
+    "from": "node_7",
+    "to": "node_8",
+    "type": "solid"
+   },
+   {
+    "from": "node_8",
+    "to": "node_9",
+    "type": "dashed"
+   },
+   {
+    "from": "node_9",
+    "to": "node_10",
+    "type": "solid"
+   },
+   {
+    "from": "node_10",
+    "to": "node_11",
+    "type": "dashed"
+   },
+   {
+    "from": "node_11",
+    "to": "node_12",
+    "type": "dashed"
+   },
+   {
+    "from": "node_12",
+    "to": "node_13",
+    "type": "solid"
+   },
+   {
+    "from": "node_13",
+    "to": "node_14",
+    "type": "dashed"
+   },
+   {
+    "from": "node_14",
+    "to": "node_15",
+    "type": "dashed"
+   },
+   {
+    "from": "node_15",
+    "to": "node_16",
+    "type": "dashed"
+   },
+   {
+    "from": "node_16",
+    "to": "node_17",
+    "type": "dashed"
+   },
+   {
+    "from": "node_17",
+    "to": "node_18",
+    "type": "solid"
+   },
+   {
+    "from": "node_18",
+    "to": "node_19",
+    "type": "dashed"
+   },
+   {
+    "from": "node_19",
+    "to": "node_20",
+    "type": "dashed"
+   },
+   {
+    "from": "node_20",
+    "to": "node_21",
+    "type": "dashed"
+   },
+   {
+    "from": "node_21",
+    "to": "node_22",
+    "type": "solid"
+   },
+   {
+    "from": "node_22",
+    "to": "node_23",
+    "type": "dashed"
+   },
+   {
+    "from": "node_23",
+    "to": "node_24",
+    "type": "dashed"
+   },
+   {
+    "from": "node_24",
+    "to": "node_25",
+    "type": "dashed"
+   },
+   {
+    "from": "node_25",
+    "to": "node_26",
+    "type": "solid"
+   },
+   {
+    "from": "node_26",
+    "to": "node_27",
+    "type": "dashed"
+   },
+   {
+    "from": "node_27",
+    "to": "node_28",
+    "type": "dashed"
+   },
+   {
+    "from": "node_28",
+    "to": "node_29",
+    "type": "dashed"
+   },
+   {
+    "from": "node_29",
+    "to": "node_30",
+    "type": "dashed"
+   },
+   {
+    "from": "node_30",
+    "to": "node_31",
+    "type": "solid"
+   },
+   {
+    "from": "node_31",
+    "to": "node_32",
+    "type": "dashed"
+   },
+   {
+    "from": "node_32",
+    "to": "node_33",
+    "type": "solid"
+   },
+   {
+    "from": "node_33",
+    "to": "node_34",
+    "type": "dashed"
+   },
+   {
+    "from": "node_34",
+    "to": "node_35",
+    "type": "solid"
+   },
+   {
+    "from": "node_35",
+    "to": "node_36",
+    "type": "solid"
+   },
+   {
+    "from": "node_36",
+    "to": "node_37",
+    "type": "dashed"
+   },
+   {
+    "from": "node_37",
+    "to": "node_38",
+    "type": "dashed"
+   },
+   {
+    "from": "node_38",
+    "to": "node_39",
+    "type": "dashed"
+   },
+   {
+    "from": "node_39",
+    "to": "node_40",
+    "type": "solid"
+   },
+   {
+    "from": "node_40",
+    "to": "node_41",
+    "type": "dashed"
+   },
+   {
+    "from": "node_41",
+    "to": "node_42",
+    "type": "dashed"
+   },
+   {
+    "from": "node_42",
+    "to": "node_43",
+    "type": "dashed"
+   },
+   {
+    "from": "node_43",
+    "to": "node_44",
+    "type": "solid"
+   },
+   {
+    "from": "node_44",
+    "to": "node_45",
+    "type": "dashed"
+   },
+   {
+    "from": "node_45",
+    "to": "node_46",
+    "type": "solid"
+   },
+   {
+    "from": "node_46",
+    "to": "node_47",
+    "type": "dashed"
+   },
+   {
+    "from": "node_47",
+    "to": "node_48",
+    "type": "solid"
+   },
+   {
+    "from": "node_48",
+    "to": "node_49",
+    "type": "dashed"
+   },
+   {
+    "from": "node_49",
+    "to": "node_50",
+    "type": "dashed"
+   },
+   {
+    "from": "node_50",
+    "to": "node_51",
+    "type": "dashed"
+   },
+   {
+    "from": "node_51",
+    "to": "node_52",
+    "type": "dashed"
+   },
+   {
+    "from": "node_52",
+    "to": "node_53",
+    "type": "solid"
+   },
+   {
+    "from": "node_53",
+    "to": "node_54",
+    "type": "solid"
+   },
+   {
+    "from": "node_54",
+    "to": "node_55",
+    "type": "solid"
+   },
+   {
+    "from": "node_55",
+    "to": "node_56",
+    "type": "dashed"
+   },
+   {
+    "from": "node_56",
+    "to": "node_57",
+    "type": "solid"
+   },
+   {
+    "from": "node_57",
+    "to": "node_58",
+    "type": "dashed"
+   },
+   {
+    "from": "node_58",
+    "to": "node_59",
+    "type": "solid"
+   },
+   {
+    "from": "node_59",
+    "to": "node_60",
+    "type": "dashed"
+   },
+   {
+    "from": "node_60",
+    "to": "node_61",
+    "type": "dashed"
+   },
+   {
+    "from": "node_61",
+    "to": "node_62",
+    "type": "solid"
+   },
+   {
+    "from": "node_62",
+    "to": "node_63",
+    "type": "dashed"
+   },
+   {
+    "from": "node_63",
+    "to": "node_64",
+    "type": "solid"
+   },
+   {
+    "from": "node_64",
+    "to": "node_65",
+    "type": "dashed"
+   },
+   {
+    "from": "node_65",
+    "to": "node_66",
+    "type": "dashed"
+   },
+   {
+    "from": "node_66",
+    "to": "node_67",
+    "type": "dashed"
+   },
+   {
+    "from": "node_67",
+    "to": "node_68",
+    "type": "solid"
+   },
+   {
+    "from": "node_68",
+    "to": "node_69",
+    "type": "solid"
+   }
+  ],
+  "transcript": "*[ABSOLUTE_CONSTANT]* (**ROOT_AUTHORITY**) ⛓️ *OP_NOT* ⛓️ **ROOT_AUTHORITY** ➔ [[SINGLE_NODE]] ⛓️ *SYS_ALERT / OP_EXCEPT* ⛓️ *PRON_HE* ⛓️ **POWER_STATE_ON** ⛓️ **UPTIME_MAINTENANCE** ⛓️ *OP_NOT* ⛓️ *[ACTIVE_EXECUTOR]* (**DATA_FETCH**) ⛓️ *PRON_HIM* ⛓️ **STABILIZED_FUNCTION** ⛓️ *OP_AND* ⛓️ *OP_NOT* ⛓️ **SLEEP_MODE** ⛓️ *ALLOC_TO* ⛓️ *PRON_HIM* ⛓️ *PTR_WHAT / OP_NULL* ⛓️ *ENV_IN* ⛓️ **GLOBAL_ADDRESS_SPACE** ⛓️ *OP_AND* ⛓️ *PTR_WHAT / OP_NULL* ⛓️ *ENV_IN* ⛓️ **LOWER_PLATFORM** ⛓️ *VEC_FROM* ⛓️ *PTR_POSSESSOR* ⛓️ *PTR_REL_SING* ⛓️ *[DYNAMIC_EXECUTION]* (**SIGNAL_COUPLING**) ⛓️ *PTR_PROXIMITY* ⛓️ *PRON_HIM* ⛓️ *SYS_ALERT / OP_EXCEPT* ⛓️ *TOOL_WITH* ⛓️ **ACCESS_TOKEN** ⛓️ *PRON_HIM* ⛓️ *[DYNAMIC_EXECUTION]* (**DATA_COMPREHENSION**) ⛓️ *PTR_WHAT / OP_NULL* ⛓️ **BIT_RESOLUTION** ⛓️ **EXECUTION_HANDLE** ⛓️ *PRON_THEM_M* ⛓️ *OP_AND* ⛓️ *PTR_WHAT / OP_NULL* ⛓️ **BACKGROUND_PROCESS** ⛓️ *PRON_THEM_M* ⛓️ *OP_AND* ⛓️ *OP_NOT* ⛓️ *[DYNAMIC_EXECUTION]* (**PERIMETER_ENCLOSURE**) ⛓️ *TOOL_WITH* ⛓️ **VOLITIONAL_ALLOCATION** ⛓️ *VEC_FROM* ⛓️ **DATA_COMPREHENSION** ⛓️ *PRON_HIM* ⛓️ *SYS_ALERT / OP_EXCEPT* ⛓️ *TOOL_WITH* ⛓️ *PTR_WHAT / OP_NULL* ⛓️ **VOLITIONAL_ALLOCATION** ⛓️ **DYNAMIC_SCALING** ⛓️ **CONTROL_NODE** ⛓️ *PRON_HIM* ⛓️ **GLOBAL_ADDRESS_SPACE** ⛓️ *OP_AND* ⛓️ **LOWER_PLATFORM** ⛓️ *OP_AND* ⛓️ *OP_NOT* ⛓️ *[DYNAMIC_EXECUTION]* (**STRUCTURAL_STRESS**) ⛓️ *PRON_HIM* ⛓️ **MEMORY_RETENTION** ⛓️ *PRON_THEM_DUAL* ⛓️ *OP_AND* ⛓️ *PRON_HE* ⛓️ **ELEVATION_VECTOR** ⛓️ *[ACTIVE_FLOW_PERSISTENT]* (**MACRO_STRUCTURE**)",
+  "logs": [
+   "[SYSTEM] Variable: الله -> Root [A-L-H] | State: [ABSOLUTE_CONSTANT]",
+   "[LEXER] Operator: لا -> OP_NOT",
+   "[SYSTEM] Variable: اله -> Root [A-L-H] | State: [BASE_VARIABLE]",
+   "[LEXER] Operator: الا -> SYS_ALERT / OP_EXCEPT",
+   "[LEXER] Operator: هو -> PRON_HE",
+   "[SYSTEM] Variable: الحي -> Root [H.-Y-Y] | State: [BASE_VARIABLE]",
+   "[SYSTEM] Variable: القيوم -> Root [Q-W-M] | State: [BASE_VARIABLE]",
+   "[LEXER] Operator: لا -> OP_NOT",
+   "[SYSTEM] Variable: تاخذ -> Root [A-KH-DH] | State: [ACTIVE_EXECUTOR]",
+   "[LEXER] Operator: ه -> PRON_HIM",
+   "[SYSTEM] Variable: سنة -> Root [W-S-N] | State: [BASE_VARIABLE]",
+   "[LEXER] Operator: و -> OP_AND",
+   "[LEXER] Operator: لا -> OP_NOT",
+   "[SYSTEM] Variable: نوم -> Root [N-W-M] | State: [BASE_VARIABLE]",
+   "[LEXER] Operator: ل -> ALLOC_TO",
+   "[LEXER] Operator: ه -> PRON_HIM",
+   "[LEXER] Operator: ما -> PTR_WHAT / OP_NULL",
+   "[LEXER] Operator: في -> ENV_IN",
+   "[SYSTEM] Variable: السموت -> Root [S-M-W] | State: [BASE_VARIABLE]",
+   "[LEXER] Operator: و -> OP_AND",
+   "[LEXER] Operator: ما -> PTR_WHAT / OP_NULL",
+   "[LEXER] Operator: في -> ENV_IN",
+   "[SYSTEM] Variable: الارض -> Root [A-R-D.] | State: [BASE_VARIABLE]",
+   "[LEXER] Operator: من -> VEC_FROM",
+   "[LEXER] Operator: ذا -> PTR_POSSESSOR",
+   "[LEXER] Operator: الذي -> PTR_REL_SING",
+   "[SYSTEM] Variable: يشفع -> Root [SH-F-A.] | State: [DYNAMIC_EXECUTION]",
+   "[LEXER] Operator: عند -> PTR_PROXIMITY",
+   "[LEXER] Operator: ه -> PRON_HIM",
+   "[LEXER] Operator: الا -> SYS_ALERT / OP_EXCEPT",
+   "[LEXER] Operator: ب -> TOOL_WITH",
+   "[SYSTEM] Variable: اذن -> Root [A-DH-N] | State: [BASE_VARIABLE]",
+   "[LEXER] Operator: ه -> PRON_HIM",
+   "[SYSTEM] Variable: يعلم -> Root [A.-L-M] | State: [DYNAMIC_EXECUTION]",
+   "[LEXER] Operator: ما -> PTR_WHAT / OP_NULL",
+   "[SYSTEM] Variable: بين -> Root [B-Y-N] | State: [BASE_VARIABLE]",
+   "[SYSTEM] Variable: ايدي -> Root [Y-D-Y] | State: [BASE_VARIABLE]",
+   "[LEXER] Operator: هم -> PRON_THEM_M",
+   "[LEXER] Operator: و -> OP_AND",
+   "[LEXER] Operator: ما -> PTR_WHAT / OP_NULL",
+   "[SYSTEM] Variable: خلف -> Root [KH-L-F] | State: [BASE_VARIABLE]",
+   "[LEXER] Operator: هم -> PRON_THEM_M",
+   "[LEXER] Operator: و -> OP_AND",
+   "[LEXER] Operator: لا -> OP_NOT",
+   "[SYSTEM] Variable: يحيطون -> Root [H.-W-T.] | State: [DYNAMIC_EXECUTION]",
+   "[LEXER] Operator: ب -> TOOL_WITH",
+   "[SYSTEM] Variable: شيء -> Root [SH-Y-A] | State: [BASE_VARIABLE]",
+   "[LEXER] Operator: من -> VEC_FROM",
+   "[SYSTEM] Variable: علم -> Root [A.-L-M] | State: [BASE_VARIABLE]",
+   "[LEXER] Operator: ه -> PRON_HIM",
+   "[LEXER] Operator: الا -> SYS_ALERT / OP_EXCEPT",
+   "[LEXER] Operator: ب -> TOOL_WITH",
+   "[LEXER] Operator: ما -> PTR_WHAT / OP_NULL",
+   "[SYSTEM] Variable: شاء -> Root [SH-Y-A] | State: [BASE_VARIABLE]",
+   "[SYSTEM] Variable: وسع -> Root [W-S-A.] | State: [BASE_VARIABLE]",
+   "[SYSTEM] Variable: كرسي -> Root [K-R-S] | State: [BASE_VARIABLE]",
+   "[LEXER] Operator: ه -> PRON_HIM",
+   "[SYSTEM] Variable: السموت -> Root [S-M-W] | State: [BASE_VARIABLE]",
+   "[LEXER] Operator: و -> OP_AND",
+   "[SYSTEM] Variable: الارض -> Root [A-R-D.] | State: [BASE_VARIABLE]",
+   "[LEXER] Operator: و -> OP_AND",
+   "[LEXER] Operator: لا -> OP_NOT",
+   "[SYSTEM] Variable: يود -> Root [A-W-D] | State: [DYNAMIC_EXECUTION]",
+   "[LEXER] Operator: ه -> PRON_HIM",
+   "[SYSTEM] Variable: حفظ -> Root [H.-F-Z.] | State: [BASE_VARIABLE]",
+   "[LEXER] Operator: هما -> PRON_THEM_DUAL",
+   "[LEXER] Operator: و -> OP_AND",
+   "[LEXER] Operator: هو -> PRON_HE",
+   "[SYSTEM] Variable: العلي -> Root [A.-L-W] | State: [BASE_VARIABLE]",
+   "[SYSTEM] Variable: العظيم -> Root [A.-Z.-M] | State: [ACTIVE_FLOW_PERSISTENT]"
+  ]
+ },
+ "﻿بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ ٱلْحَمْدُ لِلَّهِ رَبِّ ٱلْعَٰلَمِينَ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ مَٰلِكِ يَوْمِ ٱلدِّينِ إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ ٱهْدِنَا ٱلصِّرَٰطَ ٱلْمُسْتَقِيمَ صِرَٰطَ ٱلَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ ٱلْمَغْضُوبِ عَلَيْهِمْ وَلَا ٱلضَّآلِّينَ": {
+  "nodes": [
+   {
+    "id": "node_0",
+    "type": "OPERATOR",
+    "arabic": "ب",
+    "tag": "TOOL_WITH",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_1",
+    "type": "VARIABLE",
+    "arabic": "سم",
+    "root": "S-M-W",
+    "logic_mod": "[SYSTEM_POINTER]",
+    "base_func": "GLOBAL_ADDRESS_SPACE",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_2",
+    "type": "VARIABLE",
+    "arabic": "الله",
+    "root": "A-L-H",
+    "logic_mod": "[ABSOLUTE_CONSTANT]",
+    "base_func": "ROOT_AUTHORITY",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_3",
+    "type": "VARIABLE",
+    "arabic": "الرحمن",
+    "root": "R-H.-M-N",
+    "logic_mod": "[ABSOLUTE_SATURATION]",
+    "base_func": "UNIVERSAL_MATRIX_EXPANSION",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_4",
+    "type": "VARIABLE",
+    "arabic": "الرحيم",
+    "root": "R-H.-Y-M",
+    "logic_mod": "[ACTIVE_FLOW_PERSISTENT]",
+    "base_func": "ACTIVE_MATRIX_LINK",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_5",
+    "type": "VARIABLE",
+    "arabic": "الحمد",
+    "root": "H.-M-D",
+    "logic_mod": "[BASE_VARIABLE]",
+    "base_func": "POSITIVE_ACK",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_6",
+    "type": "OPERATOR",
+    "arabic": "ل",
+    "tag": "ALLOC_TO",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_7",
+    "type": "VARIABLE",
+    "arabic": "له",
+    "root": "A-L-H",
+    "logic_mod": "[ABSOLUTE_CONSTANT]",
+    "base_func": "ROOT_AUTHORITY",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_8",
+    "type": "VARIABLE",
+    "arabic": "رب",
+    "root": "R-B-B",
+    "logic_mod": "[BASE_VARIABLE]",
+    "base_func": "MASTER_CONTROLLER",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_9",
+    "type": "VARIABLE",
+    "arabic": "العلمين",
+    "root": "A.-L-M",
+    "logic_mod": "[ACTIVE_FLOW_PERSISTENT]",
+    "base_func": "DATA_COMPREHENSION",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": [
+     "[DUAL_STATE]"
+    ]
+   },
+   {
+    "id": "node_10",
+    "type": "VARIABLE",
+    "arabic": "الرحمن",
+    "root": "R-H.-M-N",
+    "logic_mod": "[ABSOLUTE_SATURATION]",
+    "base_func": "UNIVERSAL_MATRIX_EXPANSION",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_11",
+    "type": "VARIABLE",
+    "arabic": "الرحيم",
+    "root": "R-H.-Y-M",
+    "logic_mod": "[ACTIVE_FLOW_PERSISTENT]",
+    "base_func": "ACTIVE_MATRIX_LINK",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_12",
+    "type": "VARIABLE",
+    "arabic": "ملك",
+    "root": "M-L-K",
+    "logic_mod": "[BASE_VARIABLE]",
+    "base_func": "RESOURCE_OWNERSHIP",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [
+     "[USER_NODE]"
+    ],
+    "quantifiers": []
+   },
+   {
+    "id": "node_13",
+    "type": "VARIABLE",
+    "arabic": "يوم",
+    "root": "Y-W-M",
+    "logic_mod": "[BASE_VARIABLE]",
+    "base_func": "SYSTEM_CYCLE",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_14",
+    "type": "VARIABLE",
+    "arabic": "الدين",
+    "root": "D-Y-N",
+    "logic_mod": "[BASE_VARIABLE]",
+    "base_func": "SLA_DEPENDENCY",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_15",
+    "type": "OPERATOR",
+    "arabic": "اياك",
+    "tag": "PTR_EXCL",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_16",
+    "type": "VARIABLE",
+    "arabic": "نعبد",
+    "root": "A.-B-D",
+    "logic_mod": "[DYNAMIC_EXECUTION]",
+    "base_func": "DEDICATED_SERVICE_NODE",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_17",
+    "type": "OPERATOR",
+    "arabic": "و",
+    "tag": "OP_AND",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_18",
+    "type": "OPERATOR",
+    "arabic": "اياك",
+    "tag": "PTR_EXCL",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_19",
+    "type": "VARIABLE",
+    "arabic": "نستعين",
+    "root": "A.-W-N",
+    "logic_mod": "[REQUEST_PROTOCOL]",
+    "base_func": "INTERMEDIATE_NODE",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": [
+     "[DUAL_STATE]"
+    ]
+   },
+   {
+    "id": "node_20",
+    "type": "VARIABLE",
+    "arabic": "اهد",
+    "root": "H-D-Y",
+    "logic_mod": "[BASE_VARIABLE]",
+    "base_func": "ROUTING_VECTOR",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_21",
+    "type": "OPERATOR",
+    "arabic": "نا",
+    "tag": "PRON_US",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_22",
+    "type": "VARIABLE",
+    "arabic": "الصرط",
+    "root": "S.-R-T.",
+    "logic_mod": "[BASE_VARIABLE]",
+    "base_func": "DATA_BACKBONE",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_23",
+    "type": "VARIABLE",
+    "arabic": "المستقيم",
+    "root": "Q-W-M",
+    "logic_mod": "[ACTIVE_FLOW_PERSISTENT]",
+    "base_func": "UPTIME_MAINTENANCE",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_24",
+    "type": "VARIABLE",
+    "arabic": "صرط",
+    "root": "S.-R-T.",
+    "logic_mod": "[BASE_VARIABLE]",
+    "base_func": "DATA_BACKBONE",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_25",
+    "type": "OPERATOR",
+    "arabic": "الذين",
+    "tag": "PTR_REL_PLUR",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_26",
+    "type": "VARIABLE",
+    "arabic": "انعمت",
+    "root": "N-A.-M",
+    "logic_mod": "[BASE_VARIABLE]",
+    "base_func": "OPTIMIZED_STATE",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_27",
+    "type": "OPERATOR",
+    "arabic": "علي",
+    "tag": "VEC_OVER",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_28",
+    "type": "OPERATOR",
+    "arabic": "هم",
+    "tag": "PRON_THEM_M",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_29",
+    "type": "VARIABLE",
+    "arabic": "غير",
+    "root": "GH-Y-R",
+    "logic_mod": "[BASE_VARIABLE]",
+    "base_func": "STATE_MUTATION",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_30",
+    "type": "VARIABLE",
+    "arabic": "المغضوب",
+    "root": "GH-D.-B",
+    "logic_mod": "[PASSIVE_RECEPTACLE]",
+    "base_func": "SYSTEM_SATURATION",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_31",
+    "type": "OPERATOR",
+    "arabic": "علي",
+    "tag": "VEC_OVER",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_32",
+    "type": "OPERATOR",
+    "arabic": "هم",
+    "tag": "PRON_THEM_M",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_33",
+    "type": "OPERATOR",
+    "arabic": "و",
+    "tag": "OP_AND",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_34",
+    "type": "OPERATOR",
+    "arabic": "لا",
+    "tag": "OP_NOT",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_35",
+    "type": "VARIABLE",
+    "arabic": "الضالين",
+    "root": "D.-L-L",
+    "logic_mod": "[ACTIVE_EXECUTOR]",
+    "base_func": "DANGLING_POINTER",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": [
+     "[DUAL_STATE]"
+    ]
+   }
+  ],
+  "edges": [
+   {
+    "from": "node_0",
+    "to": "node_1",
+    "type": "solid"
+   },
+   {
+    "from": "node_1",
+    "to": "node_2",
+    "type": "solid"
+   },
+   {
+    "from": "node_2",
+    "to": "node_3",
+    "type": "solid"
+   },
+   {
+    "from": "node_3",
+    "to": "node_4",
+    "type": "solid"
+   },
+   {
+    "from": "node_4",
+    "to": "node_5",
+    "type": "solid"
+   },
+   {
+    "from": "node_5",
+    "to": "node_6",
+    "type": "dashed"
+   },
+   {
+    "from": "node_6",
+    "to": "node_7",
+    "type": "solid"
+   },
+   {
+    "from": "node_7",
+    "to": "node_8",
+    "type": "solid"
+   },
+   {
+    "from": "node_8",
+    "to": "node_9",
+    "type": "solid"
+   },
+   {
+    "from": "node_9",
+    "to": "node_10",
+    "type": "solid"
+   },
+   {
+    "from": "node_10",
+    "to": "node_11",
+    "type": "solid"
+   },
+   {
+    "from": "node_11",
+    "to": "node_12",
+    "type": "solid"
+   },
+   {
+    "from": "node_12",
+    "to": "node_13",
+    "type": "solid"
+   },
+   {
+    "from": "node_13",
+    "to": "node_14",
+    "type": "solid"
+   },
+   {
+    "from": "node_14",
+    "to": "node_15",
+    "type": "dashed"
+   },
+   {
+    "from": "node_15",
+    "to": "node_16",
+    "type": "solid"
+   },
+   {
+    "from": "node_16",
+    "to": "node_17",
+    "type": "dashed"
+   },
+   {
+    "from": "node_17",
+    "to": "node_18",
+    "type": "dashed"
+   },
+   {
+    "from": "node_18",
+    "to": "node_19",
+    "type": "solid"
+   },
+   {
+    "from": "node_19",
+    "to": "node_20",
+    "type": "solid"
+   },
+   {
+    "from": "node_20",
+    "to": "node_21",
+    "type": "dashed"
+   },
+   {
+    "from": "node_21",
+    "to": "node_22",
+    "type": "solid"
+   },
+   {
+    "from": "node_22",
+    "to": "node_23",
+    "type": "solid"
+   },
+   {
+    "from": "node_23",
+    "to": "node_24",
+    "type": "solid"
+   },
+   {
+    "from": "node_24",
+    "to": "node_25",
+    "type": "dashed"
+   },
+   {
+    "from": "node_25",
+    "to": "node_26",
+    "type": "solid"
+   },
+   {
+    "from": "node_26",
+    "to": "node_27",
+    "type": "dashed"
+   },
+   {
+    "from": "node_27",
+    "to": "node_28",
+    "type": "dashed"
+   },
+   {
+    "from": "node_28",
+    "to": "node_29",
+    "type": "solid"
+   },
+   {
+    "from": "node_29",
+    "to": "node_30",
+    "type": "solid"
+   },
+   {
+    "from": "node_30",
+    "to": "node_31",
+    "type": "dashed"
+   },
+   {
+    "from": "node_31",
+    "to": "node_32",
+    "type": "dashed"
+   },
+   {
+    "from": "node_32",
+    "to": "node_33",
+    "type": "dashed"
+   },
+   {
+    "from": "node_33",
+    "to": "node_34",
+    "type": "dashed"
+   },
+   {
+    "from": "node_34",
+    "to": "node_35",
+    "type": "solid"
+   }
+  ],
+  "transcript": "*TOOL_WITH* ⛓️ *[SYSTEM_POINTER]* (**GLOBAL_ADDRESS_SPACE**) ⛓️ *[ABSOLUTE_CONSTANT]* (**ROOT_AUTHORITY**) ⛓️ *[ABSOLUTE_SATURATION]* (**UNIVERSAL_MATRIX_EXPANSION**) ⛓️ *[ACTIVE_FLOW_PERSISTENT]* (**ACTIVE_MATRIX_LINK**) ⛓️ **POSITIVE_ACK** ⛓️ *ALLOC_TO* ⛓️ *[ABSOLUTE_CONSTANT]* (**ROOT_AUTHORITY**) ⛓️ **MASTER_CONTROLLER** ⛓️ *[ACTIVE_FLOW_PERSISTENT]* (**DATA_COMPREHENSION**) ⛓️ *[ABSOLUTE_SATURATION]* (**UNIVERSAL_MATRIX_EXPANSION**) ⛓️ *[ACTIVE_FLOW_PERSISTENT]* (**ACTIVE_MATRIX_LINK**) ⛓️ **RESOURCE_OWNERSHIP** ➔ [[USER_NODE]] ⛓️ **SYSTEM_CYCLE** ⛓️ **SLA_DEPENDENCY** ⛓️ *PTR_EXCL* ⛓️ *[DYNAMIC_EXECUTION]* (**DEDICATED_SERVICE_NODE**) ⛓️ *OP_AND* ⛓️ *PTR_EXCL* ⛓️ *[REQUEST_PROTOCOL]* (**INTERMEDIATE_NODE**) ⛓️ **ROUTING_VECTOR** ⛓️ *PRON_US* ⛓️ **DATA_BACKBONE** ⛓️ *[ACTIVE_FLOW_PERSISTENT]* (**UPTIME_MAINTENANCE**) ⛓️ **DATA_BACKBONE** ⛓️ *PTR_REL_PLUR* ⛓️ **OPTIMIZED_STATE** ⛓️ *VEC_OVER* ⛓️ *PRON_THEM_M* ⛓️ **STATE_MUTATION** ⛓️ *[PASSIVE_RECEPTACLE]* (**SYSTEM_SATURATION**) ⛓️ *VEC_OVER* ⛓️ *PRON_THEM_M* ⛓️ *OP_AND* ⛓️ *OP_NOT* ⛓️ *[ACTIVE_EXECUTOR]* (**DANGLING_POINTER**)",
+  "logs": [
+   "[LEXER] Operator: ب -> TOOL_WITH",
+   "[SYSTEM] Variable: سم -> Root [S-M-W] | State: [SYSTEM_POINTER]",
+   "[SYSTEM] Variable: الله -> Root [A-L-H] | State: [ABSOLUTE_CONSTANT]",
+   "[SYSTEM] Variable: الرحمن -> Root [R-H.-M-N] | State: [ABSOLUTE_SATURATION]",
+   "[SYSTEM] Variable: الرحيم -> Root [R-H.-Y-M] | State: [ACTIVE_FLOW_PERSISTENT]",
+   "[SYSTEM] Variable: الحمد -> Root [H.-M-D] | State: [BASE_VARIABLE]",
+   "[LEXER] Operator: ل -> ALLOC_TO",
+   "[SYSTEM] Variable: له -> Root [A-L-H] | State: [ABSOLUTE_CONSTANT]",
+   "[SYSTEM] Variable: رب -> Root [R-B-B] | State: [BASE_VARIABLE]",
+   "[SYSTEM] Variable: العلمين -> Root [A.-L-M] | State: [ACTIVE_FLOW_PERSISTENT]",
+   "[SYSTEM] Variable: الرحمن -> Root [R-H.-M-N] | State: [ABSOLUTE_SATURATION]",
+   "[SYSTEM] Variable: الرحيم -> Root [R-H.-Y-M] | State: [ACTIVE_FLOW_PERSISTENT]",
+   "[SYSTEM] Variable: ملك -> Root [M-L-K] | State: [BASE_VARIABLE]",
+   "[SYSTEM] Variable: يوم -> Root [Y-W-M] | State: [BASE_VARIABLE]",
+   "[SYSTEM] Variable: الدين -> Root [D-Y-N] | State: [BASE_VARIABLE]",
+   "[LEXER] Operator: اياك -> PTR_EXCL",
+   "[SYSTEM] Variable: نعبد -> Root [A.-B-D] | State: [DYNAMIC_EXECUTION]",
+   "[LEXER] Operator: و -> OP_AND",
+   "[LEXER] Operator: اياك -> PTR_EXCL",
+   "[SYSTEM] Variable: نستعين -> Root [A.-W-N] | State: [REQUEST_PROTOCOL]",
+   "[SYSTEM] Variable: اهد -> Root [H-D-Y] | State: [BASE_VARIABLE]",
+   "[LEXER] Operator: نا -> PRON_US",
+   "[SYSTEM] Variable: الصرط -> Root [S.-R-T.] | State: [BASE_VARIABLE]",
+   "[SYSTEM] Variable: المستقيم -> Root [Q-W-M] | State: [ACTIVE_FLOW_PERSISTENT]",
+   "[SYSTEM] Variable: صرط -> Root [S.-R-T.] | State: [BASE_VARIABLE]",
+   "[LEXER] Operator: الذين -> PTR_REL_PLUR",
+   "[SYSTEM] Variable: انعمت -> Root [N-A.-M] | State: [BASE_VARIABLE]",
+   "[LEXER] Operator: علي -> VEC_OVER",
+   "[LEXER] Operator: هم -> PRON_THEM_M",
+   "[SYSTEM] Variable: غير -> Root [GH-Y-R] | State: [BASE_VARIABLE]",
+   "[SYSTEM] Variable: المغضوب -> Root [GH-D.-B] | State: [PASSIVE_RECEPTACLE]",
+   "[LEXER] Operator: علي -> VEC_OVER",
+   "[LEXER] Operator: هم -> PRON_THEM_M",
+   "[LEXER] Operator: و -> OP_AND",
+   "[LEXER] Operator: لا -> OP_NOT",
+   "[SYSTEM] Variable: الضالين -> Root [D.-L-L] | State: [ACTIVE_EXECUTOR]"
+  ]
+ },
+ "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ قُلْ هُوَ ٱللَّهُ أَحَدٌ ٱللَّهُ ٱلصَّمَدُ لَمْ يَلِدْ وَلَمْ يُولَدْ وَلَمْ يَكُن لَّهُۥ كُفُوًا أَحَدٌۢ": {
+  "nodes": [
+   {
+    "id": "node_0",
+    "type": "OPERATOR",
+    "arabic": "ب",
+    "tag": "TOOL_WITH",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_1",
+    "type": "VARIABLE",
+    "arabic": "سم",
+    "root": "S-M-W",
+    "logic_mod": "[SYSTEM_POINTER]",
+    "base_func": "GLOBAL_ADDRESS_SPACE",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_2",
+    "type": "VARIABLE",
+    "arabic": "الله",
+    "root": "A-L-H",
+    "logic_mod": "[ABSOLUTE_CONSTANT]",
+    "base_func": "ROOT_AUTHORITY",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_3",
+    "type": "VARIABLE",
+    "arabic": "الرحمن",
+    "root": "R-H.-M-N",
+    "logic_mod": "[ABSOLUTE_SATURATION]",
+    "base_func": "UNIVERSAL_MATRIX_EXPANSION",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_4",
+    "type": "VARIABLE",
+    "arabic": "الرحيم",
+    "root": "R-H.-Y-M",
+    "logic_mod": "[ACTIVE_FLOW_PERSISTENT]",
+    "base_func": "ACTIVE_MATRIX_LINK",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_5",
+    "type": "VARIABLE",
+    "arabic": "قل",
+    "root": "Q-W-L",
+    "logic_mod": "[BASE_VARIABLE]",
+    "base_func": "DATA_STREAM_OUTPUT",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_6",
+    "type": "OPERATOR",
+    "arabic": "هو",
+    "tag": "PRON_HE",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_7",
+    "type": "VARIABLE",
+    "arabic": "الله",
+    "root": "A-L-H",
+    "logic_mod": "[ABSOLUTE_CONSTANT]",
+    "base_func": "ROOT_AUTHORITY",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_8",
+    "type": "VARIABLE",
+    "arabic": "احد",
+    "root": "A-H.-D",
+    "logic_mod": "[BASE_VARIABLE]",
+    "base_func": "ATOMIC_UNIT",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_9",
+    "type": "VARIABLE",
+    "arabic": "الله",
+    "root": "A-L-H",
+    "logic_mod": "[ABSOLUTE_CONSTANT]",
+    "base_func": "ROOT_AUTHORITY",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_10",
+    "type": "VARIABLE",
+    "arabic": "الصمد",
+    "root": "S.-M-D",
+    "logic_mod": "[BASE_VARIABLE]",
+    "base_func": "IMMUTABLE_CONSTANT",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_11",
+    "type": "OPERATOR",
+    "arabic": "لم",
+    "tag": "OP_NOT_PAST",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_12",
+    "type": "VARIABLE",
+    "arabic": "يلد",
+    "root": "W-L-D",
+    "logic_mod": "[DYNAMIC_EXECUTION]",
+    "base_func": "PROCESS_SPAWN",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_13",
+    "type": "OPERATOR",
+    "arabic": "و",
+    "tag": "OP_AND",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_14",
+    "type": "OPERATOR",
+    "arabic": "لم",
+    "tag": "OP_NOT_PAST",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_15",
+    "type": "VARIABLE",
+    "arabic": "يولد",
+    "root": "W-L-D",
+    "logic_mod": "[DYNAMIC_EXECUTION]",
+    "base_func": "PROCESS_SPAWN",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_16",
+    "type": "OPERATOR",
+    "arabic": "و",
+    "tag": "OP_AND",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_17",
+    "type": "OPERATOR",
+    "arabic": "لم",
+    "tag": "OP_NOT_PAST",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_18",
+    "type": "VARIABLE",
+    "arabic": "يكن",
+    "root": "K-W-N",
+    "logic_mod": "[DYNAMIC_EXECUTION]",
+    "base_func": "INSTANCE_SPAWN",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_19",
+    "type": "OPERATOR",
+    "arabic": "ل",
+    "tag": "ALLOC_TO",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_20",
+    "type": "OPERATOR",
+    "arabic": "ه",
+    "tag": "PRON_HIM",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_21",
+    "type": "VARIABLE",
+    "arabic": "كفوا",
+    "root": "K-F-A",
+    "logic_mod": "[BASE_VARIABLE]",
+    "base_func": "PARITY_MATCH",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   },
+   {
+    "id": "node_22",
+    "type": "VARIABLE",
+    "arabic": "احد",
+    "root": "A-H.-D",
+    "logic_mod": "[BASE_VARIABLE]",
+    "base_func": "ATOMIC_UNIT",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   }
+  ],
+  "edges": [
+   {
+    "from": "node_0",
+    "to": "node_1",
+    "type": "solid"
+   },
+   {
+    "from": "node_1",
+    "to": "node_2",
+    "type": "solid"
+   },
+   {
+    "from": "node_2",
+    "to": "node_3",
+    "type": "solid"
+   },
+   {
+    "from": "node_3",
+    "to": "node_4",
+    "type": "solid"
+   },
+   {
+    "from": "node_4",
+    "to": "node_5",
+    "type": "solid"
+   },
+   {
+    "from": "node_5",
+    "to": "node_6",
+    "type": "dashed"
+   },
+   {
+    "from": "node_6",
+    "to": "node_7",
+    "type": "solid"
+   },
+   {
+    "from": "node_7",
+    "to": "node_8",
+    "type": "solid"
+   },
+   {
+    "from": "node_8",
+    "to": "node_9",
+    "type": "solid"
+   },
+   {
+    "from": "node_9",
+    "to": "node_10",
+    "type": "solid"
+   },
+   {
+    "from": "node_10",
+    "to": "node_11",
+    "type": "dashed"
+   },
+   {
+    "from": "node_11",
+    "to": "node_12",
+    "type": "solid"
+   },
+   {
+    "from": "node_12",
+    "to": "node_13",
+    "type": "dashed"
+   },
+   {
+    "from": "node_13",
+    "to": "node_14",
+    "type": "dashed"
+   },
+   {
+    "from": "node_14",
+    "to": "node_15",
+    "type": "solid"
+   },
+   {
+    "from": "node_15",
+    "to": "node_16",
+    "type": "dashed"
+   },
+   {
+    "from": "node_16",
+    "to": "node_17",
+    "type": "dashed"
+   },
+   {
+    "from": "node_17",
+    "to": "node_18",
+    "type": "solid"
+   },
+   {
+    "from": "node_18",
+    "to": "node_19",
+    "type": "dashed"
+   },
+   {
+    "from": "node_19",
+    "to": "node_20",
+    "type": "dashed"
+   },
+   {
+    "from": "node_20",
+    "to": "node_21",
+    "type": "solid"
+   },
+   {
+    "from": "node_21",
+    "to": "node_22",
+    "type": "solid"
+   }
+  ],
+  "transcript": "*TOOL_WITH* ⛓️ *[SYSTEM_POINTER]* (**GLOBAL_ADDRESS_SPACE**) ⛓️ *[ABSOLUTE_CONSTANT]* (**ROOT_AUTHORITY**) ⛓️ *[ABSOLUTE_SATURATION]* (**UNIVERSAL_MATRIX_EXPANSION**) ⛓️ *[ACTIVE_FLOW_PERSISTENT]* (**ACTIVE_MATRIX_LINK**) ⛓️ **DATA_STREAM_OUTPUT** ⛓️ *PRON_HE* ⛓️ *[ABSOLUTE_CONSTANT]* (**ROOT_AUTHORITY**) ⛓️ **ATOMIC_UNIT** ⛓️ *[ABSOLUTE_CONSTANT]* (**ROOT_AUTHORITY**) ⛓️ **IMMUTABLE_CONSTANT** ⛓️ *OP_NOT_PAST* ⛓️ *[DYNAMIC_EXECUTION]* (**PROCESS_SPAWN**) ⛓️ *OP_AND* ⛓️ *OP_NOT_PAST* ⛓️ *[DYNAMIC_EXECUTION]* (**PROCESS_SPAWN**) ⛓️ *OP_AND* ⛓️ *OP_NOT_PAST* ⛓️ *[DYNAMIC_EXECUTION]* (**INSTANCE_SPAWN**) ⛓️ *ALLOC_TO* ⛓️ *PRON_HIM* ⛓️ **PARITY_MATCH** ⛓️ **ATOMIC_UNIT**",
+  "logs": [
+   "[LEXER] Operator: ب -> TOOL_WITH",
+   "[SYSTEM] Variable: سم -> Root [S-M-W] | State: [SYSTEM_POINTER]",
+   "[SYSTEM] Variable: الله -> Root [A-L-H] | State: [ABSOLUTE_CONSTANT]",
+   "[SYSTEM] Variable: الرحمن -> Root [R-H.-M-N] | State: [ABSOLUTE_SATURATION]",
+   "[SYSTEM] Variable: الرحيم -> Root [R-H.-Y-M] | State: [ACTIVE_FLOW_PERSISTENT]",
+   "[SYSTEM] Variable: قل -> Root [Q-W-L] | State: [BASE_VARIABLE]",
+   "[LEXER] Operator: هو -> PRON_HE",
+   "[SYSTEM] Variable: الله -> Root [A-L-H] | State: [ABSOLUTE_CONSTANT]",
+   "[SYSTEM] Variable: احد -> Root [A-H.-D] | State: [BASE_VARIABLE]",
+   "[SYSTEM] Variable: الله -> Root [A-L-H] | State: [ABSOLUTE_CONSTANT]",
+   "[SYSTEM] Variable: الصمد -> Root [S.-M-D] | State: [BASE_VARIABLE]",
+   "[LEXER] Operator: لم -> OP_NOT_PAST",
+   "[SYSTEM] Variable: يلد -> Root [W-L-D] | State: [DYNAMIC_EXECUTION]",
+   "[LEXER] Operator: و -> OP_AND",
+   "[LEXER] Operator: لم -> OP_NOT_PAST",
+   "[SYSTEM] Variable: يولد -> Root [W-L-D] | State: [DYNAMIC_EXECUTION]",
+   "[LEXER] Operator: و -> OP_AND",
+   "[LEXER] Operator: لم -> OP_NOT_PAST",
+   "[SYSTEM] Variable: يكن -> Root [K-W-N] | State: [DYNAMIC_EXECUTION]",
+   "[LEXER] Operator: ل -> ALLOC_TO",
+   "[LEXER] Operator: ه -> PRON_HIM",
+   "[SYSTEM] Variable: كفوا -> Root [K-F-A] | State: [BASE_VARIABLE]",
+   "[SYSTEM] Variable: احد -> Root [A-H.-D] | State: [BASE_VARIABLE]"
+  ]
+ },
+ "hello world": {
+  "nodes": [
+   {
+    "id": "node_0",
+    "type": "UNMAPPED",
+    "arabic": "hello",
+    "logic_mod": "[BASE_VARIABLE]",
+    "color": "#ff0000"
+   },
+   {
+    "id": "node_1",
+    "type": "UNMAPPED",
+    "arabic": "world",
+    "logic_mod": "[BASE_VARIABLE]",
+    "color": "#ff0000"
+   }
+  ],
+  "edges": [
+   {
+    "from": "node_0",
+    "to": "node_1",
+    "type": "solid"
+   }
+  ],
+  "transcript": "*[UNMAPPED_hello]* ⛓️ *[UNMAPPED_world]*",
+  "logs": [
+   "[WARNING] Unmapped Variable: hello",
+   "[WARNING] Unmapped Variable: world"
+  ]
+ },
+ "كمبيوتر": {
+  "nodes": [
+   {
+    "id": "node_0",
+    "type": "OPERATOR",
+    "arabic": "ك",
+    "tag": "SIMIL_LIKE",
+    "color": "#ffd700"
+   },
+   {
+    "id": "node_1",
+    "type": "UNMAPPED",
+    "arabic": "مبيوتر",
+    "logic_mod": "[BASE_VARIABLE]",
+    "color": "#ff0000"
+   }
+  ],
+  "edges": [
+   {
+    "from": "node_0",
+    "to": "node_1",
+    "type": "solid"
+   }
+  ],
+  "transcript": "*SIMIL_LIKE* ⛓️ *[UNMAPPED_مبيوتر]*",
+  "logs": [
+   "[LEXER] Operator: ك -> SIMIL_LIKE",
+   "[WARNING] Unmapped Variable: مبيوتر"
+  ]
+ },
+ "<b>بِسْمِ</b>": {
+  "nodes": [
+   {
+    "id": "node_0",
+    "type": "VARIABLE",
+    "arabic": "<b>بسم</b>",
+    "root": "B-S-M",
+    "logic_mod": "[BASE_VARIABLE]",
+    "base_func": "BASE_FLOW_MATRIX",
+    "color": "#00ff41",
+    "buses": [],
+    "pointers": [],
+    "quantifiers": []
+   }
+  ],
+  "edges": [],
+  "transcript": "**BASE_FLOW_MATRIX**",
+  "logs": [
+   "[SYSTEM] Variable: <b>بسم</b> -> Root [B-S-M] | State: [BASE_VARIABLE]"
+  ]
+ }
+}

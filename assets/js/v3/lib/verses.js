@@ -62,6 +62,10 @@ export const cleanVerseText = (text) => String(text ?? '').replace(/﻿/g, '');
 // Le passage voyage dans l'adresse sous forme de nombres : ?s=2&de=255&a=255
 export const passageQuery = ({ sura, start, end }) => `?s=${sura}&de=${start}&a=${end}`;
 
+// L'adresse d'un passage dans un outil : les seuls endroits où elle s'écrit (un test de règles y veille)
+export const interpreterHref = (passage) => `/interpreteur/${passageQuery(passage)}`;
+export const sequencerHref = (passage) => `/sequenceur/${passageQuery(passage)}`;
+
 export function parsePassageQuery(search) {
   const params = new URLSearchParams(String(search ?? ''));
   const sura = params.get('s');

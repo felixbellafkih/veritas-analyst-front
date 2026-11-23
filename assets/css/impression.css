@@ -47,6 +47,11 @@ body {
 .suite,
 .echanges,
 .corpus,
+.sequence__formulaire,
+.sequence__envoi,
+.sequence__adresse,
+.sequence__legende,
+.chaine__suite,
 dialog {
   display: none !important;
 }

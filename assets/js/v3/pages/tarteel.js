@@ -10,7 +10,7 @@ import { makeHandoff } from '../lib/tarteel-handoff.js';
 import { createTarteelProbe } from '../lib/tarteel-probe.js';
 import { clusterCopyText, indexesOfSura, parseTarteelQuery, suraDistribution, tarteelQuery } from '../lib/tarteel-stats.js';
 import { clusterVerse } from '../lib/tarteel.js';
-import { SURAS, passageQuery } from '../lib/verses.js';
+import { SURAS, interpreterHref } from '../lib/verses.js';
 import { copyText } from '../ui/clipboard.js';
 import { mountClusterList } from '../ui/cluster-list.js';
 import { add, browserStore, clear, el, fill } from '../ui/dom.js';
@@ -74,7 +74,7 @@ function verseLink(index, verse) {
   const [sura, verseNumber] = reference.split(':').map(Number);
   return el('a', {
     class: 'cluster__lien',
-    attrs: { href: `/interpreteur/${passageQuery({ sura, start: verseNumber, end: verseNumber })}`, 'aria-label': `${t('Ouvrir ce verset dans l’Interpréteur')} : ${reference}`, title: t('Ouvrir ce verset dans l’Interpréteur') },
+    attrs: { href: interpreterHref({ sura, start: verseNumber, end: verseNumber }), 'aria-label': `${t('Ouvrir ce verset dans l’Interpréteur')} : ${reference}`, title: t('Ouvrir ce verset dans l’Interpréteur') },
   }, icon('arrow', 16));
 }
 

@@ -571,4 +571,9 @@
   .onglets__lien {
     padding-inline: 0;
   }
+
+  /* « Séquenceur », en gras quand c'est la page en cours, dépasse d'un demi-pixel sa case de 64 px */
+  .onglets__lien {
+    font-size: 0.65625rem;
+  }
 }

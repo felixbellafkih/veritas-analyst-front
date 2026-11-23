@@ -131,6 +131,10 @@ export function createStore({ local, session } = {}) {
     loadForm: () => readJson(STORAGE.form),
     saveForm: (value) => inTab.set(STORAGE.form, JSON.stringify(value)),
 
+    // Formulaire du Séquenceur (lib/sequence-form.js) : à part de celui de l'Interpréteur, pour l'onglet
+    loadSequenceForm: () => readJson(STORAGE.sequence),
+    saveSequenceForm: (value) => inTab.set(STORAGE.sequence, JSON.stringify(value)),
+
     // Sélection reportée de la page Tarteel à l'Interpréteur (lib/tarteel-handoff.js) : gardée pour
     // l'onglet, et lue une seule fois. Un rechargement de l'Interpréteur ne recoche donc rien.
     saveTarteelHandoff: (value) => inTab.set(STORAGE.handoff, JSON.stringify(value)),

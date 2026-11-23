@@ -31,8 +31,8 @@ const versionDirs = existsSync(JS) ? readdirSync(JS).filter((name) => /^v\d+$/.t
 const MODULES = join(JS, versionDirs[0] || 'v0');
 const moduleRel = (path) => relative(MODULES, path).replace(/\\/g, '/');
 
-test('les pages du site existent : accueil, Interpréteur, Scanner, Tarteel', () => {
-  for (const name of ['accueil', 'interpreteur', 'scanner', 'tarteel']) assert.ok(PAGES.includes(`${name}/index.html`), name);
+test('les pages du site existent : accueil, Interpréteur, Scanner, Tarteel, Séquenceur', () => {
+  for (const name of ['accueil', 'interpreteur', 'scanner', 'tarteel', 'sequenceur']) assert.ok(PAGES.includes(`${name}/index.html`), name);
 });
 
 // Une page oubliée dans _dev/pages.mjs garderait son ancien numéro de version à la mise en ligne suivante
@@ -207,9 +207,9 @@ test('Tarteel : les messages du signal ne sont écrits qu’à un endroit (ui/ta
   assert.deepEqual(writers, ['ui/tarteel-status.js']);
 });
 
-// Ni le Scanner ni la page Tarteel n'envoient de clé : elles ne font que des lectures publiques
+// Ni le Scanner, ni la page Tarteel, ni le Séquenceur n'envoient de clé : ils ne font que des lectures publiques
 test('pages de lecture : aucune analyse n’y est lancée, aucune clé n’y est envoyée', () => {
-  for (const name of ['scanner.js', 'tarteel.js']) {
+  for (const name of ['scanner.js', 'tarteel.js', 'sequenceur.js']) {
     const source = read(scripts.find((path) => path.endsWith(join('pages', name))));
     assert.doesNotMatch(source, /api\.(analyze|models|corpus[A-Z]\w*|devMode)\(/, name);
     assert.doesNotMatch(source, /credentials\(\)/, name);
@@ -230,4 +230,23 @@ test('Interpréteur : le report du Tarteel est lu à l’ouverture de la page, h
   assert.ok(show.length > 0);
   assert.doesNotMatch(show, /takeTarteelHandoff/);
   assert.match(show, /handoff\.take\(/);
+});
+
+// Étape 3 : l'adresse d'un passage dans un outil (?s=…&de=…&a=…) n'est écrite qu'à un endroit
+test('les adresses d’un passage, vers le Séquenceur ou l’Interpréteur, sont bâties dans lib/verses.js', () => {
+  const byHand = scripts.filter((path) => /\/(sequenceur|interpreteur)\/(\?|\$\{)/.test(read(path))).map((path) => rel(path).split('/').slice(-2).join('/'));
+  assert.deepEqual(byHand, ['lib/verses.js']);
+});
+
+// Les champs « sourate, du verset, au verset » servent à l'Interpréteur et au Séquenceur : un seul module les bâtit
+test('les champs de verset ne sont bâtis qu’à un endroit : ui/verse-fields.js', () => {
+  const builders = scripts.filter((path) => /verset-debut/.test(read(path))).map((path) => rel(path).split('/').slice(-2).join('/'));
+  assert.deepEqual(builders, ['ui/verse-fields.js']);
+});
+
+// Depuis le mode Verset de l'Interpréteur, le même passage s'ouvre dans le Séquenceur
+test('Interpréteur : le lien vers le Séquenceur est bâti par sequencerHref', () => {
+  const source = read(scripts.find((path) => path.endsWith(join('ui', 'passage-form.js'))));
+  assert.match(source, /sequencerHref\(state\)/);
+  assert.match(source, /Voir la séquence de ce passage/);
 });

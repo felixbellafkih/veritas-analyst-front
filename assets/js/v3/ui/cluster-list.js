@@ -8,7 +8,7 @@
 //   Le lien d'une ligne (page Tarteel) n'est atteignable que sur la ligne du curseur.
 // - « Tout sélectionner » et « Tout désélectionner » portent sur les versets affichés.
 import { CORPUS_CELL_LIMIT, tooLongForCorpus } from '../lib/corpus-panel.js';
-import { nextIndex } from '../lib/roving.js';
+import { hasModifier, nextIndex } from '../lib/roving.js';
 import { LARGE_SELECTION, clusterText, clusterVerse, largeSelection } from '../lib/tarteel.js';
 import { add, clear, el, fill } from './dom.js';
 import { t } from './i18n-dom.js';
@@ -132,6 +132,8 @@ export function mountClusterList(container, { probe, verses, devMode = () => fal
       box.click();
       return;
     }
+    // Alt+←, Cmd+↑, Ctrl+Fin… : ces touches sont celles du navigateur
+    if (hasModifier(event)) return;
     const next = nextIndex(Number(box.dataset.position), event.key, visible.length);
     if (next === null) return;
     event.preventDefault();

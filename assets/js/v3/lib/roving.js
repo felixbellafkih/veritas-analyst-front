@@ -1,6 +1,10 @@
 // Déplacement du curseur du clavier dans une longue liste, sans interface.
 // La liste n'offre qu'un seul arrêt à la touche Tab ; les flèches, Début et Fin passent d'une ligne à l'autre.
 
+// Une touche tenue avec Alt, Ctrl, Cmd ou Maj appartient au navigateur ou au système (Alt+← : page
+// précédente) : la liste ne doit ni l'avaler ni déplacer son curseur.
+export const hasModifier = (event) => Boolean(event) && Boolean(event.altKey || event.ctrlKey || event.metaKey || event.shiftKey);
+
 // current : rang de la ligne qui a le curseur ; total : nombre de lignes.
 // Rend le rang où aller, ou null quand la touche ne déplace rien (une autre touche, une liste vide).
 export function nextIndex(current, key, total) {
