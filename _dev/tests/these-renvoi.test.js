@@ -4,7 +4,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { libraryHref } from '../../assets/js/v4/lib/library.js';
+import { libraryHref } from '../../assets/js/v5/lib/library.js';
 
 const DIR = fileURLToPath(new URL('../../thesis/', import.meta.url));
 const CHAPTERS = { INTRODUCTION: 'introduction', PHASE_1: 'phase-1', PHASE_2: 'phase-2', PHASE_3: 'phase-3' };

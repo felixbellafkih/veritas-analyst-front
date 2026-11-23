@@ -3,7 +3,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { filterRoots, foldArabic, parseRootsIndex, scannerHref, scannerQuery, searchRoots } from '../../assets/js/v4/lib/roots-index.js';
+import { filterRoots, foldArabic, parseRootsIndex, scannerHref, scannerQuery, searchRoots } from '../../assets/js/v5/lib/roots-index.js';
 
 const INDEX = parseRootsIndex({ roots: [
   ['S-M-W', 'س م و', 'GLOBAL_ADDRESS_SPACE // STACK_LAYER'],

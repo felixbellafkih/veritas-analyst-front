@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { API_PROD, CLASSIC_URL, STORAGE, apiBase, apiChoice } from '../../assets/js/v4/lib/config.js';
+import { API_PROD, CLASSIC_URL, STORAGE, apiBase, apiChoice } from '../../assets/js/v5/lib/config.js';
 
 test('constantes', () => {
   assert.equal(API_PROD, 'https://api.veritas-analyst.org');

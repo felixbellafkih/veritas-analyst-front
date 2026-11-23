@@ -4,8 +4,8 @@ import assert from 'node:assert/strict';
 import { installFakeDom } from './aides/faux-dom.mjs';
 
 const dom = installFakeDom();
-const { mountSequenceForm } = await import('../../assets/js/v4/ui/sequence-form.js');
-const { sequenceFormState } = await import('../../assets/js/v4/lib/sequence-form.js');
+const { mountSequenceForm } = await import('../../assets/js/v5/ui/sequence-form.js');
+const { sequenceFormState } = await import('../../assets/js/v5/lib/sequence-form.js');
 
 function mounted(saved) {
   const state = sequenceFormState(saved);

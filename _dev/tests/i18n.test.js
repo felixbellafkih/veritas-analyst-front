@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { chooseLanguage, htmlLang, isRtl, languageList, pickLanguage, responseLanguage, translate, tx, validLang } from '../../assets/js/v4/lib/i18n.js';
+import { chooseLanguage, htmlLang, isRtl, languageList, pickLanguage, responseLanguage, translate, tx, validLang } from '../../assets/js/v5/lib/i18n.js';
 
 // Les codes de engine/translator.py (LANGUAGE_NAMES), plus le français
 const codes = ['fr', 'en', 'ar', 'es', 'de', 'it', 'pt', 'ru', 'zh-CN', 'zh-TW', 'ja', 'ko', 'hi', 'tr', 'id', 'vi', 'pl', 'nl', 'sv',

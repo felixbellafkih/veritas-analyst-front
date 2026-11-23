@@ -47,7 +47,7 @@ test('la page est recensée avec les autres, et rhabillée par le cadre du site'
 });
 
 test('le module des mentions légales ne contacte pas l’API et n’offre pas la clé', () => {
-  const source = readFileSync(fileURLToPath(new URL('../../assets/js/v4/pages/legal.js', import.meta.url)), 'utf8');
+  const source = readFileSync(fileURLToPath(new URL('../../assets/js/v5/pages/legal.js', import.meta.url)), 'utf8');
   assert.doesNotMatch(source, /from '[^']*\/api\.js'|fetch\(|onKeyClick|key-dialog/);
   assert.match(source, /mountShell\(\{ page: 'legal'/);
 });
