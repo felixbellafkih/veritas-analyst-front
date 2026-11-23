@@ -7,9 +7,9 @@ import assert from 'node:assert/strict';
 import { installFakeDom } from './aides/faux-dom.mjs';
 
 const dom = installFakeDom();
-const { EXECUTION_FLOW, GOVERNANCE_MAP } = await import('../../assets/js/v3/lib/library-diagrams.js');
-const { GOVERNANCE_PANELS } = await import('../../assets/js/v3/lib/library.js');
-const { mountFlow, mountGovernanceMap } = await import('../../assets/js/v3/ui/diagrams.js');
+const { EXECUTION_FLOW, GOVERNANCE_MAP } = await import('../../assets/js/v4/lib/library-diagrams.js');
+const { GOVERNANCE_PANELS } = await import('../../assets/js/v4/lib/library.js');
+const { mountFlow, mountGovernanceMap } = await import('../../assets/js/v4/ui/diagrams.js');
 
 const texts = (nodes) => nodes.map((node) => node.textContent);
 const tagged = (node, tag) => node.find((child) => child.tagName === tag);

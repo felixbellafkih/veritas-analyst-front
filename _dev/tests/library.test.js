@@ -7,8 +7,8 @@ import { fileURLToPath } from 'node:url';
 import {
   GOVERNANCE_PANELS, LIBRARY_DOCS, LIBRARY_HOME, THESIS_CHAPTERS,
   chapterNeighbours, libraryHref, parseLibraryContent, parseLibraryQuery, pickText,
-} from '../../assets/js/v3/lib/library.js';
-import { parseMarkdown } from '../../assets/js/v3/lib/markdown.js';
+} from '../../assets/js/v4/lib/library.js';
+import { parseMarkdown } from '../../assets/js/v4/lib/markdown.js';
 
 const HOME = { doc: 'manifeste', chapter: 'introduction', panel: '1' };
 const file = (code) => JSON.parse(readFileSync(fileURLToPath(new URL(`../../assets/bibliotheque/${code}.json`, import.meta.url)), 'utf8'));

@@ -3,8 +3,8 @@
 // Relecture de l'étape 3 : ces décisions vivaient dans pages/sequenceur.js, sans aucun test.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { sequenceFormState } from '../../assets/js/v3/lib/sequence-form.js';
-import { SEQUENCER_HOME, historyAddress, historyEntry, openingState, planOpen, planPop } from '../../assets/js/v3/lib/sequence-history.js';
+import { sequenceFormState } from '../../assets/js/v4/lib/sequence-form.js';
+import { SEQUENCER_HOME, historyAddress, historyEntry, openingState, planOpen, planPop } from '../../assets/js/v4/lib/sequence-history.js';
 
 const FIRST = { mode: 'verset', sura: 1, start: 1, end: 1, text: '' };
 const state = (extra = {}) => sequenceFormState({ ...FIRST, ...extra });

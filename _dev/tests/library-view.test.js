@@ -6,8 +6,8 @@ import assert from 'node:assert/strict';
 import { installFakeDom } from './aides/faux-dom.mjs';
 
 const dom = installFakeDom();
-const { mountLibraryView } = await import('../../assets/js/v3/ui/library-view.js');
-const { GOVERNANCE_PANELS, THESIS_CHAPTERS } = await import('../../assets/js/v3/lib/library.js');
+const { mountLibraryView } = await import('../../assets/js/v4/ui/library-view.js');
+const { GOVERNANCE_PANELS, THESIS_CHAPTERS } = await import('../../assets/js/v4/lib/library.js');
 
 const FRENCH = {
   these: { introduction: 'Introduction en français.', 'phase-1': 'Phase une en français.', 'phase-2': 'Phase deux en français.', 'phase-3': 'Phase trois en français.' },
