@@ -30,6 +30,8 @@ const JS = join(SITE, 'assets', 'js');
 const versionDirs = existsSync(JS) ? readdirSync(JS).filter((name) => /^v\d+$/.test(name)) : [];
 const MODULES = join(JS, versionDirs[0] || 'v0');
 const moduleRel = (path) => relative(MODULES, path).replace(/\\/g, '/');
+// Dossiers écrits par la publication du corpus (export_corpus.py du Kernel), pas à la main
+const GENERATED = ['corpus', 'en', 'lx-1242ba1a'];
 
 test('les pages du site existent : accueil, Interpréteur, Scanner, Tarteel, Séquenceur, Bibliothèque', () => {
   for (const name of ['accueil', 'interpreteur', 'scanner', 'tarteel', 'sequenceur', 'bibliotheque']) assert.ok(PAGES.includes(`${name}/index.html`), name);
@@ -66,9 +68,42 @@ test('Bibliothèque : le manifeste est dans la page, avec les emplacements que l
 test('toute page qui charge un module du site est recensée dans _dev/pages.mjs', () => {
   const found = readdirSync(SITE).filter((name) => {
     const page = join(SITE, name, 'index.html');
-    return !name.startsWith('.') && !name.startsWith('_') && existsSync(page) && /<script type="module" src="\/assets\/js\/v\d+\//.test(read(page));
+    // corpus/ et en/ : pages écrites par la publication du corpus, vérifiées plus bas
+    return !name.startsWith('.') && !name.startsWith('_') && !GENERATED.includes(name) && existsSync(page) && /<script type="module" src="\/assets\/js\/v\d+\//.test(read(page));
   });
   assert.deepEqual(found.sort(), [...PAGE_DIRS].sort());
+});
+
+// Étape 5 : les pages du corpus sont écrites chaque nuit par export_corpus.py (Kernel), au gabarit du site
+// quand le dépôt le porte. Elles restent indexables ; tout le reste suit les règles des autres pages.
+test('pages du corpus : le module ne contacte pas l’API et ne touche ni au titre ni au contenu', () => {
+  const path = scripts.find((each) => each.endsWith(join('pages', 'corpus.js')));
+  assert.ok(path, 'pages/corpus.js');
+  const source = read(path);
+  assert.doesNotMatch(source, /from '[^']*\/api\.js'/);
+  assert.doesNotMatch(source, /fetch\(|onKeyClick|document\.title|key-dialog/);
+  assert.match(source, /initI18n\(\{[^}]*fallback/);
+  assert.match(source, /mountShell\(\{ page: 'corpus'/);
+});
+
+const corpusPages = ['corpus', join('en', 'corpus')]
+  .flatMap((dir) => walk(join(SITE, dir)))
+  .filter((path) => path.endsWith('index.html') && /\/assets\/js\/v\d+\/pages\/corpus\.js/.test(read(path)));
+
+test('pages du corpus au gabarit du site : politique de sécurité, version en place, indexables', () => {
+  const sitePage = read(join(SITE, 'sequenceur', 'index.html'));
+  const siteVersion = /\?v=(\d+)"/.exec(sitePage)[1];
+  for (const path of corpusPages) {
+    const html = read(path);
+    assert.ok(html.includes(CSP), `${rel(path)} : politique de sécurité`);
+    assert.doesNotMatch(html, /noindex/, rel(path));
+    assert.doesNotMatch(html, /lx-1242ba1a|llms\.txt/, rel(path));
+    assert.doesNotMatch(html, /<script(?![^>]*\s(?:src=|type="application\/ld\+json"))[^>]*>/i, `${rel(path)} : script écrit dans la page`);
+    assert.doesNotMatch(html, /\sstyle\s*=|<style\b|\son[a-z]+\s*=/i, rel(path));
+    const versions = new Set([...html.matchAll(/\?v=(\d+)"/g)].map((match) => match[1]));
+    assert.deepEqual([...versions], [siteVersion], rel(path));
+    assert.match(html, new RegExp(`/assets/js/v${siteVersion}/pages/corpus\\.js\\?v=${siteVersion}"`), rel(path));
+  }
 });
 
 for (const page of PAGES) {
