@@ -31,8 +31,35 @@ const versionDirs = existsSync(JS) ? readdirSync(JS).filter((name) => /^v\d+$/.t
 const MODULES = join(JS, versionDirs[0] || 'v0');
 const moduleRel = (path) => relative(MODULES, path).replace(/\\/g, '/');
 
-test('les pages du site existent : accueil, Interpréteur, Scanner, Tarteel, Séquenceur', () => {
-  for (const name of ['accueil', 'interpreteur', 'scanner', 'tarteel', 'sequenceur']) assert.ok(PAGES.includes(`${name}/index.html`), name);
+test('les pages du site existent : accueil, Interpréteur, Scanner, Tarteel, Séquenceur, Bibliothèque', () => {
+  for (const name of ['accueil', 'interpreteur', 'scanner', 'tarteel', 'sequenceur', 'bibliotheque']) assert.ok(PAGES.includes(`${name}/index.html`), name);
+});
+
+// La Bibliothèque ne lit que des fichiers du site : elle ne contacte pas l'API, n'envoie ni clé ni mot de
+// passe, et n'en demande pas
+test('Bibliothèque : aucun appel à l’API, seuls des fichiers du site sont lus', () => {
+  for (const name of [join('pages', 'bibliotheque.js'), join('ui', 'library-view.js'), join('ui', 'diagrams.js'), join('lib', 'library.js'), join('lib', 'library-diagrams.js')]) {
+    const path = scripts.find((each) => each.endsWith(name));
+    assert.ok(path, name);
+    const source = read(path);
+    assert.doesNotMatch(source, /from '[^']*\/api\.js'/, name);
+    assert.doesNotMatch(source, /key-dialog|credentials\(|getKey\(|getDevPassword\(|apiBase|api\.veritas-analyst/, name);
+    for (const call of source.match(/fetch\([^)]*\)/g) || []) assert.match(call, /^fetch\([`']\/assets\//, `${name} : ${call}`);
+  }
+  const page = read(join(SITE, 'bibliotheque', 'index.html'));
+  assert.doesNotMatch(page, /<(input|textarea|form)\b/);
+  // Le bouton de la clé n'y est pas : la page n'en donne pas l'ouverture, et le cadre le cache alors
+  assert.doesNotMatch(read(scripts.find((each) => each.endsWith(join('pages', 'bibliotheque.js')))), /onKeyClick/);
+  assert.match(read(scripts.find((each) => each.endsWith(join('ui', 'shell.js')))), /hidden: !onKeyClick/);
+});
+
+// Le manifeste est écrit dans la page : sans script, il reste lisible
+test('Bibliothèque : le manifeste est dans la page, avec les emplacements que le module remplit', () => {
+  const page = read(join(SITE, 'bibliotheque', 'index.html'));
+  for (const id of ['bibliotheque', 'manifeste', 'schema-execution', 'nombre-racines']) assert.match(page, new RegExp(`id="${id}"`), id);
+  assert.match(page, /VERITAS KERNEL : MANIFESTE &amp; PROTOCOLE/);
+  assert.match(page, /<meta name="robots" content="noindex">/);
+  assert.match(page, /\/assets\/css\/bibliotheque\.css\?v=\d+/);
 });
 
 // Une page oubliée dans _dev/pages.mjs garderait son ancien numéro de version à la mise en ligne suivante

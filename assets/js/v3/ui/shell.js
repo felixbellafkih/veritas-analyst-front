@@ -117,10 +117,12 @@ export function mountShell({ page, store, onKeyClick, localApi = null }) {
     on: { click: openLanguageMenu },
   }, icon('globe'), el('span', { class: 'bouton-bord__texte', text: languageLabel(currentLang()) }));
 
+  // Le bouton de la clé n'apparaît que sur les pages qui savent l'ouvrir : une page de lecture seule, qui ne
+  // contacte pas l'API (la Bibliothèque), ne demande pas de clé.
   const keyLabel = el('span', { class: 'bouton-bord__texte' });
   const keyButton = el('button', {
     class: 'bouton-bord bouton-cle',
-    attrs: { type: 'button', 'aria-haspopup': 'dialog' },
+    attrs: { type: 'button', 'aria-haspopup': 'dialog', hidden: !onKeyClick },
     on: { click: () => onKeyClick && onKeyClick() },
   }, icon('key'), keyLabel, el('span', { class: 'temoin' }));
 

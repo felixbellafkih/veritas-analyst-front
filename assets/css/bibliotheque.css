@@ -264,3 +264,287 @@
 .carte-gouv__element--lien:hover {
   border-color: var(--accent);
 }
+
+/* ------------------------------------------------------------------ page */
+
+.biblio {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  margin-block-start: 24px;
+  min-width: 0;
+}
+
+.biblio__panneau {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+
+.biblio__panneau[hidden] {
+  display: none;
+}
+
+.biblio__titre {
+  color: var(--titre);
+  font-family: var(--police-titres);
+  font-size: var(--t-titre);
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.biblio__titre--volet {
+  margin-block-start: 12px;
+  font-size: var(--t-sous-titre);
+}
+
+.biblio__intro {
+  max-width: 640px;
+  margin-block-start: -12px;
+  color: var(--secondaire);
+}
+
+/* ------------------------------------------------------------------ onglets */
+
+/* Les trois lectures, puis les chapitres de la thèse. La rangée revient à la ligne : rien ne déborde à 320 px. */
+.onglets-doc {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  border-block-end: 1px solid var(--bord);
+}
+
+.onglets-doc__onglet {
+  min-height: var(--cible);
+  margin-block-end: -1px;
+  padding: 8px 14px;
+  border: 0;
+  border-block-end: 2px solid transparent;
+  background: none;
+  color: var(--secondaire);
+  font: inherit;
+  font-weight: 500;
+  text-align: start;
+  cursor: pointer;
+}
+
+.onglets-doc__onglet:hover {
+  color: var(--fort);
+}
+
+.onglets-doc__onglet[aria-selected="true"] {
+  border-block-end-color: var(--accent);
+  color: var(--fort);
+  font-weight: 600;
+}
+
+/* Les chapitres : des pastilles, pour ne pas répéter la rangée du dessus */
+.onglets-doc--chapitres {
+  gap: 8px;
+  border: 0;
+}
+
+.onglets-doc--chapitres .onglets-doc__onglet {
+  margin: 0;
+  border: 1px solid var(--bord);
+  border-radius: var(--rayon-moyen);
+  background: var(--surface);
+  font-size: var(--t-petit);
+}
+
+.onglets-doc--chapitres .onglets-doc__onglet[aria-selected="true"] {
+  border-color: var(--accent);
+  background: var(--surface-3);
+}
+
+/* ------------------------------------------------------------------ lecture */
+
+.biblio__etat:empty {
+  display: none;
+}
+
+.biblio__etat > p,
+.biblio__langue {
+  color: var(--secondaire);
+  font-size: var(--t-petit);
+}
+
+.biblio__etat .message__actions {
+  margin-block-start: 10px;
+}
+
+/* La ligne qui dit qu'un texte est servi en français, faute de traduction */
+.biblio__langue {
+  padding: 10px 14px;
+  border: 1px solid var(--bord);
+  border-inline-start: 3px solid var(--attention);
+  border-radius: var(--rayon);
+  background: var(--fond);
+}
+
+.biblio__langue[hidden] {
+  display: none;
+}
+
+/* Colonne de lecture : le texte de l'auteur, à taille confortable */
+.biblio__texte {
+  margin: 0;
+  outline: 0;
+  font-size: 1.0625rem;
+  overflow-wrap: break-word;
+}
+
+.biblio__texte:empty {
+  display: none;
+}
+
+.biblio__texte > :first-child {
+  margin-block-start: 0;
+}
+
+.biblio__volet-titre {
+  color: var(--accent);
+  font-size: var(--t-sous-titre);
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+/* Chapitre précédent, chapitre suivant : le suivant reste au bout de la ligne, même seul */
+.biblio__suite {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px;
+  margin-block-start: 12px;
+  padding-block-start: 20px;
+  border-block-start: 1px solid var(--bord-doux);
+}
+
+.biblio__pas {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-height: var(--cible);
+  max-width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--bord);
+  border-radius: var(--rayon);
+  background: var(--surface);
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+.biblio__pas[hidden] {
+  display: none;
+}
+
+.biblio__pas:hover {
+  border-color: var(--accent);
+}
+
+.biblio__pas--apres {
+  margin-inline-start: auto;
+  text-align: end;
+}
+
+.biblio__pas-sens {
+  color: var(--secondaire);
+  font-size: var(--t-petit);
+}
+
+.biblio__pas-nom {
+  color: var(--accent);
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+
+/* ------------------------------------------------------------------ manifeste */
+
+/* Un texte à mise en forme (gras, italique) s'affiche une fois mis en forme par le module de la page */
+.manifeste [data-i18n-md=""] {
+  visibility: hidden;
+}
+
+.manifeste__colonnes {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+@media (min-width: 1024px) {
+  .manifeste__colonnes {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+    gap: 32px;
+  }
+}
+
+.manifeste__texte,
+.manifeste__partie,
+.manifeste__statut {
+  margin: 0;
+  min-width: 0;
+}
+
+.manifeste .analyse__corps > :first-child {
+  margin-block-start: 0;
+}
+
+.manifeste__encart {
+  margin-block-start: 20px;
+  padding: 16px 18px;
+  border: 1px solid var(--bord);
+  border-inline-start: 3px solid var(--accent);
+  border-radius: var(--rayon);
+  background: var(--surface);
+}
+
+.manifeste__encart > :first-child {
+  margin-block-start: 0;
+}
+
+.manifeste__encart--attention {
+  border-inline-start-color: var(--attention);
+}
+
+.manifeste__statut {
+  margin-block-start: 0;
+}
+
+.manifeste__nombre {
+  color: var(--reussite);
+  font-family: var(--police-codes);
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.manifeste__sous-titre {
+  margin: 0 0 14px;
+  color: var(--accent);
+  font-size: var(--t-petit);
+  letter-spacing: 0.09em;
+  line-height: 1.5;
+}
+
+.manifeste__code {
+  color: var(--accent);
+  font-family: var(--police-codes);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Un groupe qui porte des liens : son bouton ne prend que la hauteur de son nom, les liens suivent aussitôt */
+.carte-gouv__choix:not(:last-child) {
+  flex: none;
+}
+
+/* Téléphone étroit : les trois onglets tiennent sur une ligne */
+@media (max-width: 400px) {
+  .onglets-doc__onglet {
+    padding-inline: 10px;
+    font-size: var(--t-petit);
+  }
+}
