@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { SURAS, clampRange, cleanVerseText, parsePassageQuery, passageQuery, referenceLabel, resultTitle } from '../../assets/js/v3/lib/verses.js';
+import { SURAS, clampRange, cleanVerseText, parsePassageQuery, passageQuery, referenceLabel, resultTitle } from '../../assets/js/v4/lib/verses.js';
 
 test('SURAS : 114 sourates, 6236 versets', () => {
   assert.equal(SURAS.length, 114);

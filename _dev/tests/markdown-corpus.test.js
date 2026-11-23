@@ -2,7 +2,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { outline, parseMarkdown, plainText } from '../../assets/js/v3/lib/markdown.js';
+import { outline, parseMarkdown, plainText } from '../../assets/js/v4/lib/markdown.js';
 
 const ARABIC = /[؀-ۿݐ-ݿࢠ-ࣿﭐ-﷿ﹰ-﻿]+/g;
 const arabicOf = (text) => (text.match(ARABIC) || []).join('');

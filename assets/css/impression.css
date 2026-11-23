@@ -52,6 +52,9 @@ body {
 .sequence__adresse,
 .sequence__legende,
 .chaine__suite,
+.onglets-doc,
+.biblio__suite,
+.biblio__etat,
 dialog {
   display: none !important;
 }

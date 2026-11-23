@@ -3,7 +3,7 @@
 // 1 879 tabulations avant d'atteindre le bouton « Analyser ».
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { hasModifier, nextIndex } from '../../assets/js/v3/lib/roving.js';
+import { hasModifier, nextIndex } from '../../assets/js/v4/lib/roving.js';
 
 test('flèches : la ligne suivante, la précédente, sans sortir de la liste', () => {
   assert.equal(nextIndex(0, 'ArrowDown', 5), 1);

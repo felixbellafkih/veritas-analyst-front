@@ -13,7 +13,7 @@ export const DESTINATIONS = [
   { id: 'scanner', label: tx('Scanner'), href: '/scanner/', icon: 'search', ready: true, tab: true },
   // Le corpus a une page française (href) et une page anglaise (hrefOther)
   { id: 'corpus', label: tx('Corpus'), href: '/corpus/', hrefOther: '/en/corpus/', icon: 'layers', ready: true, tab: false },
-  { id: 'bibliotheque', label: tx('Bibliothèque'), href: '/bibliotheque/', icon: 'book', ready: false, tab: false },
+  { id: 'bibliotheque', label: tx('Bibliothèque'), href: '/bibliotheque/', icon: 'book', ready: true, tab: false },
 ];
 
 // Menu de l'ordinateur : toutes les destinations qui ont leur page

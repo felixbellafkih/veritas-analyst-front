@@ -53,12 +53,14 @@
   background: var(--fond);
 }
 
+/* Six destinations, « Version classique » et les trois boutons tiennent sur une ligne à 1280 px : la barre
+   est un peu plus large que la page, et ses écarts sont serrés. Plus étroit, les boutons passent dessous. */
 .entete__dans {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px 36px;
-  max-width: var(--largeur);
+  gap: 8px 20px;
+  max-width: calc(var(--largeur) + 80px);
   min-height: 64px;
   margin-inline: auto;
   padding: 10px var(--marge);
@@ -133,7 +135,7 @@
   flex: 1 1 auto;
   flex-wrap: wrap;
   align-items: center;
-  gap: 4px;
+  gap: 2px;
 }
 
 .menu__lien {
@@ -141,7 +143,7 @@
   align-items: center;
   gap: 6px;
   min-height: var(--cible);
-  padding-inline: 14px;
+  padding-inline: 10px;
   border-radius: var(--rayon-petit);
   color: var(--secondaire);
   font-size: var(--t-petit);
@@ -161,6 +163,13 @@
 
 .menu__lien--classique {
   margin-inline-start: auto;
+}
+
+/* Tablette : le menu tient sur sa ligne */
+@media (max-width: 1023.98px) {
+  .menu__lien {
+    padding-inline: 8px;
+  }
 }
 
 .outils {

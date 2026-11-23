@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import { installFakeDom } from './aides/faux-dom.mjs';
 
 const dom = installFakeDom();
-const { mountVerseFields } = await import('../../assets/js/v3/ui/verse-fields.js');
+const { mountVerseFields } = await import('../../assets/js/v4/ui/verse-fields.js');
 
 function mounted(state) {
   let changes = 0;

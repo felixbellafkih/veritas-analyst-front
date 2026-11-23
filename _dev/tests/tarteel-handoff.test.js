@@ -3,7 +3,7 @@
 // références retrouvées dans CE cluster, pour CES racines, se cochent.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { applyHandoff, handoffSlot, makeHandoff } from '../../assets/js/v3/lib/tarteel-handoff.js';
+import { applyHandoff, handoffSlot, makeHandoff } from '../../assets/js/v4/lib/tarteel-handoff.js';
 
 const V = ['[2:22] : a', '[2:164] : b', '[3:5] : c'];
 

@@ -3,7 +3,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { clusterCopyText, indexesOfSura, parseTarteelQuery, suraDistribution, suraOf, tarteelQuery } from '../../assets/js/v3/lib/tarteel-stats.js';
+import { clusterCopyText, indexesOfSura, parseTarteelQuery, suraDistribution, suraOf, tarteelQuery } from '../../assets/js/v4/lib/tarteel-stats.js';
 
 const V = ['[2:22] : a', '[2:164] : b', '[3:5] : c', 'sans repère'];
 const REAL = JSON.parse(readFileSync(fileURLToPath(new URL('../fixtures/tarteel.json', import.meta.url)), 'utf8')).clusters['S-M-W|'];
