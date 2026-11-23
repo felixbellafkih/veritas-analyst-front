@@ -33,6 +33,7 @@
 - [Quran 29:1 — Veritas analysis (Maqasid al-Huruf)](https://veritas-analyst.org/en/corpus/29/1/)
 - [Quran 30:32 — Veritas analysis (Maqasid al-Huruf)](https://veritas-analyst.org/en/corpus/30/32/)
 - [Quran 37:1-4 — Veritas analysis (Maqasid al-Huruf)](https://veritas-analyst.org/en/corpus/37/1-4/)
+- [Quran 39:28 — Veritas analysis (Maqasid al-Huruf)](https://veritas-analyst.org/en/corpus/39/28/)
 - [Quran 42:1-2 — Veritas analysis (Maqasid al-Huruf)](https://veritas-analyst.org/en/corpus/42/1-2/)
 - [Quran 7:204 différence entre أنصت  et سمع. — Veritas analysis (Maqasid al-Huruf)](https://veritas-analyst.org/en/corpus/autres/7-204-diff-rence-entre-et/)
 - [Quran — Tarteel cluster s-r-q ∩ q-t.-a. — Veritas analysis](https://veritas-analyst.org/en/corpus/tarteel/s-r-q--q-t-a/)
