@@ -64,8 +64,8 @@ function openLanguageMenu() {
 }
 
 function classicLink(className) {
-  return el('a', { class: className, attrs: { href: CLASSIC_URL, target: '_blank', rel: 'noopener' } },
-    el('span', { text: t('Version classique') }), icon('external', 16));
+  // L'app est servie par le site (/classique/) : même onglet, comme les autres pages
+  return el('a', { class: className, attrs: { href: CLASSIC_URL } }, el('span', { text: t('Version classique') }));
 }
 
 // « Plus », au téléphone : les destinations que la barre d'onglets ne porte pas, puis ce que la barre du

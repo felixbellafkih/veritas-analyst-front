@@ -151,3 +151,14 @@ test('version suivante : les pages du corpus au gabarit du site suivent ; les au
     assert.ok(!changed.some((name) => name.startsWith('lx-') || name.endsWith('.jsonl') || name === 'corpus/9/84/index.html'));
   });
 });
+
+// Étape 6 : /classique/ n'a pas de module, mais sa feuille porte ?v= : la montée de version la suit
+test('version suivante : la page de l’app (/classique/) suit aussi', async () => {
+  const files = { ...site(OLD), 'classique/index.html': `<link rel="stylesheet" href="/assets/css/classique.css?v=${OLD}">
+` };
+  await withSite(files, async (root, read) => {
+    const { changed } = await bumpVersion(root);
+    assert.ok((await read('classique/index.html')).includes(`classique.css?v=${NEW}"`));
+    assert.ok(changed.includes('classique/index.html'));
+  });
+});

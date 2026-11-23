@@ -4,7 +4,7 @@ import { API_PROD, CLASSIC_URL, STORAGE, apiBase, apiChoice } from '../../assets
 
 test('constantes', () => {
   assert.equal(API_PROD, 'https://api.veritas-analyst.org');
-  assert.equal(CLASSIC_URL, 'https://veritas-analyst.streamlit.app');
+  assert.equal(CLASSIC_URL, '/classique/'); // étape 6 : l'app est servie par le site
   assert.deepEqual(STORAGE, {
     theme: 'veritas.theme', lang: 'veritas.lang', key: 'veritas.cle', dev: 'veritas.dev',
     conversation: 'veritas.conversation', model: 'veritas.modele', form: 'veritas.formulaire', api: 'veritas.api', handoff: 'veritas.tarteel',

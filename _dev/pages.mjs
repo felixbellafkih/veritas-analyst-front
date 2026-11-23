@@ -8,3 +8,7 @@ export const PAGES = ['bibliotheque', 'interpreteur', 'scanner', 'sequenceur', '
 // Les fichiers de ces pages, plus les pages faites d'un seul fichier à la racine (les mentions légales : leur
 // adresse, /legal.html, sert l'app sur l'App Store et ne change pas). Chemins relatifs au dépôt.
 export const PAGE_FILES = ['index.html', ...PAGES.map((name) => `${name}/index.html`), 'legal.html'];
+
+// Pages sans module dont les adresses portent ?v= : la montée de version les suit aussi (l'app Streamlit,
+// servie en plein écran à /classique/ depuis l'étape 6)
+export const STATIC_FILES = ['classique/index.html'];

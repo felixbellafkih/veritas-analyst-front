@@ -1,7 +1,8 @@
 // Configuration du site. Aucune dépendance au navigateur : Node teste ce module tel quel.
 
 export const API_PROD = 'https://api.veritas-analyst.org';
-export const CLASSIC_URL = 'https://veritas-analyst.streamlit.app';
+// L'app Streamlit, servie en plein écran par le site depuis l'étape 6 (classique/index.html)
+export const CLASSIC_URL = '/classique/';
 
 // Noms des valeurs gardées dans le navigateur (voir lib/store.js)
 export const STORAGE = Object.freeze({

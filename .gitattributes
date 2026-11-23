@@ -6,6 +6,7 @@
 /index.html text=auto eol=lf
 /accueil/** text=auto eol=lf
 /bibliotheque/** text=auto eol=lf
+/classique/** text=auto eol=lf
 /legal.html text=auto eol=lf
 /interpreteur/** text=auto eol=lf
 /scanner/** text=auto eol=lf
