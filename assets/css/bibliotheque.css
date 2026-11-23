@@ -1,0 +1,266 @@
+/* Nouveau site Veritas — page de la Bibliothèque : le manifeste, la thèse, la carte de gouvernance. */
+
+/* ------------------------------------------------------------------ schéma : architecture d'exécution */
+
+/* Six blocs reliés par cinq flèches. Le schéma garde les libellés de l'app, de gauche à droite, quelle que
+   soit la langue de la page, et revient à la ligne au bord de l'écran : jamais de défilement de côté. */
+.flux {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 14px 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Un bloc et la flèche qui en part restent ensemble quand la ligne se coupe */
+.flux__etape {
+  display: flex;
+  flex: 0 1 auto;
+  align-items: center;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.flux__bloc {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  min-width: 0;
+  max-width: 190px;
+  padding: 10px 14px;
+  border: 1px solid var(--bord-fort);
+  border-radius: var(--rayon);
+  background: var(--surface);
+  overflow-wrap: anywhere;
+}
+
+.flux__bloc--entree {
+  border-color: var(--accent);
+}
+
+.flux__bloc--noyau {
+  border-color: var(--reussite);
+  border-width: 2px;
+}
+
+.flux__bloc--alerte {
+  border-color: var(--erreur);
+}
+
+.flux__titre {
+  color: var(--titre);
+  font-family: var(--police-codes);
+  font-size: var(--t-petit);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.flux__bloc--noyau .flux__titre {
+  color: var(--reussite);
+}
+
+.flux__bloc--alerte .flux__titre {
+  color: var(--erreur);
+}
+
+.flux__texte {
+  color: var(--secondaire);
+  font-size: var(--t-petit);
+  line-height: 1.35;
+}
+
+/* La flèche : son libellé au-dessus, le trait et sa pointe dessous */
+.flux__lien {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  min-width: 44px;
+  padding-inline: 6px;
+}
+
+.flux__libelle {
+  max-width: 92px;
+  color: var(--secondaire);
+  font-family: var(--police-codes);
+  font-size: 0.6875rem;
+  line-height: 1.25;
+  text-align: center;
+}
+
+.flux__fleche {
+  position: relative;
+  align-self: stretch;
+  height: 0;
+  border-block-start: 2px solid var(--discret);
+}
+
+.flux__fleche::after {
+  content: "";
+  position: absolute;
+  inset-block-start: -5px;
+  inset-inline-end: 1px;
+  width: 8px;
+  height: 8px;
+  border-block-start: 2px solid var(--discret);
+  border-inline-end: 2px solid var(--discret);
+  transform: rotate(45deg);
+}
+
+/* ------------------------------------------------------------------ schéma : carte de gouvernance */
+
+/* Le noyau, puis ses quatre groupes. Chaque groupe est un bouton qui ouvre son volet. */
+.carte-gouv {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.carte-gouv__noyau {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  max-width: 100%;
+  padding: 12px 22px;
+  border: 2px solid var(--reussite);
+  border-radius: var(--rayon-grand);
+  background: var(--surface);
+  font-family: var(--police-codes);
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.carte-gouv__noyau-titre {
+  color: var(--reussite);
+  font-weight: 600;
+}
+
+.carte-gouv__noyau-texte {
+  color: var(--secondaire);
+  font-size: var(--t-petit);
+}
+
+/* Le trait qui descend du noyau vers ses groupes */
+.carte-gouv__tronc {
+  width: 0;
+  height: 22px;
+  border-inline-start: 2px solid var(--discret);
+}
+
+.carte-gouv__groupes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr));
+  gap: 14px;
+  align-self: stretch;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.carte-gouv__groupe {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  border: 1px dashed var(--bord-fort);
+  border-radius: var(--rayon);
+  background: var(--surface);
+}
+
+/* Le groupe ouvert */
+.carte-gouv__groupe:has(> .carte-gouv__choix[aria-pressed="true"]) {
+  border-style: solid;
+  border-color: var(--accent);
+  background: var(--surface-2);
+}
+
+.carte-gouv__choix {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  min-height: var(--cible);
+  padding: 12px 14px;
+  border: 0;
+  border-radius: var(--rayon);
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+.carte-gouv__nom {
+  color: var(--titre);
+  font-family: var(--police-codes);
+  font-size: var(--t-petit);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  overflow-wrap: anywhere;
+}
+
+.carte-gouv__choix:hover .carte-gouv__nom,
+.carte-gouv__choix[aria-pressed="true"] .carte-gouv__nom {
+  color: var(--accent);
+}
+
+/* Sans :has(), le groupe ouvert se reconnaît encore à son nom souligné */
+.carte-gouv__choix[aria-pressed="true"] .carte-gouv__nom {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+
+.carte-gouv__element {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 7px 10px;
+  border: 1px solid var(--bord);
+  border-radius: var(--rayon-petit);
+  background: var(--fond);
+  overflow-wrap: anywhere;
+}
+
+.carte-gouv__titre {
+  color: var(--texte);
+  font-size: var(--t-petit);
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.carte-gouv__texte {
+  color: var(--secondaire);
+  font-size: 0.75rem;
+  line-height: 1.3;
+}
+
+.carte-gouv__liens {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0 14px 12px;
+  list-style: none;
+}
+
+/* Une unité d'analyse mène à sa page */
+.carte-gouv__element--lien {
+  min-height: var(--cible);
+  justify-content: center;
+  border-color: var(--bord-fort);
+  text-decoration: none;
+}
+
+.carte-gouv__element--lien .carte-gouv__titre {
+  color: var(--accent);
+}
+
+.carte-gouv__element--lien:hover {
+  border-color: var(--accent);
+}
