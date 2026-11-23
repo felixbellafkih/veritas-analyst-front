@@ -243,3 +243,10 @@ test('les champs de verset ne sont bâtis qu’à un endroit : ui/verse-fields.j
   const builders = scripts.filter((path) => /verset-debut/.test(read(path))).map((path) => rel(path).split('/').slice(-2).join('/'));
   assert.deepEqual(builders, ['ui/verse-fields.js']);
 });
+
+// Depuis le mode Verset de l'Interpréteur, le même passage s'ouvre dans le Séquenceur
+test('Interpréteur : le lien vers le Séquenceur est bâti par sequencerHref', () => {
+  const source = read(scripts.find((path) => path.endsWith(join('ui', 'passage-form.js'))));
+  assert.match(source, /sequencerHref\(state\)/);
+  assert.match(source, /Voir la séquence de ce passage/);
+});

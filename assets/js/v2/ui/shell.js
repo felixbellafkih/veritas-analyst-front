@@ -1,24 +1,14 @@
 // Socle commun à toutes les pages : en-tête, menu, barre d'onglets du téléphone, pied de page.
 import { CLASSIC_URL } from '../lib/config.js';
+import { menuDestinations, moreDestinations, tabDestinations } from '../lib/destinations.js';
 import { htmlLang, tx } from '../lib/i18n.js';
 import { add, clear, el, fill } from './dom.js';
 import { openDialog } from './dialog.js';
 import { icon, logo } from './icons.js';
 import { currentLang, interfaceLanguages, languageLabel, setLanguage, t, td } from './i18n-dom.js';
 
-// Les destinations du site, dans l'ordre du menu. Une entrée n'apparaît que si sa page existe (ready).
-// Les noms sont ceux de l'app mobile.
-export const DESTINATIONS = [
-  { id: 'interpreteur', label: tx('Interpréteur'), href: '/interpreteur/', icon: 'book', ready: true },
-  { id: 'tarteel', label: tx('Tarteel'), href: '/tarteel/', icon: 'list', ready: true },
-  { id: 'sequenceur', label: tx('Séquenceur'), href: '/sequenceur/', icon: 'nodes', ready: false },
-  { id: 'scanner', label: tx('Scanner'), href: '/scanner/', icon: 'search', ready: true },
-  { id: 'corpus', label: tx('Corpus'), href: '/corpus/', hrefOther: '/en/corpus/', icon: 'layers', ready: true },
-  { id: 'bibliotheque', label: tx('Bibliothèque'), href: '/bibliotheque/', icon: 'book', ready: false },
-];
-
 const HOME = '/accueil/';
-const PAGE_TITLES = { accueil: tx('Accueil'), interpreteur: tx('Interpréteur'), scanner: tx('Scanner'), tarteel: tx('Tarteel') };
+const PAGE_TITLES = { accueil: tx('Accueil'), interpreteur: tx('Interpréteur'), scanner: tx('Scanner'), sequenceur: tx('Séquenceur'), tarteel: tx('Tarteel') };
 const THEME_EVENT = 'veritas:theme';
 
 // Le corpus a une page française et une page anglaise
@@ -78,8 +68,9 @@ function classicLink(className) {
     el('span', { text: t('Version classique') }), icon('external', 16));
 }
 
-// « Plus », au téléphone : ce que la barre du haut ne peut pas porter
-function openMore(store) {
+// « Plus », au téléphone : les destinations que la barre d'onglets ne porte pas, puis ce que la barre du
+// haut ne peut pas porter
+function openMore(store, page) {
   const { body, close } = openDialog(t('Plus'));
   const theme = el('button', { class: 'liste-choix__bouton', attrs: { type: 'button' } });
   const paint = () => {
@@ -91,6 +82,11 @@ function openMore(store) {
   });
   paint();
   add(body, el('ul', { class: 'liste-choix' },
+    moreDestinations().map((destination) => el('li', {}, el('a', {
+      class: 'liste-choix__bouton',
+      attrs: { href: hrefOf(destination), 'aria-current': destination.id === page ? 'page' : null },
+      on: { click: close },
+    }, el('span', { text: td(destination.label) }), icon(destination.icon)))),
     el('li', {}, theme),
     el('li', {}, classicLink('liste-choix__bouton')),
     el('li', {}, el('a', { class: 'liste-choix__bouton', attrs: { href: '/legal.html' }, on: { click: close } }, el('span', { text: t('Mentions légales') }))),
@@ -112,7 +108,6 @@ function localBanner(localApi) {
 }
 
 export function mountShell({ page, store, onKeyClick, localApi = null }) {
-  const ready = DESTINATIONS.filter((destination) => destination.ready);
   if (localApi) document.body.insertBefore(localBanner(localApi), document.body.firstChild);
 
   // ---- en-tête. Le bouton de la langue n'apparaît que si l'interface existe dans une autre langue que le français.
@@ -130,7 +125,7 @@ export function mountShell({ page, store, onKeyClick, localApi = null }) {
   }, icon('key'), keyLabel, el('span', { class: 'temoin' }));
 
   const menu = el('nav', { class: 'menu', attrs: { 'aria-label': t('Outils') } });
-  for (const destination of ready) {
+  for (const destination of menuDestinations()) {
     add(menu, el('a', {
       class: 'menu__lien',
       text: td(destination.label),
@@ -150,13 +145,13 @@ export function mountShell({ page, store, onKeyClick, localApi = null }) {
   // ---- barre d'onglets du téléphone
   const tabs = clear(document.getElementById('onglets'));
   tabs.setAttribute('aria-label', t('Outils'));
-  for (const destination of ready) {
+  for (const destination of tabDestinations()) {
     add(tabs, el('a', {
       class: 'onglets__lien',
       attrs: { href: hrefOf(destination), 'aria-current': destination.id === page ? 'page' : null },
     }, icon(destination.icon, 22), el('span', { text: td(destination.label) })));
   }
-  add(tabs, el('button', { class: 'onglets__lien', attrs: { type: 'button', 'aria-haspopup': 'dialog' }, on: { click: () => openMore(store) } },
+  add(tabs, el('button', { class: 'onglets__lien', attrs: { type: 'button', 'aria-haspopup': 'dialog' }, on: { click: () => openMore(store, page) } },
     icon('more', 22), el('span', { text: t('Plus') })));
 
   // ---- pied de page

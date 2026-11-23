@@ -10,7 +10,7 @@ import { handoffSlot } from '../lib/tarteel-handoff.js';
 import { tarteelQuery } from '../lib/tarteel-stats.js';
 import { modelMenu } from '../lib/models.js';
 import { createTarteelProbe } from '../lib/tarteel-probe.js';
-import { cleanVerseText, referenceLabel } from '../lib/verses.js';
+import { cleanVerseText, referenceLabel, sequencerHref } from '../lib/verses.js';
 import { mountClusterList } from './cluster-list.js';
 import { add, clear, el, fill } from './dom.js';
 import { icon } from './icons.js';
@@ -84,11 +84,19 @@ export function mountPassageForm(container, { api, store, asked, onLaunch, onMan
     hint: (count) => t('Sourate de {n} versets · 10 versets au plus par analyse', { n: count }),
     onChange: () => {
       save();
+      paintSequenceLink();
       loadVerse();
     },
   });
 
-  const versePanel = el('div', { class: 'passage__mode' }, verseFields.nodes, verse);
+  // Le même passage dans le Séquenceur, sans clé : sa séquence, mot par mot
+  const sequenceLink = el('a', { class: 'bouton-lien' }, el('span', { text: t('Voir la séquence de ce passage') }), icon('arrow', 16));
+  function paintSequenceLink() {
+    sequenceLink.setAttribute('href', sequencerHref(state));
+  }
+  paintSequenceLink();
+
+  const versePanel = el('div', { class: 'passage__mode' }, verseFields.nodes, verse, sequenceLink);
 
   // ------------------------------------------------------------------ mode Tarteel
 
