@@ -213,3 +213,23 @@ test('clavier : Fin bâtit la chaîne jusqu’au bout, et la suite arrive avec d
   assert.equal(dom.focused(), links()[299]);
   assert.equal(links().filter((link) => link.tabIndex === 0).length, 1);
 });
+
+// Relecture de l'étape 3 : curseur sur une racine, Alt+← ne ramenait plus à la page précédente
+test('clavier : une touche tenue avec Alt, Ctrl, Cmd ou Maj reste au navigateur', () => {
+  const { links } = mounted(elementsOf(V['1:1']));
+  links()[1].focus();
+  for (const [key, modifier] of [['ArrowLeft', 'altKey'], ['ArrowLeft', 'metaKey'], ['Home', 'ctrlKey'], ['ArrowDown', 'shiftKey'], ['End', 'ctrlKey']]) {
+    const event = links()[1].dispatch('keydown', { key, [modifier]: true });
+    assert.equal(event.prevented, false, `${modifier}+${key}`);
+    assert.equal(dom.focused(), links()[1], `${modifier}+${key}`);
+  }
+  assert.deepEqual(links().map((link) => link.tabIndex), [-1, 0, -1, -1]);
+});
+
+// Relecture de l'étape 3 : une longue étiquette de connecteur sortait de sa carte sur téléphone
+test('connecteurs et quantificateurs : leurs étiquettes peuvent aussi se couper après « _ »', () => {
+  const { cards } = mounted([element({ inputs: ['[INSTRUMENTAL_BIND]'], outputs: ['[CLIENT_ENVIRONMENT]'], quantifiers: ['[PLURAL_MASCULINE_SOUND_STATE]'] })]);
+  const lines = cards()[0].byClass('carte-mot__ligne');
+  assert.deepEqual(lines.map((line) => line.textContent), ['IN : [INSTRUMENTAL_BIND]', 'OUT : [CLIENT_ENVIRONMENT]', '[PLURAL_MASCULINE_SOUND_STATE]']);
+  assert.deepEqual(lines.map((line) => line.find((node) => node.tagName === 'WBR').length), [1, 1, 3]);
+});

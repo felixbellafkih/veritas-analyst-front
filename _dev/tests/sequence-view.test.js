@@ -198,3 +198,21 @@ test('légende : repliée, sous l’en-tête', () => {
   assert.equal(legend.find((node) => node.tagName === 'SUMMARY')[0].textContent, 'Comment lire cette chaîne');
   assert.ok(legend.find((node) => node.tagName === 'LI').length >= 3);
 });
+
+// Relecture de l'étape 3 : « Réessayer » disparaît au clic ; le curseur du clavier retombait en haut de la page
+test('après « Réessayer », le curseur reste sur le bloc relancé', () => {
+  const { view, blocks, buttons, retried } = mounted();
+  view.show(verses([ready('1:1'), failed('1:2', NETWORK)]));
+  assert.equal(blocks()[1].attrs.tabindex, '-1');
+  buttons(blocks()[1])[0].click();
+  assert.deepEqual(retried, [1]);
+  assert.equal(dom.focused(), blocks()[1]);
+});
+
+test('après « Réessayer » du message unique de panne, le curseur va sur le premier bloc', () => {
+  const { view, container, blocks, buttons, retried } = mounted();
+  view.show(verses([failed('1:1', NETWORK), failed('1:2', NETWORK)]));
+  buttons(container.byClass('sequence__panne')[0])[0].click();
+  assert.deepEqual(retried, [0, 1]);
+  assert.equal(dom.focused(), blocks()[0]);
+});

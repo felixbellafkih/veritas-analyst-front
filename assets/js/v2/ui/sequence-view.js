@@ -67,7 +67,8 @@ export function mountSequenceView(container, { onRetry, address }) {
     const text = el('p', { class: 'bloc__texte', attrs: block.reference ? { lang: 'ar', dir: 'rtl' } : { dir: 'auto' } });
     text.hidden = true;
     const body = el('div', { class: 'bloc__corps' });
-    const node = el('section', { class: 'bloc' },
+    // tabindex -1 : le bloc peut recevoir le curseur (après « Réessayer »), sans être un arrêt de la touche Tab
+    const node = el('section', { class: 'bloc', attrs: { tabindex: -1 } },
       block.reference ? el('h3', { class: 'bloc__titre' }, el('span', { class: 'verset__ref', text: block.reference })) : null,
       text,
       body);
@@ -87,7 +88,11 @@ export function mountSequenceView(container, { onRetry, address }) {
       if (block.sequence.elements.length) mountSequenceChain(slot.body, { elements: block.sequence.elements });
       else fill(slot.body, el('p', { class: 'champ__aide bloc__vide', text: t('Aucun élément à afficher.') }));
     } else if (block.step === 'echec') {
-      fill(slot.body, failureNode(block.failure, () => onRetry(index)));
+      // Le bouton disparaît au clic : le curseur va sur le bloc, pour ne pas retomber en haut de la page
+      fill(slot.body, failureNode(block.failure, () => {
+        onRetry(index);
+        slot.node.focus();
+      }));
     } else {
       fill(slot.body, el('p', { class: 'champ__aide bloc__attente', text: t('Séquence en cours…'), attrs: { role: 'status' } }));
     }
@@ -172,7 +177,13 @@ export function mountSequenceView(container, { onRetry, address }) {
     const down = blocks.length > 1 && blocks.every((block) => block.step === 'echec');
     outage.hidden = !down;
     blocksBox.hidden = down;
-    if (down) fill(outage, failureParts(blocks[0].failure, () => blocks.forEach((_, index) => onRetry(index))));
+    if (down) {
+      fill(outage, failureParts(blocks[0].failure, () => {
+        blocks.forEach((_, index) => onRetry(index));
+        // Le message s'efface dès qu'un bloc repart : le curseur va sur le premier bloc
+        if (slots[0]) slots[0].node.focus();
+      }));
+    }
     paintTexts(blocks);
   }
 

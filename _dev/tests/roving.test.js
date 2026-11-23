@@ -3,7 +3,7 @@
 // 1 879 tabulations avant d'atteindre le bouton « Analyser ».
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { nextIndex } from '../../assets/js/v2/lib/roving.js';
+import { hasModifier, nextIndex } from '../../assets/js/v2/lib/roving.js';
 
 test('flèches : la ligne suivante, la précédente, sans sortir de la liste', () => {
   assert.equal(nextIndex(0, 'ArrowDown', 5), 1);
@@ -27,4 +27,12 @@ test('un rang hors de la liste est ramené dans la liste', () => {
   assert.equal(nextIndex(-1, 'ArrowDown', 5), 0);
   assert.equal(nextIndex(9, 'ArrowUp', 5), 4);
   assert.equal(nextIndex(9, 'ArrowDown', 5), 4);
+});
+
+// Relecture de l'étape 3 : Alt+← (page précédente) était avalé par les listes à curseur unique
+test('hasModifier : une touche tenue avec Alt, Ctrl, Cmd ou Maj n’est pas pour la liste', () => {
+  for (const name of ['altKey', 'ctrlKey', 'metaKey', 'shiftKey']) assert.equal(hasModifier({ key: 'ArrowLeft', [name]: true }), true, name);
+  assert.equal(hasModifier({ key: 'ArrowLeft' }), false);
+  assert.equal(hasModifier({ key: 'ArrowLeft', altKey: false, shiftKey: false }), false);
+  assert.equal(hasModifier(null), false);
 });

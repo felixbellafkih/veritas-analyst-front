@@ -141,3 +141,19 @@ test('page Tarteel : une ligne bâtie plus tard arrive avec un lien hors du parc
   assert.equal(links().length, 120);
   assert.equal(links().filter((link) => link.tabIndex === 0).length, 1);
 });
+
+// Relecture de l'étape 3 : le défaut trouvé dans la chaîne du Séquenceur existait ici, sur une page en ligne
+test('au clavier : une flèche tenue avec Alt, Ctrl, Cmd ou Maj reste au navigateur ; Entrée coche toujours', async () => {
+  const { boxes, probe } = await mounted();
+  boxes()[2].focus();
+  for (const [key, modifier] of [['ArrowDown', 'altKey'], ['ArrowUp', 'metaKey'], ['End', 'ctrlKey'], ['ArrowDown', 'shiftKey']]) {
+    const event = boxes()[2].dispatch('keydown', { key, [modifier]: true });
+    assert.equal(event.prevented, false, `${modifier}+${key}`);
+    assert.equal(dom.focused(), boxes()[2], `${modifier}+${key}`);
+  }
+  assert.equal(boxes().length, 60);
+  // Entrée ne lance jamais l'analyse depuis une case, même tenue avec Ctrl
+  const enter = boxes()[2].dispatch('keydown', { key: 'Enter', ctrlKey: true });
+  assert.equal(enter.prevented, true);
+  assert.equal(probe.selection().chosen, 1);
+});

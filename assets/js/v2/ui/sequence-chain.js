@@ -9,7 +9,7 @@
 // - Au clavier, une chaîne n'offre qu'un arrêt à la touche Tab : les flèches, Début et Fin passent d'une
 //   racine à l'autre. Sans cela, chaque variable ajouterait une tabulation avant la suite de la page.
 import { scannerHref } from '../lib/roots-index.js';
-import { nextIndex } from '../lib/roving.js';
+import { hasModifier, nextIndex } from '../lib/roving.js';
 import { add, el, fill } from './dom.js';
 import { t } from './i18n-dom.js';
 
@@ -32,7 +32,7 @@ const label = (className, text) => (text ? el('span', { class: className, attrs:
 
 const group = (title, lines) => el('div', { class: 'carte-mot__groupe' },
   el('span', { class: 'carte-mot__titre', text: title }),
-  lines.map((line) => el('span', { class: 'carte-mot__ligne', text: line, attrs: { dir: 'ltr' } })));
+  lines.map((line) => label('carte-mot__ligne', line)));
 
 // Connecteurs, pointeurs et quantificateurs : seulement quand l'API en rend. Mêmes libellés que le Scanner.
 function extras(element) {
@@ -113,6 +113,8 @@ export function mountSequenceChain(container, { elements, slice = SLICE }) {
   list.addEventListener('keydown', (event) => {
     const link = event.target;
     if (!link.classList || !link.classList.contains('carte-mot__racine')) return;
+    // Alt+←, Cmd+←, Ctrl+Début… : ces touches sont celles du navigateur
+    if (hasModifier(event)) return;
     const next = nextIndex(Number(link.dataset.position), rovingKey(event.key), linkCount);
     if (next === null) return;
     event.preventDefault();

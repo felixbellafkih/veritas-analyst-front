@@ -322,9 +322,11 @@ textarea.sequence__texte {
   font-family: var(--police-codes);
   font-size: 0.8125rem;
   line-height: 1.45;
-  /* Une étiquette ne se coupe qu'aux endroits prévus (après « _ » et « // ») ; un mot trop long pour
-     l'écran se coupe quand même plutôt que de déborder. */
-  overflow-wrap: break-word;
+  /* Une étiquette se coupe d'abord aux endroits prévus (après « _ » et « // ») ; un morceau encore trop
+     long pour la carte se coupe où il faut plutôt que d'en sortir. « anywhere » et non « break-word » :
+     c'est lui qui laisse la carte rester à sa largeur. */
+  max-width: 100%;
+  overflow-wrap: anywhere;
 }
 
 .carte-mot__racine {
@@ -373,10 +375,12 @@ textarea.sequence__texte {
 }
 
 .carte-mot__alerte {
+  max-width: 100%;
   color: var(--erreur);
   font-family: var(--police-codes);
   font-size: 0.8125rem;
   font-weight: 600;
+  overflow-wrap: anywhere;
 }
 
 /* Connecteurs, pointeurs, quantificateurs : seulement quand l'API en rend */
@@ -394,13 +398,16 @@ textarea.sequence__texte {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  max-width: 100%;
 }
 
 .carte-mot__titre {
+  max-width: 100%;
   color: var(--discret);
   font-size: 0.6875rem;
   font-weight: 600;
   letter-spacing: 0.04em;
+  overflow-wrap: anywhere;
 }
 
 .carte-mot__ligne {
