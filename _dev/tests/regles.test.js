@@ -231,3 +231,9 @@ test('Interpréteur : le report du Tarteel est lu à l’ouverture de la page, h
   assert.doesNotMatch(show, /takeTarteelHandoff/);
   assert.match(show, /handoff\.take\(/);
 });
+
+// Étape 3 : l'adresse d'un passage dans un outil (?s=…&de=…&a=…) n'est écrite qu'à un endroit
+test('les adresses d’un passage, vers le Séquenceur ou l’Interpréteur, sont bâties dans lib/verses.js', () => {
+  const byHand = scripts.filter((path) => /\/(sequenceur|interpreteur)\/(\?|\$\{)/.test(read(path))).map((path) => rel(path).split('/').slice(-2).join('/'));
+  assert.deepEqual(byHand, ['lib/verses.js']);
+});

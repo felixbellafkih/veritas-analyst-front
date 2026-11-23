@@ -211,3 +211,25 @@ test('report Tarteel : un contenu illisible vaut absence, et il est effacé', ()
   assert.equal(store.takeTarteelHandoff(), null);
   assert.equal(session.data.has('veritas.tarteel'), false);
 });
+
+// ------------------------------------------------------------------ formulaire du Séquenceur (étape 3)
+
+test('formulaire du Séquenceur : gardé pour l’onglet, jamais sur l’appareil', () => {
+  const { local, session, store } = setup();
+  assert.equal(store.loadSequenceForm(), null);
+  const form = { mode: 'texte', sura: 2, start: 255, end: 255, text: 'بِسْمِ' };
+  store.saveSequenceForm(form);
+  assert.ok(session.data.has('veritas.sequence'));
+  assert.equal(local.data.size, 0, 'rien sur l’appareil');
+  assert.deepEqual(store.loadSequenceForm(), form);
+  assert.deepEqual(store.loadSequenceForm(), form, 'il se relit autant de fois qu’il faut');
+});
+
+test('formulaire du Séquenceur : un contenu illisible vaut absence ; il ne touche pas celui de l’Interpréteur', () => {
+  const { store } = setup({}, { 'veritas.sequence': '{pas du JSON' });
+  assert.equal(store.loadSequenceForm(), null);
+  store.saveForm({ mode: 'tarteel' });
+  store.saveSequenceForm({ mode: 'texte' });
+  assert.deepEqual(store.loadForm(), { mode: 'tarteel' });
+  assert.deepEqual(store.loadSequenceForm(), { mode: 'texte' });
+});
