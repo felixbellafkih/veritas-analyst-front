@@ -8,6 +8,7 @@ test('constantes', () => {
   assert.deepEqual(STORAGE, {
     theme: 'veritas.theme', lang: 'veritas.lang', key: 'veritas.cle', dev: 'veritas.dev',
     conversation: 'veritas.conversation', model: 'veritas.modele', form: 'veritas.formulaire', api: 'veritas.api', handoff: 'veritas.tarteel',
+    sequence: 'veritas.sequence',
   });
 });
 
