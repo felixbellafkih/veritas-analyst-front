@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { htmlLang, isRtl, languageList, pickLanguage, responseLanguage, translate, tx, validLang } from '../../assets/js/v4/lib/i18n.js';
+import { chooseLanguage, htmlLang, isRtl, languageList, pickLanguage, responseLanguage, translate, tx, validLang } from '../../assets/js/v4/lib/i18n.js';
 
 // Les codes de engine/translator.py (LANGUAGE_NAMES), plus le français
 const codes = ['fr', 'en', 'ar', 'es', 'de', 'it', 'pt', 'ru', 'zh-CN', 'zh-TW', 'ja', 'ko', 'hi', 'tr', 'id', 'vi', 'pl', 'nl', 'sv',
@@ -140,4 +140,17 @@ test('liste des langues : absente, illisible ou sans le français → le frança
   for (const loaded of [null, undefined, 'texte', {}, [], [{ code: 'en', label: 'English', interface: true }]]) {
     assert.deepEqual(languageList(loaded), { all: [{ code: 'fr', label: 'Français' }], ui: ['fr'] }, JSON.stringify(loaded));
   }
+});
+
+// Étape 5 : une page du corpus est en français ou en anglais. Sans choix du visiteur, son menu prend la langue
+// de la page, et non celle du navigateur : un robot qui exécute les scripts voit une page d'une seule langue.
+test('chooseLanguage : la demande, puis le choix gardé, puis la langue de la page, puis le navigateur', () => {
+  const few = ['fr', 'en', 'ar', 'de'];
+  assert.equal(chooseLanguage({ asked: 'ar', kept: 'de', fallback: 'en', browser: ['de'], codes: few }), 'ar');
+  assert.equal(chooseLanguage({ asked: 'xx', kept: 'de', fallback: 'en', browser: ['ar'], codes: few }), 'de');
+  assert.equal(chooseLanguage({ asked: null, kept: null, fallback: 'en', browser: ['de-DE'], codes: few }), 'en');
+  assert.equal(chooseLanguage({ asked: null, kept: null, fallback: 'fr', browser: ['en-US'], codes: few }), 'fr');
+  assert.equal(chooseLanguage({ asked: null, kept: null, fallback: undefined, browser: ['de-DE'], codes: few }), 'de');
+  assert.equal(chooseLanguage({ asked: null, kept: null, fallback: 'zz', browser: [], codes: few }), 'fr');
+  assert.equal(chooseLanguage({ asked: null, kept: 'xx', fallback: 'en', browser: ['ar'], codes: few }), 'en');
 });

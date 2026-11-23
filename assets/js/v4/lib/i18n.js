@@ -52,6 +52,15 @@ export function pickLanguage(candidates, codes) {
 
 export const validLang = (code, codes) => typeof code === 'string' && codes.includes(code);
 
+// Langue de l'interface à l'ouverture d'une page : ?lang= s'il est valable, sinon le choix gardé, sinon la langue
+// propre à la page (fallback : une page du corpus est en français ou en anglais), sinon celles du navigateur.
+export function chooseLanguage({ asked, kept, fallback, browser, codes }) {
+  if (validLang(asked, codes)) return asked;
+  if (validLang(kept, codes)) return kept;
+  if (validLang(fallback, codes)) return fallback;
+  return pickLanguage(browser, codes);
+}
+
 export const isRtl = (code) => RTL.has(code);
 
 export const htmlLang = (code) => (own(HTML_LANG, code) ? HTML_LANG[code] : code);

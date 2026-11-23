@@ -5,7 +5,7 @@
 // l'interface. Le texte s'écrit toujours en toutes lettres : c'est ainsi que _dev/textes.mjs le collecte.
 // Dans les pages : data-i18n (le texte de l'élément est la source), data-i18n-md (idem, avec gras et code),
 // data-i18n-placeholder, data-i18n-aria-label, data-i18n-title (la valeur de l'attribut est la source).
-import { htmlLang, isRtl, languageList, pickLanguage, translate, validLang } from '../lib/i18n.js';
+import { chooseLanguage, htmlLang, isRtl, languageList, translate, validLang } from '../lib/i18n.js';
 import { parseInline } from '../lib/markdown.js';
 import { fill } from './dom.js';
 import { renderInline } from './markdown-view.js';
@@ -44,11 +44,14 @@ async function fetchJson(path) {
 export async function initI18n(options) {
   store = options.store;
   ({ all: list, ui: uiCodes } = languageList(await fetchJson('/assets/i18n/langues.json')));
-  const asked = new URLSearchParams(window.location.search).get('lang');
-  const kept = store.getLang();
-  if (validLang(asked, uiCodes)) current = asked;
-  else if (validLang(kept, uiCodes)) current = kept;
-  else current = pickLanguage(window.navigator.languages || [window.navigator.language], uiCodes);
+  // fallback (facultatif) : la langue propre à la page, prise avant celles du navigateur (pages du corpus)
+  current = chooseLanguage({
+    asked: new URLSearchParams(window.location.search).get('lang'),
+    kept: store.getLang(),
+    fallback: options.fallback,
+    browser: window.navigator.languages || [window.navigator.language],
+    codes: uiCodes,
+  });
 
   catalog = null;
   if (current !== 'fr') {
