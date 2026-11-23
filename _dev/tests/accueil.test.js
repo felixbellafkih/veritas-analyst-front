@@ -1,4 +1,4 @@
-// Règles propres à la page d'accueil (accueil/index.html), vérifiées sur le fichier lui-même.
+// Règles propres à la page d'accueil (index.html, à la racine depuis l'étape 6), vérifiées sur le fichier lui-même.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
@@ -7,12 +7,28 @@ import { fileURLToPath } from 'node:url';
 import { CLASSIC_URL } from '../../assets/js/v5/lib/config.js';
 
 const SITE = fileURLToPath(new URL('../..', import.meta.url));
-const path = join(SITE, 'accueil', 'index.html');
+const path = join(SITE, 'index.html');
 const html = existsSync(path) ? readFileSync(path, 'utf8') : '';
 const ANALYSES = ['1/1', '6/159', '18/96-97'];
 
 test('la page d’accueil existe', () => {
   assert.ok(html.length > 0);
+});
+
+// Étape 6 : l'accueil du site officiel, à la racine, indexable
+test('l’accueil est à la racine, indexable, avec son adresse de référence', () => {
+  assert.match(html, /<script type="module" src="\/assets\/js\/v\d+\/pages\/accueil\.js\?v=\d+"><\/script>/);
+  assert.ok(html.includes('<link rel="canonical" href="https://veritas-analyst.org/">'));
+  assert.doesNotMatch(html, /noindex/);
+});
+
+test('/accueil/ renvoie vers l’accueil, sans script', () => {
+  const old = readFileSync(join(SITE, 'accueil', 'index.html'), 'utf8');
+  assert.ok(old.includes('<meta http-equiv="refresh" content="0; url=/">'));
+  assert.ok(old.includes('<link rel="canonical" href="https://veritas-analyst.org/">'));
+  assert.ok(old.includes('<a href="/">'));
+  assert.ok(old.includes('<meta name="robots" content="noindex">'));
+  assert.doesNotMatch(old, /<script|\sstyle\s*=|<style/i);
 });
 
 // export_corpus.py laisse intacte la page d'accueil qui porte cette marque (conception §6.3)

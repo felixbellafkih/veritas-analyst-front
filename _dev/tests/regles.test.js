@@ -11,7 +11,7 @@ const CSP = '<meta http-equiv="Content-Security-Policy" content="default-src \'n
 const SERVED = ['assets', ...PAGE_DIRS];
 const PAGES = PAGE_FILES.filter((page) => existsSync(join(SITE, page)));
 // Pages indexables : les mentions légales (page de confidentialité de l'app sur l'App Store)
-const INDEXED = ['legal.html'];
+const INDEXED = PAGE_FILES; // étape 6 : toutes les pages du site sont indexables
 
 function walk(dir) {
   if (!existsSync(dir)) return [];
@@ -35,8 +35,16 @@ const moduleRel = (path) => relative(MODULES, path).replace(/\\/g, '/');
 // Dossiers écrits par la publication du corpus (export_corpus.py du Kernel), pas à la main
 const GENERATED = ['corpus', 'en', 'lx-1242ba1a'];
 
-test('les pages du site existent : accueil, Interpréteur, Scanner, Tarteel, Séquenceur, Bibliothèque', () => {
-  for (const name of ['accueil', 'interpreteur', 'scanner', 'tarteel', 'sequenceur', 'bibliotheque']) assert.ok(PAGES.includes(`${name}/index.html`), name);
+test('les pages du site existent : accueil (à la racine), Interpréteur, Scanner, Tarteel, Séquenceur, Bibliothèque', () => {
+  assert.ok(PAGES.includes('index.html'), 'index.html');
+  for (const name of ['interpreteur', 'scanner', 'tarteel', 'sequenceur', 'bibliotheque']) assert.ok(PAGES.includes(`${name}/index.html`), name);
+  assert.ok(!PAGE_FILES.includes('accueil/index.html'), 'accueil/index.html est une page de renvoi');
+});
+
+// Étape 6 : plus aucun lien interne vers /accueil/ (page de renvoi), sauf ses propres tests
+test('aucun module ni outil ne vise encore /accueil/', () => {
+  const tools = walk(join(SITE, '_dev')).filter((path) => /\.m?js$/.test(path) && !path.endsWith('accueil.test.js') && !path.endsWith('regles.test.js'));
+  for (const path of [...scripts, ...tools]) assert.doesNotMatch(read(path), /['"`]\/accueil\//, rel(path));
 });
 
 // La Bibliothèque ne lit que des fichiers du site : elle ne contacte pas l'API, n'envoie ni clé ni mot de
@@ -62,7 +70,7 @@ test('Bibliothèque : le manifeste est dans la page, avec les emplacements que l
   const page = read(join(SITE, 'bibliotheque', 'index.html'));
   for (const id of ['bibliotheque', 'manifeste', 'schema-execution', 'nombre-racines']) assert.match(page, new RegExp(`id="${id}"`), id);
   assert.match(page, /VERITAS KERNEL : MANIFESTE &amp; PROTOCOLE/);
-  assert.match(page, /<meta name="robots" content="noindex">/);
+  assert.doesNotMatch(page, /noindex/); // étape 6 : indexable
   assert.match(page, /\/assets\/css\/bibliotheque\.css\?v=\d+/);
 });
 

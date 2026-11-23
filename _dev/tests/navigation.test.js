@@ -9,7 +9,7 @@ const HERE = 'https://veritas-analyst.org/interpreteur/?s=1&de=1&a=7';
 // suivre un lien qui remplacerait la page.
 test('un lien vers une autre page du site, ou vers un autre site, quitte la page', () => {
   assert.equal(leavesPage({ href: '/corpus/' }, HERE), true);
-  assert.equal(leavesPage({ href: '/accueil/' }, HERE), true);
+  assert.equal(leavesPage({ href: '/' }, HERE), true);
   assert.equal(leavesPage({ href: '/legal.html' }, HERE), true);
   assert.equal(leavesPage({ href: '/interpreteur/' }, HERE), true); // même page, autre passage : elle se recharge
   assert.equal(leavesPage({ href: 'https://ailleurs.example/' }, HERE), true);

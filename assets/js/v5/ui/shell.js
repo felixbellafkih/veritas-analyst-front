@@ -7,7 +7,7 @@ import { openDialog } from './dialog.js';
 import { icon, logo } from './icons.js';
 import { currentLang, interfaceLanguages, languageLabel, setLanguage, t, td } from './i18n-dom.js';
 
-const HOME = '/accueil/';
+const HOME = '/';
 const PAGE_TITLES = { accueil: tx('Accueil'), interpreteur: tx('Interpréteur'), scanner: tx('Scanner'), sequenceur: tx('Séquenceur'), tarteel: tx('Tarteel'), bibliotheque: tx('Bibliothèque'), corpus: tx('Corpus'), legal: tx('Mentions légales') };
 const THEME_EVENT = 'veritas:theme';
 
